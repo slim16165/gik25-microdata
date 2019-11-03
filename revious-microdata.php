@@ -17,6 +17,9 @@ Author:      Gianluigi Salvi
 //	ini_set('display_errors', 1);
 //	error_reporting(-1);
 
+if (defined('DOING_AJAX') && DOING_AJAX)
+    return;
+
 	require_once("include/GenericShortcode.php");
 	require_once("include/site_specific/superinformati_specific.php");
 
