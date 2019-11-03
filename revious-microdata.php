@@ -7,12 +7,16 @@ Version:     0.1
 Author:      Gianluigi Salvi
  */
 
-	//error_reporting(E_ALL);
-	//define('WP_DEBUG', true);
-	//define('WP_DEBUG_DISPLAY', true);
-	//ini_set('display_errors','On');
-	//ini_set('error_reporting', E_ALL );
+//	error_reporting(E_ALL);
+//	define('WP_DEBUG', true);
+//	define('WP_DEBUG_DISPLAY', true);
+//	ini_set('display_errors','On');
+//	ini_set('error_reporting', E_ALL );
+//
+//	ini_set('display_startup_errors', 1);
+//	ini_set('display_errors', 1);
+//	error_reporting(-1);
 
 	require_once("include/GenericShortcode.php");
-	require_once("include/chiecosa_specific.php");
+	require_once("include/site_specific/superinformati_specific.php");
 

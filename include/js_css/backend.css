@@ -1,0 +1,78 @@
+/* Code By Webdevtrick ( https://webdevtrick.com ) */
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    padding-top: 100px;
+    background:#e8eaed;
+    font-family: 'Josefin Sans', sans-serif;
+}
+main {
+    max-width: 500px;
+    margin: 0 auto;
+    padding-bottom: 10px;
+    background: white;
+    border-radius: 3px;
+    overflow: hidden;
+}
+h1 {
+    font-size: 24px;
+    font-weight: normal;
+    background: #ff3a3a;
+    color: white;
+    text-align: center;
+    padding: 20px 0; margin-bottom: 40px;
+}
+.flp {
+    padding: 0 50px;
+}
+.flp div {
+    position: relative;
+    margin-bottom: 30px;}
+
+.flp input, .flp label {
+    width: 400px;
+    display: block;
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    height: 46px;
+    border: 1px solid #999;
+}
+.flp input {
+    padding: 10px;
+    outline: none;
+    border-radius: 3px;
+}
+.flp label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 10px 8px;
+    border-color: transparent;
+    color: #666;
+    cursor: text;
+}
+.ch {
+    display: block;
+    float: left;
+    position: relative;
+    background: white;
+}
+.ch:first-child {padding-left: 2px;}
+.ch:last-child {padding-right: 2px;}
+
+.focussed {
+    pointer-events: none;
+}
+@media (max-width: 765px) {
+    .flp {
+        padding: 0 15px;
+    }
+    .flp input, .flp label {
+        width: 100%;
+    }
+}

@@ -1,0 +1,344 @@
+/* ======================================
+ * https://github.com/adamdehaven/gik25-microdata
+ * version 0.1
+ *
+ * gik225
+ *
+ * gik25-microdata.css
+ *
+ * ======================================
+*/
+
+/* Liste su più colonne con thumbnail (nuova versione) */
+
+div.thumbnail-list
+{
+    column-count: 2;
+    margin-bottom: 4px;
+}
+
+ol.thumbnail-list,
+ul.thumbnail-list {
+    /*margin: 1.2em 0 1.2em 1em;*/
+    margin: 0px;
+    list-style: none;
+}
+
+ol.thumbnail-list li,
+ul.thumbnail-list li {
+    /*position: relative;*/
+    /*padding: .4em .4em .4em 2em;*/
+    /*line-height: 0;*/
+    background: #EFEFEF;
+    text-decoration: none;
+    border-radius: .3em;
+    font-size: 0.94em;
+    margin-bottom: 1px;
+    /*width: 100%;*/
+    /*!*border-bottom: 1px solid #ccc;*!*/
+    /*!*display: table;*!*/
+    border-collapse: collapse;
+}
+
+ol.thumbnail-list li a,
+ul.thumbnail-list li a {
+    display: flex; /* establish flex container */
+    flex-direction: row; /* make main axis horizontal (default value) */
+    justify-content: left; /* center items horizontally, in this case */
+    align-items: center; /* center items vertically, in this case */
+    height: 50px;
+    /*background-color: #eee;*/
+}
+
+ol.thumbnail-list li + div,
+ul.thumbnail-list li + div {
+    display: flex; /* establish flex container */
+    flex-direction: row; /* make main axis horizontal (default value) */
+    justify-content: left; /* center items horizontally, in this case */
+    align-items: center; /* center items vertically, in this case */
+    height: 50px;
+    background-color: #eee;
+}
+
+div.container
+li.container {
+    display: flex; /* establish flex container */
+    flex-direction: row; /* make main axis horizontal (default value) */
+    justify-content: left; /* center items horizontally, in this case */
+    align-items: center; /* center items vertically, in this case */
+    height: 50px;
+    background-color: #eee;
+}
+
+
+.li-text {
+    display: inline-block;;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+img.li-img {
+    display: inline-block;
+    max-width: 50px;
+    height: 50px;
+    width: 50px;
+    margin-bottom: 0px !important;
+}
+
+@media screen and (max-width: 600px){
+    img.li-img img {
+        max-width: 50px;
+        height: 50px;
+        width: 50px;
+    }
+}
+
+
+/* Liste su più colonne con thumbnail e intestazione bianca / blu */
+
+.entry-content table.thumbnail-list tr:hover td,
+.entry-content table.thumbnail-list:hover
+{
+    background-color: white !important;
+}
+
+.entry-content table.thumbnail-list tr td
+{
+    padding: 0;
+}
+
+
+
+/* Liste con pallino azzurrino carino */
+
+ol.nicelist, ul.nicelist {
+    margin: 1.2em 0 1.2em 1em;
+}
+
+ol.nicelist li, ul.nicelist li {
+     position: relative;
+     display: block;
+     padding: .4em .4em .4em 2em;
+     margin: .6em 0;
+     background: #EFEFEF;
+     text-decoration: none;
+     border-radius: .3em;
+     font-size: 0.94em;
+ }
+
+ol.nicelist li a, ul.nicelist li a {
+    /*display: block;*/
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+}
+
+ol.nicelist li:before, ul.nicelist li:before {
+    content: " ";
+    position: absolute;
+    left: -13px;
+    top: 20px;
+    margin-top: -17px;
+    background: #4db2ec;
+    height: 28px;
+    width: 28px;
+    line-height: 26px;
+    border: 4px solid #fff;
+    text-align: center;
+    font-weight: 700;
+    border-radius: 28px;
+    transition: all .3s ease-out;
+    color: #555;
+    font-size: 14px;
+}
+
+
+
+
+.icon--instagram-64 {
+    width: 94px;
+    height: 64px;
+    display: block;
+    line-height: 30px;
+    color: #fff;
+    font-size: 9px;
+    font-style: normal;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    background-image: url(instagram.png);
+    background-repeat: no-repeat;
+    padding-right: 10px;
+    margin-top: 12px;
+    -webkit-filter: drop-shadow(5px 5px 6px rgba(0,0,0,0.5));
+}
+
+.instagram {
+    background: #d6249f;
+    background: radial-gradient(circle farthest-corner at 30% 90%,#fec564,transparent 50%),radial-gradient(circle farthest-corner at 0 140%,#fec564,transparent 50%),radial-gradient(ellipse farthest-corner at 0 -25%,#5258cf,transparent 50%),radial-gradient(ellipse farthest-corner at 20% -50%,#5258cf,transparent 50%),radial-gradient(ellipse farthest-corner at 100% 0,#893dc2,transparent 50%),radial-gradient(ellipse farthest-corner at 60% -20%,#893dc2,transparent 50%),radial-gradient(ellipse farthest-corner at 100% 100%,#d9317a,transparent),linear-gradient(#6559ca,#bc318f 30%,#e33f5f 50%,#f77638 70%,#fec66d 100%);
+    -ms-flex-align: center;
+    align-items: center;
+    color: #fff;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+    justify-content: center;
+    padding: 12px;
+    text-transform: uppercase;
+    /*margin: 0 -12px 12px;*/
+    text-decoration: none;
+    text-shadow: 0 0 2px rgba(0,0,0,0.3);
+    color: white !important;
+}
+
+.entry-content a.instagram{
+    color: white !important;
+    font-weight: bold;
+    text-shadow: 2px 1px 1px rgba(0,0,0,0.5);
+}
+
+
+/*.gik25-quote blockquote, .gik25-quote blockquote p { !* Reset <blockquote> element *!*/
+    /*margin:0 !important;*/
+    /*padding:0 !important;*/
+    /*border:0 !important;*/
+    /*outline:0 !important;*/
+    /*font-size:16px !important;*/
+    /*line-height: 33px !important;*/
+    /*text-align: left !important;*/
+    /*vertical-align:baseline !important;*/
+    /*background:transparent !important;*/
+    /*quotes:none !important;*/
+/*}*/
+
+/*.specialnote*/
+/*{*/
+    /*border-bottom: #4db2ec 2px solid;*/
+    /*border-top: #4db2ec 2px solid;*/
+    /*padding: 4px !important;*/
+    /*padding-right: 4px !important;*/
+    /*background-color: #EBF1FC !important;*/
+    /*margin-bottom: 12px !important;*/
+    /*margin-top: 12px !important;*/
+    /*color: black !important;*/
+    /*font-size:15px !important;*/
+    /*width: 100%;*/
+    /*font-family: Lato, Geneva, sans-serif;*/
+    /*font-style: normal;*/
+    /*line-height: 1.5;*/
+    /*display: block;*/
+    /*width: 100% !important;*/
+/*}*/
+
+/*.specialnote > **/
+/*{*/
+    /*margin: 10px;*/
+    /*margin-bottom: 10px !important;*/
+/*}*/
+
+/*.specialnote > h4*/
+/*{*/
+    /*font-size: 23px;*/
+    /*font-weight: bold;*/
+    /*font-family: Lato;*/
+    /*margin-top: 12px;*/
+/*}*/
+
+/*.gik25-quote blockquote:before,*/
+/*.gik25-quote blockquote:after,*/
+/*.gik25-quote blockquote p:before,*/
+/*.gik25-quote blockquote p:after {*/
+    /*content:'' !important;*/
+    /*content:none !important;*/
+/*}*/
+
+/*.gik25-quote blockquote footer:before {*/
+    /*content:'\2014 \00A0' !important;*/
+/*}*/
+
+/*.gik25-quote blockquote footer {*/
+    /*margin-top:4px;*/
+/*}*/
+
+/*.gik25-quote blockquote footer cite {*/
+    /*font-style: italic;*/
+/*}*/
+
+/*.gik25-quote blockquote footer cite a {*/
+    /*display: inline-block;*/
+    /*font-style: italic;*/
+/*}*/
+
+/*.gik25-quote {*/
+    /*color:#363636;*/
+    /*font-size:16px;*/
+    /*line-height: 1.5;*/
+    /*display: block;*/
+    /*width: 30%;*/
+    /*padding: 0.5em 1em;*/
+    /*margin: 24px 0px;*/
+/*}*/
+
+/*.gik25-quote.pullquote-align-full {*/
+    /*width:95%;*/
+/*}*/
+
+/*.gik25-quote blockquote p {*/
+    /*color:#363636;*/
+    /*font-size:21px;*/
+    /*line-height: 1.5;*/
+/*}*/
+
+/*.pullquote-align-left {*/
+    /*text-align: left;*/
+    /*margin: 0.5em 1.5em 1em 0;*/
+    /*float: left;*/
+/*}*/
+
+/*.pullquote-align-right {*/
+    /*text-align: left;*/
+    /*margin: 0.5em 0 1em 1.5em;*/
+    /*float: right;*/
+/*}*/
+
+/*.pullquote-align-full {*/
+    /*text-align: left;*/
+    /*margin: 0.5em 0 1em 1.5em;*/
+    /*padding-right: 0;*/
+    /*float: none;*/
+/*}*/
+
+/*.pullquote-border-placement-left {*/
+    /*border-left: 5px solid #eeeeee;*/
+/*}*/
+/*.pullquote-border-placement-right {*/
+    /*border-right: 5px solid #eeeeee;*/
+/*}*/
+/*.pullquote-border-placement-top {*/
+    /*border-top: 5px solid #eeeeee;*/
+    /*padding-left:.5em;*/
+	/*padding-right: .5em;*/
+/*}*/
+
+/*@media screen and (min-width: 769px) and (max-width: 992px) {*/
+    /*.gik25-quote {*/
+        /*width:50% !important;*/
+    /*}*/
+    /*.gik25-quote.pullquote-align-full {*/
+        /*margin: 0.5em 0 1em 0.5em;*/
+        /*width:95% !important;*/
+    /*}*/
+/*}*/
+
+/*@media screen and (max-width: 768px) {*/
+    /*.gik25-quote {*/
+        /*margin: 0.5em 0 1em 0.5em !important;*/
+        /*padding: 0.5em 1em;*/
+        /*padding-right: 0;*/
+        /*width:95% !important;*/
+        /*border-left: 5px solid #eeeeee;*/
+        /*border-right: none !important;*/
+        /*border-top: none !important;*/
+        /*float:none;*/
+    /*}*/
+/*}*/
