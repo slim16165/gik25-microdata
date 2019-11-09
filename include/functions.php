@@ -10,10 +10,9 @@
 	spl_autoload_register(function($className) {
 //		include_once $_SERVER['DOCUMENT_ROOT'] . "/class/$className.class.php";
 		require_once "class/HtmlHelper.class.php";
-		require_once "class/LowLevelShortcode.class.php";
+//		require_once "class/LowLevelShortcode.class.php";
 		require_once "class/MyString.class.php";
 		require_once "class/ServerHelper.class.php";
-		require_once "class/shortcode-wpautop-control.php";
 		require_once "class/ShortCodeHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
 	});
@@ -139,7 +138,9 @@ TAG;
 	{
 		if (is_single())
 		{ ?>
-			<script type="text/javascript" class="teads" async="true" src="//a.teads.tv/page/109549/tag"></script>
+            <!-- EZOIC_REMOVE_BEGIN -->
+            <script type="text/javascript" class="teads" async="true" src="//a.teads.tv/page/109549/tag"></script>
+            <!-- EZOIC_REMOVE_END -->
 
 			<?php
 		}
