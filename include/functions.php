@@ -204,7 +204,7 @@ TAG;
 
 	function exclude_posts_from_everywhere($query)
 	{
-		$ids = find_post_id_from_taxonomy();
+		$ids = find_post_id_from_taxonomy("OT");
 
 		if ( $query->is_home() || $query->is_feed() || $query->is_archive() ) {
 			$query->set('post__not_in', $ids);
@@ -213,7 +213,7 @@ TAG;
 
 
 
-	function find_post_id_from_taxonomy()
+	function find_post_id_from_taxonomy($term_name)
 	{
 		global $wpdb;
 
@@ -227,7 +227,7 @@ INNER JOIN wp_term_taxonomy
     AND wp_term_taxonomy.taxonomy = 'post_tag'
 INNER JOIN wp_terms
   ON wp_terms.term_id = wp_term_taxonomy.term_id
-    AND wp_terms.name = 'OT'
+    AND wp_terms.name = '$term_name'
 WHERE wp_posts.post_type = 'post'
   AND wp_posts.post_status = 'publish'
   AND wp_posts.post_parent = 0
@@ -257,7 +257,7 @@ TAG;
 
 	function exclude_posts_from_sitemap_by_post_ids($alreadyExcluded)
 	{
-		$excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy());
+		$excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT"));
 		return $excludePostId;
 	}
 
