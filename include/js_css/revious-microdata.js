@@ -137,7 +137,16 @@ let handleQuesData = (data, n) => {
         domanda_i = domanda_i.replace(/"(.*)"/mg, "$1");
         risposta_i = risposta_i.replace(/"(.*)"/mg, "$1");
 
+        if(domanda_i &&  !(domanda_i === ""))
+        {
+            domande_risposte.push(`{"domanda": "${domanda_i}", "risposta": "${risposta_i}"}\n`);
+        }
+    }
+    quesdata+= domande_risposte.join(",<br/>");
+    return quesdata +'<br/>[/domande_e_risposte]';
+}
 
+let numItem = 5;
 
         if(domanda_i &&  !(domanda_i === ""))
         {
