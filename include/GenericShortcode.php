@@ -124,47 +124,95 @@ EOF
 		return $dom->saveHTML();
 	}
 
-	#region Shortcode Domande e risposte
+	#endregion
 
-	include "class/shortcode-wpautop-control.php";
+	#region	Metodi per fixare wpautop, wptexturize e simili negli shortcode
 
-	chiedolabs_shortcode_wpautop_control(array('domande_e_risposte'));
 
-	add_shortcode('domande_e_risposte', 'domande_e_risposte_handler');
+//	NON FUNZIONA - ROMPE l'altro programma
+//	include "class/shortcode-wpautop-control.php";
+//	chiedolabs_shortcode_wpautop_control(array('domande_e_risposte'));
 
-//Evita di applicare la funzione
+	//	function shortcode_fix( $content ) {
+//		// List all your shortcodes as an array
+//		$block = join( '|', array( 'domande_e_risposte' ) );
+//
+//		$rep = preg_replace( "/(<p>)?\[($block)(\s[^\]]+)?\](<\/p>|<br \/>)?/", '[$2$3]', $content );
+//		$rep = preg_replace( "/(<p>)?\[\/($block)](<\/p>|<br \/>)?/", '[/$2]', $rep );
+//
+//		return $rep;
+//	}
+//	add_filter( 'the_content', 'shortcode_fix' );
+
+	//Other transformation
+	//	remove_filter('the_content', 'wpautop');
+	//	remove_filter('the_content', 'wptexturize');
+	//	remove_filter('the_content', 'convert_chars');
+
+	//Evita di applicare la funzione
 	apply_filters( 'no_texturize_shortcodes', array('registerNoTexturizeShortcodes'));
+
+	remove_filter( 'the_content', 'wpautop' );
+	add_filter( 'the_content', 'wpautop' , 9);
 
 	function registerNoTexturizeShortcodes( $shortcodes )
 	{
 		$shortcodes[] = 'domande_e_risposte';
-		return $shortcodes;//array_merge($shortcodes, array('domande_e_risposte'));
+		return $shortcodes; //array_merge($shortcodes, array('domande_e_risposte'));
 	}
 
-//Vanno evitati wptexturize() e wpautop()
+	#endregion
+
+	#region Shortcode Domande e risposte
+
+	//Vanno evitati wptexturize() e wpautop()
 	function domande_e_risposte_handler($atts, $content = null)
 	{
-//	add_filter('run_wptexturize', '__return_false');
+		//	add_filter('run_wptexturize', '__return_false');
 		$result = "\n\n";
 		$result.= "<!--adinj_exclude_start-->\n";
-		$jsonIniziale = str_replace("<br />", "", $content);
+		$jsonIniziale = str_replace(
+			array("<br />", "<p />", "<p>", "</p>"),
+			array("", "", "", ""),
+			$content);
+
 		$jsonIniziale = html_entity_decode($jsonIniziale);
 
-		$jsonIniziale = str_replace(
+		$jsonUnparsed = str_replace(
 			array("“","”"),
 			array("\"", "\""),
 			$jsonIniziale
 		);
 
+
+
 		$jsonIniziale = <<<TAG
 {
 "domande": [
-$jsonIniziale
+$jsonUnparsed
 ]}
 TAG;
 
 		$jsonDecoded = json_decode($jsonIniziale, true);
-		$result.= CheckJsonError($jsonIniziale);
+		$result.= CheckJsonError($jsonIniziale/*, $jsonUnparsed*/);
+
+		//Parse Json e HTML
+		$question_array_json = array();
+		$question_array_html = array();
+		foreach($jsonDecoded as $domandeRisposte)
+		{
+			foreach($domandeRisposte as $domandaRisposta)
+			{
+				if($domandaRisposta["domanda"] == null || $domandaRisposta["risposta"] == null)
+				{
+					$question_array_json[] = "ERRORE: Non ci possono essere domande o risposte vuote";
+					$question_array_html[] = "<span style='color: red; font-size: xx-large; font-weight: bold;'>ERRORE: Non ci possono essere domande o risposte vuote</span>";
+				}
+
+				$question_array_json[] = QuestionSchema::RenderJson($domandaRisposta["domanda"], $domandaRisposta["risposta"]);
+				$question_array_html[] = QuestionSchema::RenderHTML($domandaRisposta["domanda"], $domandaRisposta["risposta"]);
+			}
+		}
 
 		//Apertura Json
 		$result.= <<<TAG
@@ -173,16 +221,9 @@ TAG;
   "@type": "FAQPage",
   "mainEntity": [
 TAG;
-        $question_array = array();
-		foreach($jsonDecoded as $domandeRisposte)
-		{
-			foreach($domandeRisposte as $domandaRisposta)
-			{
-                $question_array[] = QuestionSchema::RenderJson($domandaRisposta["domanda"], $domandaRisposta["risposta"]);
-			}
-		}
 
-        $result.= implode(",\n", $question_array);
+        $jsonDomande = implode(",\n", $question_array_json);
+        $result.= $jsonDomande;
 
 
         //Chiusura Json
@@ -197,24 +238,16 @@ TAG;
 <div class="schema-faq-section">
 
 TAG;
+		$htmlDomande = implode("", $question_array_html);
+		$result.= $htmlDomande;
 
-		$question_array = array();
-		foreach($jsonDecoded as $domandeRisposte)
-		{
-			foreach($domandeRisposte as $domandaRisposta)
-			{
-				$question_array[] = QuestionSchema::RenderHTML($domandaRisposta["domanda"], $domandaRisposta["risposta"]);
-			}
-		}
-
-		$result.= implode("", $question_array);
 		$result.= "</div>\n";
 		$result.= "<!--adinj_exclude_end-->\n\n\n";
 
 		return $result;
 	}
 
-#endregion
+	add_shortcode('domande_e_risposte', 'domande_e_risposte_handler', 8);
 
 	#endregion
 
@@ -444,22 +477,27 @@ EOF;
 	add_action( 'init', 'revious_microdata_buttons' );
 
 	function revious_microdata_buttons() {
-		add_filter("mce_external_plugins", "revious_microdata_add_buttons");
+		add_filter("mce_external_plugins", "revious_microdata_add_tinymce_plugins");
 		add_filter('mce_buttons', 'revious_microdata_register_buttons');
 	}
 
-	function revious_microdata_add_buttons($plugin_array) {
+	function revious_microdata_add_tinymce_plugins($plugin_array) {
 		$plugin_array['revious_microdata'] = plugins_url( '/js_css/revious-microdata.js', __FILE__ );
+		$plugin_array['QuestionAndAnswer'] = plugins_url( '/js_css/revious-microdata.js', __FILE__ );
 		return $plugin_array;
 	}
 
 	function revious_microdata_register_buttons($buttons) {
-		array_push( $buttons, 'md_telefono_btn', 'boxinfo-menu' );
-		array_push( $buttons, 'md_prezzo_btn', 'boxinfo-menu' );
+		array_push( $buttons, 'md_telefono_btn');
+		array_push( $buttons, 'md_prezzo_btn');
+		array_push( $buttons, 'DomandeERisposte_btn');
 		return $buttons;
 	}
 
-	function load_css_single_pages() {
+	#endregion
+
+	function load_css_single_pages()
+    {
 		if(is_single())
 		{
 			$plugin_url = plugin_dir_url( __FILE__ );

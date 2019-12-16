@@ -10,10 +10,10 @@
 	spl_autoload_register(function($className) {
 //		include_once $_SERVER['DOCUMENT_ROOT'] . "/class/$className.class.php";
 		require_once "class/HtmlHelper.class.php";
-		require_once "class/LowLevelShortcode.class.php";
+//		require_once "class/LowLevelShortcode.class.php";
 		require_once "class/MyString.class.php";
+//		require_once("packets/highlight/Highlight/Highlighter.php");
 		require_once "class/ServerHelper.class.php";
-		require_once "class/shortcode-wpautop-control.php";
 		require_once "class/ShortCodeHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
 	});
@@ -23,31 +23,66 @@
 	}
 
     function CheckJsonError(string $json): string
-{
-    switch (json_last_error())
-    {
-        case JSON_ERROR_NONE:
-            return "";
-        case JSON_ERROR_DEPTH:
-            return " - Maximum stack depth exceeded\n$json";
-            break;
-        case JSON_ERROR_STATE_MISMATCH:
-			return " - Underflow or the modes mismatch\n$json";
-            break;
-        case JSON_ERROR_CTRL_CHAR:
-			return " - Unexpected control character found\n$json";
-            break;
-        case JSON_ERROR_SYNTAX:
-			return " - Syntax error, malformed JSON\n$json";
-            break;
-        case JSON_ERROR_UTF8:
-			return " - Malformed UTF-8 characters, possibly incorrectly encoded\n$json";
-            break;
-        default:
-			return " - Unknown error\n$json";
-            break;
-    }
-}
+	{
+	    $errormessage = "";
+		$json_last_error = json_last_error();
+
+		switch ($json_last_error)
+		{
+		    //Nessun errore
+			case JSON_ERROR_NONE:
+				return "";
+				break;
+
+			//varie casistiche di errori
+			case JSON_ERROR_DEPTH:
+				$errormessage = "Maximum stack depth exceeded";
+				break;
+			case JSON_ERROR_STATE_MISMATCH:
+				$errormessage = "Underflow or the modes mismatch";
+				break;
+			case JSON_ERROR_CTRL_CHAR:
+				$errormessage = "Unexpected control character found";
+				break;
+			case JSON_ERROR_SYNTAX:
+				$errormessage = "Syntax error, malformed JSON";
+				break;
+			case JSON_ERROR_UTF8:
+				$errormessage = "Malformed UTF-8 characters, possibly incorrectly encoded";
+				break;
+			default:
+				$errormessage = "Unknown error";
+				break;
+		}
+
+//		https://github.com/scrivo/highlight.php
+
+
+        $errormessage="<pre>$errormessage<br/>
+		[$json]
+		<a href='https://codebeautify.org/jsonviewer?input=[$json]'>Validator</a>
+		</pre>";
+		// Instantiate the Highlighter.
+		//$hl = new \Highlight\Highlighter();
+
+//		try {
+//			// Highlight some code.
+//			$highlighted = $hl->highlight('json', $code);
+//
+//			echo "<pre><code class=\"hljs {$highlighted->language}\">";
+//			echo $highlighted->value;
+//			echo "</code></pre>";
+//		}
+//		catch (DomainException $e) {
+//			// This is thrown if the specified language does not exist
+//
+//			echo "<pre><code>";
+//			echo $code;
+//			echo "</code></pre>";
+//		}
+
+		return $errormessage;
+	}
 
 
 	function EnableErrorLogging()
@@ -135,17 +170,27 @@ TAG;
 
 	}
 
-	function add_Teads()
-	{
-		if (is_single())
-		{ ?>
-			<script type="text/javascript" class="teads" async="true" src="//a.teads.tv/page/109549/tag"></script>
+	define('DISALLOW_FILE_EDIT',true);
 
-			<?php
-		}
+	function wpse_297026_update_user_activity() {
+		update_user_meta( get_current_user_id(), '<last_activity>', time() );
 	}
+	add_action( 'init', 'wpse_297026_update_user_activity' );
 
-	add_action('wp_head', 'add_Teads');
+
+/*	function add_Teads()
+//	{
+//		if (is_single())
+//		{
+<!--            <!-- EZOIC_REMOVE_BEGIN -->-->
+<!--            <script type="text/javascript" class="teads" async="true" src="//a.teads.tv/page/109549/tag"></script>-->
+<!--            <!-- EZOIC_REMOVE_END -->-->
+<!---->
+<!--			-->
+//		}
+//	} */
+
+//	add_action('wp_head', 'add_Teads');
 
 
 
@@ -203,7 +248,7 @@ TAG;
 
 	function exclude_posts_from_everywhere($query)
 	{
-		$ids = find_post_id_from_taxonomy();
+		$ids = find_post_id_from_taxonomy("OT");
 
 		if ( $query->is_home() || $query->is_feed() || $query->is_archive() ) {
 			$query->set('post__not_in', $ids);
@@ -212,7 +257,7 @@ TAG;
 
 
 
-	function find_post_id_from_taxonomy()
+	function find_post_id_from_taxonomy($term_name)
 	{
 		global $wpdb;
 
@@ -226,7 +271,7 @@ INNER JOIN wp_term_taxonomy
     AND wp_term_taxonomy.taxonomy = 'post_tag'
 INNER JOIN wp_terms
   ON wp_terms.term_id = wp_term_taxonomy.term_id
-    AND wp_terms.name = 'OT'
+    AND wp_terms.name = '$term_name'
 WHERE wp_posts.post_type = 'post'
   AND wp_posts.post_status = 'publish'
   AND wp_posts.post_parent = 0
@@ -256,7 +301,7 @@ TAG;
 
 	function exclude_posts_from_sitemap_by_post_ids($alreadyExcluded)
 	{
-		$excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy());
+		$excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT"));
 		return $excludePostId;
 	}
 

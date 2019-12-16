@@ -9,6 +9,7 @@
 
 	add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler');
 	add_shortcode('link_vitamine', 'link_vitamine_handler');
+	add_shortcode('link_diete', 'link_diete_handler');
 
 	function link_vitamine_handler($atts, $content = null)
 	{
@@ -24,6 +25,33 @@
 		$result .= GetLinkWithImage("https://www.nonsolodiete.it/vitamina-b12/", "Vitamina B12");
 		$result .= GetLinkWithImage("https://www.nonsolodiete.it/acido-folico-tutto-quello-che-dovete-sapere/", "Acido Folico");
 		$result .= GetLinkWithImage("https://www.nonsolodiete.it/vitamina-d/", "Vitamina D");
+
+		$result .= "</ul></div>";
+		return $result;
+	}
+
+	function link_diete_handler($atts, $content = null)
+	{
+		$result = "<h3>Lista principali Diete</h3>
+		<div class='thumbnail-list'>";
+
+//		find_post_id_from_taxonomy("dieta");
+
+		$result .= "<ul class='thumbnail-list'>";
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/le-differenti-diete/", "Diete differenti");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-10-kg/", "Dieta per perdere 10kg");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-chetogenica/", "Dieta chetogenica");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-del-supermetabolismo/", "Dieta supermetabolismo");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-plank/", "Dieta Plank");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-senza-carboidrati/", "Dieta senza carboidrati");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-mima-digiuno/", "Dieta mima digiuno");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-del-riso-scotti-dietidea/", "Dieta del riso scotti");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-lemme/", "Dieta Lemme");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-vegana/", "Dieta Vegana");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-mediterranea/", "Dieta Mediterranea");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-sirt/", "Dieta Sirt");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-delle-uova/", "Dieta delle uova");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-panzironi/", "Dieta Panzironi");
 
 		$result .= "</ul></div>";
 		return $result;

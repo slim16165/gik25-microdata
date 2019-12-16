@@ -8,7 +8,7 @@
 
 	class QuestionSchema
 	{
-		static function RenderJson(string $question, string $answer)
+		static function RenderJson($question, $answer)
 		{
 			$question_parsed = htmlspecialchars($question);
 			$answer_parsed = htmlspecialchars($answer);
@@ -25,7 +25,7 @@
 TAG;
 		}
 
-		static function RenderHTML(string $question, string $answer)
+		static function RenderHTML($question, $answer)
 		{
 			$question_parsed = htmlspecialchars($question);
 			$answer_parsed = htmlspecialchars($answer);
