@@ -52,6 +52,9 @@
 		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-sirt/", "Dieta Sirt");
 		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-delle-uova/", "Dieta delle uova");
 		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-panzironi/", "Dieta Panzironi");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-scarsdale/", "Dieta Scarsdale");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-prima-e-dopo-le-feste/", "Dieta Lampo di Natale");
+		$result .= GetLinkWithImage("https://www.nonsolodiete.it/dieta-tina-cipollari/", "Dieta di Tina Cipollari");
 
 		$result .= "</ul></div>";
 		return $result;
