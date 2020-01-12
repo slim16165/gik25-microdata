@@ -97,7 +97,8 @@
 })();
 
 // item creation dynamically
-let createArr = (n) => {
+let createArr = (n) =>
+{
     let arr = []
     for (let i = 0; i < n; i++) {
         arr.push(
@@ -121,7 +122,8 @@ function encodeHTML(str){
 }
 
 // onsubmit handled dynamically
-let handleQuesData = (data, n) => {
+let handleQuesData = (data, n) =>
+{
     let quesdata = '[domande_e_risposte]<br/>';
 
     let domande_risposte = [];
@@ -136,17 +138,6 @@ let handleQuesData = (data, n) => {
         //toglie le virgolette ad inizio e fine
         domanda_i = domanda_i.replace(/"(.*)"/mg, "$1");
         risposta_i = risposta_i.replace(/"(.*)"/mg, "$1");
-
-        if(domanda_i &&  !(domanda_i === ""))
-        {
-            domande_risposte.push(`{"domanda": "${domanda_i}", "risposta": "${risposta_i}"}\n`);
-        }
-    }
-    quesdata+= domande_risposte.join(",<br/>");
-    return quesdata +'<br/>[/domande_e_risposte]';
-}
-
-let numItem = 5;
 
         if(domanda_i &&  !(domanda_i === ""))
         {
