@@ -21,5 +21,5 @@ if (defined('DOING_AJAX') && DOING_AJAX)
     return;
 
 	require_once("include/GenericShortcode.php");
-	require_once("include/site_specific/totaldesign_specific.php");
+	require_once("include/site_specific/superinformati_specific.php");
 

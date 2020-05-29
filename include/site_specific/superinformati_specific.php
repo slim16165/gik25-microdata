@@ -133,6 +133,15 @@ function sedi_inps_handler($atts, $content = null)
 	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-brindisi.htm", "Sedi Inps Brindisi", "", false, false);
 	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-agrigento.htm", "Sedi Inps Agrigento", "", false, false);
 	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-caserta.htm", "Sedi Inps Caserta", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-viterbo.htm", "Inps Viterbo", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-vercelli.htm", "Inps Vercelli", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-oristano.htm", "Inps Oristano", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-terni.htm", "Inps Terni", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-ragusa.htm", "Inps Ragusa", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-biella.htm", "Inps Biella", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-catanzaro.htm", "Inps Catanzaro", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-enna.htm", "Inps Enna", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/consumatori/inps-lodi.htm", "Inps Lodi", "", false, false);
 
 
 	$result .= "</ul>";

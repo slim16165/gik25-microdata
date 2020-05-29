@@ -27,9 +27,18 @@
 	add_shortcode('quote', 'quote_handler');
 	add_shortcode('flexlist', 'flexlist_handler');
 
+
 	add_action( 'wp_enqueue_scripts', 'load_css_single_pages', 1001 );
 	add_action('admin_head', 'add_LogRocket');
 	//add_filter( 'xmlrpc_enabled', '__return_false' );
+	add_action( 'after_setup_theme', 'wnd_default_image_settings' );
+
+	//Change the default image settings in the Backend
+	function wnd_default_image_settings() {
+		update_option( 'image_default_align', 'left' );
+		update_option( 'image_default_link_type', 'none' );
+		update_option( 'image_default_size', 'full-size' );
+	}
 
 
 	#region Shortcode vari

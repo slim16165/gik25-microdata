@@ -9,11 +9,11 @@
 
 	spl_autoload_register(function($className) {
 //		include_once $_SERVER['DOCUMENT_ROOT'] . "/class/$className.class.php";
-		require_once "class/HtmlHelper.class.php";
+		require_once "class/Utility/HtmlHelper.class.php";
 //		require_once "class/LowLevelShortcode.class.php";
-		require_once "class/MyString.class.php";
+		require_once "class/Utility/MyString.class.php";
 //		require_once("packets/highlight/Highlight/Highlighter.php");
-		require_once "class/ServerHelper.class.php";
+		require_once "class/Utility/ServerHelper.class.php";
 		require_once "class/ShortCodeHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
 	});
@@ -157,9 +157,10 @@
 
 
         $user = wp_get_current_user();
-		echo <<<TAG
+		echo /** @lang javascript */
+		<<<TAG
 <script src="https://cdn.lr-ingest.io/LogRocket.min.js" crossorigin="anonymous"></script>
-<script>window.LogRocket && window.LogRocket.init('hdyhlv/si');
+<script>window.LogRocket && window.LogRocket.init('hdyhlv/si', {mergeIframes: true});
 LogRocket.identify('{$user->user_login}-$domain', {
   name: '{$user->user_nicename}-$domain',
   email: '{$user->user_email}',
@@ -178,17 +179,6 @@ TAG;
 	add_action( 'init', 'wpse_297026_update_user_activity' );
 
 
-/*	function add_Teads()
-//	{
-//		if (is_single())
-//		{
-<!--            <!-- EZOIC_REMOVE_BEGIN -->-->
-<!--            <script type="text/javascript" class="teads" async="true" src="//a.teads.tv/page/109549/tag"></script>-->
-<!--            <!-- EZOIC_REMOVE_END -->-->
-<!---->
-<!--			-->
-//		}
-//	} */
 
 //	add_action('wp_head', 'add_Teads');
 
