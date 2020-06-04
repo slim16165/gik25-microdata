@@ -27,6 +27,10 @@
 	add_shortcode('quote', 'quote_handler');
 	add_shortcode('flexlist', 'flexlist_handler');
 
+	//Avoid link and pages for tags of just one link
+	TagHelper::add_filter_DisableTagWith1Post();
+
+
 
 	add_action( 'wp_enqueue_scripts', 'load_css_single_pages', 1001 );
 	add_action('admin_head', 'add_LogRocket');

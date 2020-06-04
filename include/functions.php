@@ -16,6 +16,7 @@
 		require_once "class/Utility/ServerHelper.class.php";
 		require_once "class/ShortCodeHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
+		require_once "class/TagHelper.php";
 	});
 
 	function IsNullOrEmptyString($str){
@@ -115,8 +116,6 @@
 		$timediff = $endtime - $starttime;
 
 		var_dump($timediff); //in seconds
-		exit;
-
 	}
 
 	function ReplaceTargetUrlIfStaging($target_url) : string
@@ -171,7 +170,7 @@ TAG;
 
 	}
 
-	define('DISALLOW_FILE_EDIT',true);
+	//define('DISALLOW_FILE_EDIT',true);
 
 	function wpse_297026_update_user_activity() {
 		update_user_meta( get_current_user_id(), '<last_activity>', time() );
@@ -238,7 +237,7 @@ TAG;
 
 	function exclude_posts_from_everywhere($query)
 	{
-		$ids = find_post_id_from_taxonomy("OT");
+		$ids = find_post_id_from_taxonomy("OT", 'post_tag');
 
 		if ( $query->is_home() || $query->is_feed() || $query->is_archive() ) {
 			$query->set('post__not_in', $ids);
@@ -247,9 +246,19 @@ TAG;
 
 
 
-	function find_post_id_from_taxonomy($term_name)
+	function find_post_id_from_taxonomy($term_name, $taxonomy_type)
 	{
+	    #region Check errors
+
+	    if($taxonomy_type != 'post_tag' && $taxonomy_type = 'post_category')
+		{
+			echo "error: era atteso un tag o categoria";
+	        exit;
+		}
+
 		global $wpdb;
+
+		#endregion
 
 		$sql = <<<TAG
 SELECT wp_posts.ID
@@ -258,10 +267,10 @@ INNER JOIN wp_term_relationships
   ON wp_term_relationships.object_id = wp_posts.ID
 INNER JOIN wp_term_taxonomy
   ON wp_term_taxonomy.term_taxonomy_id = wp_term_relationships.term_taxonomy_id
-    AND wp_term_taxonomy.taxonomy = 'post_tag'
+    AND wp_term_taxonomy.taxonomy = '{$taxonomy_type}'
 INNER JOIN wp_terms
   ON wp_terms.term_id = wp_term_taxonomy.term_id
-    AND wp_terms.name = '$term_name'
+    AND wp_terms.name = '{$term_name}'
 WHERE wp_posts.post_type = 'post'
   AND wp_posts.post_status = 'publish'
   AND wp_posts.post_parent = 0
@@ -291,7 +300,7 @@ TAG;
 
 	function exclude_posts_from_sitemap_by_post_ids($alreadyExcluded)
 	{
-		$excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT"));
+		$excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT", 'post_tag'));
 		return $excludePostId;
 	}
 
