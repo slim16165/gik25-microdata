@@ -17,6 +17,7 @@
 		require_once "class/ShortCodeHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
 		require_once "class/TagHelper.php";
+		require_once "class/ExcludePostFrom.php";
 	});
 
 	function IsNullOrEmptyString($str){
@@ -181,8 +182,6 @@ TAG;
 
 //	add_action('wp_head', 'add_Teads');
 
-
-
 //	add_filter('the_posts', 'conditionally_add_scripts_and_styles'); // the_posts gets triggered before wp_head
 //	function conditionally_add_scripts_and_styles($posts){
 //		if (empty($posts)) return $posts;style-post-UnusedCSS+UnCSS.css
@@ -205,46 +204,6 @@ TAG;
 //}
 
 	#endregion
-
-	function exclude_posts_from_home($query)
-	{
-		if ($query->is_home() ) {
-			$query->set('post__not_in', array(1737, 1718));
-		}
-	}
-
-
-	function exclude_posts_from_feed($query)
-	{
-		if ($query->is_feed() ) {
-			$query->set('post__not_in', array(1737, 1718));
-		}
-	}
-
-	function  exclude_posts_exclude_from_search($query)
-	{
-		if ( $query->is_search() ) {
-			$query->set('post__not_in', array(1737, 1718));
-		}
-	}
-
-	function exclude_posts_from_archives($query)
-	{
-		if ( $query->is_archive() ) {
-			$query->set('post__not_in', array(1737, 1718));
-		}
-	}
-
-	function exclude_posts_from_everywhere($query)
-	{
-		$ids = find_post_id_from_taxonomy("OT", 'post_tag');
-
-		if ( $query->is_home() || $query->is_feed() || $query->is_archive() ) {
-			$query->set('post__not_in', $ids);
-		}
-	}
-
-
 
 	function find_post_id_from_taxonomy($term_name, $taxonomy_type)
 	{
@@ -298,11 +257,7 @@ TAG;
 	}
 
 
-	function exclude_posts_from_sitemap_by_post_ids($alreadyExcluded)
-	{
-		$excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT", 'post_tag'));
-		return $excludePostId;
-	}
+
 
 
 
