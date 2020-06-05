@@ -205,56 +205,7 @@ TAG;
 
 	#endregion
 
-	function find_post_id_from_taxonomy($term_name, $taxonomy_type)
-	{
-	    #region Check errors
 
-	    if($taxonomy_type != 'post_tag' && $taxonomy_type = 'post_category')
-		{
-			echo "error: era atteso un tag o categoria";
-	        exit;
-		}
-
-		global $wpdb;
-
-		#endregion
-
-		$sql = <<<TAG
-SELECT wp_posts.ID
-FROM wp_posts
-INNER JOIN wp_term_relationships
-  ON wp_term_relationships.object_id = wp_posts.ID
-INNER JOIN wp_term_taxonomy
-  ON wp_term_taxonomy.term_taxonomy_id = wp_term_relationships.term_taxonomy_id
-    AND wp_term_taxonomy.taxonomy = '{$taxonomy_type}'
-INNER JOIN wp_terms
-  ON wp_terms.term_id = wp_term_taxonomy.term_id
-    AND wp_terms.name = '{$term_name}'
-WHERE wp_posts.post_type = 'post'
-  AND wp_posts.post_status = 'publish'
-  AND wp_posts.post_parent = 0
-TAG;
-
-		$result = $wpdb->get_results( $sql);
-
-		#region Imparare PHP
-
-		//[ array_column() ] Return the values from a single column in the input array
-		//Easy
-		//		$ids = [];
-		//		foreach ($values as $value)     {
-		//			$ids[] = $value->ID    ;
-		//		}
-
-		#endregion
-
-		$fn = function ($value) {
-			return $value->ID;
-		};
-		$ids = array_map($fn, $result);
-
-		return $ids;
-	}
 
 
 

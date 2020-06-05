@@ -49,3 +49,10 @@ function exclude_posts_from_sitemap_by_post_ids($alreadyExcluded)
     $excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT", 'post_tag'));
     return $excludePostId;
 }
+
+function wpseo_exclude_from_sitemap_by_term_ids($alreadyExcluded)
+{
+    //Da implementare
+    $excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT", 'post_tag'));
+    return $excludePostId;
+}
