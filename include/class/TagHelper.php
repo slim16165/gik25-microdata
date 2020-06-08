@@ -88,7 +88,7 @@ TAG;
 
             $getTermId = function ($value)
             {
-                return $value->term_id;
+                return intval($value->term_id);
             };
             $ids = array_map($getTermId, $result);
 
