@@ -37,7 +37,7 @@ function exclude_posts_from_archives($query)
 
 function exclude_posts_from_everywhere($query)
 {
-    $ids = find_post_id_from_taxonomy("OT", 'post_tag');
+    $ids = TagHelper::find_post_id_from_taxonomy("OT", 'post_tag');
 
     if ( $query->is_home() || $query->is_feed() || $query->is_archive() ) {
         $query->set('post__not_in', $ids);
@@ -46,13 +46,13 @@ function exclude_posts_from_everywhere($query)
 
 function exclude_posts_from_sitemap_by_post_ids($alreadyExcluded)
 {
-    $excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT", 'post_tag'));
+    $excludePostId = array_merge($alreadyExcluded, TagHelper::find_post_id_from_taxonomy("OT", 'post_tag'));
     return $excludePostId;
 }
 
 function wpseo_exclude_from_sitemap_by_term_ids($alreadyExcluded)
 {
     //Da implementare
-    $excludePostId = array_merge($alreadyExcluded, find_post_id_from_taxonomy("OT", 'post_tag'));
+    $excludePostId = array_merge($alreadyExcluded, TagHelper::find_post_id_from_taxonomy("OT", 'post_tag'));
     return $excludePostId;
 }

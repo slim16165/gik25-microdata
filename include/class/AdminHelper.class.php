@@ -8,21 +8,21 @@
 
 	class AdminHelper
 	{
-		function remove_extra_field_profile()
+		public function remove_extra_field_profile()
 		{
-//			$current_file_url =  preg_replace( "#\?.*#" , "" , basename( $_SERVER['REQUEST_URI'] ) );
-//
-//			if( $current_file_url == "profile.php" )
-//			{
-//				add_action( 'wp_loaded', function(){ ob_start("profile_callback"); } );
-//				add_action( 'shutdown', function(){ ob_end_flush(); } );
-//			}
+			$current_file_url =  preg_replace( "#\?.*#" , "" , basename( $_SERVER['REQUEST_URI'] ) );
+
+			if( $current_file_url == "profile.php" )
+			{
+				add_action( 'wp_loaded', function(){ ob_start("profile_callback"); } );
+				add_action( 'shutdown', function(){ ob_end_flush(); } );
+			}
 		}
 
-		add_action( 'init', 'remove_extra_field_profile' );
+//		add_action( 'init', 'remove_extra_field_profile' );
 
 
-		function profile_callback( $html )
+		public function profile_callback( $html )
 		{
 			$profile_dom = new DOMDocument;
 			$profile_dom->loadHTML( $html );

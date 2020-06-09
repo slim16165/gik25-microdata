@@ -17,8 +17,8 @@
 		require_once "class/ShortCodeHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
 		require_once "class/TagHelper.php";
-		require_once "class/ExcludePostFrom.php";
 	});
+	require_once "class/ExcludePostFrom.php";
 
 	function IsNullOrEmptyString($str){
 		return (!isset($str) || trim($str) === '');
@@ -217,5 +217,5 @@ TAG;
 //	add_action('pre_get_posts', 'exclude_posts_from_feed');
 //	add_action('pre_get_posts', 'exclude_posts_from_archives');
 //	add_action('pre_get_posts', 'exclude_posts_from_search');
-	add_action('pre_get_posts', 'exclude_posts_from_everywhere');
+	//add_action('pre_get_posts', 'exclude_posts_from_everywhere');
 	add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', 'exclude_posts_from_sitemap_by_post_ids', 10000);
