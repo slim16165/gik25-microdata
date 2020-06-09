@@ -217,5 +217,9 @@ TAG;
 //	add_action('pre_get_posts', 'exclude_posts_from_feed');
 //	add_action('pre_get_posts', 'exclude_posts_from_archives');
 //	add_action('pre_get_posts', 'exclude_posts_from_search');
-	//add_action('pre_get_posts', 'exclude_posts_from_everywhere');
+
+	if(!function_exists("exclude_posts_from_everywhere"))
+		exit("la funzione non è definita");
+
+	add_action('pre_get_posts', 'exclude_posts_from_everywhere');
 	add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', 'exclude_posts_from_sitemap_by_post_ids', 10000);

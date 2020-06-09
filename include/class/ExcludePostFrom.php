@@ -38,7 +38,6 @@ function exclude_posts_from_archives($query)
 function exclude_posts_from_everywhere($query)
 {
     $ids = TagHelper::find_post_id_from_taxonomy("OT", 'post_tag');
-
     if ( $query->is_home() || $query->is_feed() || $query->is_archive() ) {
         $query->set('post__not_in', $ids);
     }
