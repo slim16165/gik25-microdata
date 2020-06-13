@@ -1,10 +1,7 @@
 <?php
-	/**
-	 * Created by PhpStorm.
-	 * User: g.salvi
-	 * Date: 17/09/2019
-	 * Time: 14:44
-	 */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
 
 
 	add_shortcode('lista_single_temptation_island', 'temptation_island_single_handler');

@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
+
 add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler');
 add_shortcode('sedi_inps', 'sedi_inps_handler');
 
