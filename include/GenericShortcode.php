@@ -337,37 +337,38 @@ TAG;
 		}
 	}
 
-	function linkIfNotSelf2($url, $nome)
-	{
-		global $current_post;
-		$permalink = get_permalink( $current_post->ID );
+function linkIfNotSelf2($url, $nome)
+{
+    global $current_post;
+    $permalink = get_permalink( $current_post->ID );
 
-		if($permalink != $url)
-		{
-			return "<a href=\"$url\">$nome</a>";
-		}
-		else
-		{
-			return "$nome";
-		}
-	}
+    if($permalink != $url)
+    {
+        return "<a href=\"$url\">$nome</a>";
+    }
+    else
+    {
+        return "$nome";
+    }
+}
 
-	function GetLinkWithImage(string $target_url, string $nome, string $commento = "", bool $removeIfSelf = false, bool $withImage = true)
-	{
-		$target_url = ReplaceTargetUrlIfStaging($target_url);
 
-		global $post, $MY_DEBUG; //il post corrente
-		$current_post = $post;
-		$result ="";
+function GetLinkWithImage(string $target_url, string $nome, string $commento = "", bool $removeIfSelf = false, bool $withImage = true)
+{
+    $target_url = ReplaceTargetUrlIfStaging($target_url);
 
-		if(!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
-			$commento = " ($commento)";
+    global $post, $MY_DEBUG; //il post corrente
+    $current_post = $post;
+    $result ="";
 
-		$current_permalink = get_permalink( $current_post->ID );
+    if(!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
+        $commento = " ($commento)";
 
-		//Check if the current post is the same of the target_url
-		$sameFile2 = strcmp($current_permalink, $target_url);
-		$sameFile = $sameFile2 == 0;
+    $current_permalink = get_permalink( $current_post->ID );
+
+    //Check if the current post is the same of the target_url
+    $sameFile2 = strcmp($current_permalink, $target_url);
+    $sameFile = $sameFile2 == 0;
 
 ////DEBUG
 //    $val = <<<TAG
@@ -379,51 +380,51 @@ TAG;
 //TAG;
 //    return $val;
 
-		if($sameFile && $removeIfSelf)
-		{
-			if( $MY_DEBUG )
-				return "sameFile && removeIfSelf";
-			else
-				return "";
-		}
+    if($sameFile && $removeIfSelf)
+    {
+        if( $MY_DEBUG )
+            return "sameFile && removeIfSelf";
+        else
+            return "";
+    }
 
-		$target_postid = url_to_postid($target_url);
+    $target_postid = url_to_postid($target_url);
 
-		if ($target_postid == 0)
-		{
-			if( $MY_DEBUG)
-				return "target_postid == 0";
-			else
-				return "";
-		}
+    if ($target_postid == 0)
+    {
+        if( $MY_DEBUG)
+            return "target_postid == 0";
+        else
+            return "";
+    }
 
-		$target_post = get_post($target_postid);
+    $target_post = get_post($target_postid);
 
-		if( $MY_DEBUG )
-			$result.="259-";
+    if( $MY_DEBUG )
+        $result.="259-";
 
-		if ($target_post->post_status === "publish")
-		{
-			#region debug
-		    if( $MY_DEBUG)
-				$result.="266-";
-		    #endregion
+    if ($target_post->post_status === "publish")
+    {
+        #region debug
+        if( $MY_DEBUG)
+            $result.="266-";
+        #endregion
 
-            if($withImage)
-                $result.= GetTemplateWithThumbnail($target_url, $nome, $commento, $removeIfSelf, $target_post, $sameFile);
-            else
-                $result.= GetTemplateNoThumbnail($target_url, $nome, $commento, $removeIfSelf, $sameFile);
-		}
-		else
-		{
-			if( $MY_DEBUG)
-				$result.="NON PUBBLICATO: $target_url";
-			else
-				$result.="<!-- NON PUBBLICATO -->";
-		}
+        if($withImage)
+            $result.= GetTemplateWithThumbnail($target_url, $nome, $commento, $removeIfSelf, $target_post, $sameFile);
+        else
+            $result.= GetTemplateNoThumbnail($target_url, $nome, $commento, $removeIfSelf, $sameFile);
+    }
+    else
+    {
+        if( $MY_DEBUG)
+            $result.="NON PUBBLICATO: $target_url";
+        else
+            $result.="<!-- NON PUBBLICATO -->";
+    }
 
-		return $result;
-	}
+    return $result;
+}
 
 
 function GetTemplateNoThumbnail(string $target_url, string $nome, string $commento, bool $removeIfSelf, $sameFile): string
@@ -446,21 +447,21 @@ function GetTemplateNoThumbnail(string $target_url, string $nome, string $commen
 
 }
 
-function GetTemplateWithThumbnail(string $target_url, string $nome, string $commento, bool $removeIfSelf, $target_post, $sameFile): string
-{
-    $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
+	function GetTemplateWithThumbnail(string $target_url, string $nome, string $commento, bool $removeIfSelf, $target_post, $sameFile): string
+	{
+		$featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
 
-    if ($sameFile) {
-        $result = GetNoLinkTemplate("", $nome, $commento, $removeIfSelf);
-    } else {
-        $result = GetLinkTemplate($target_url, $nome, $commento, $featured_img_url);
-    }
-    return $result;
-}
+		if ($sameFile) {
+			$result = GetNoLinkTemplate("", $nome, $commento, $removeIfSelf);
+		} else {
+			$result = GetLinkTemplate($target_url, $nome, $commento, $featured_img_url);
+		}
+		return $result;
+	}
 
 function GetNoLinkTemplate(string $target_url, string $nome, string $commento, string  $featured_img_url): string
-	{
-		return <<<EOF
+{
+    return <<<EOF
 <li>
 <div class="li-img">
 	<img style="width=50px; height: 50px;" src="$featured_img_url" alt="$nome" />		
@@ -468,11 +469,11 @@ function GetNoLinkTemplate(string $target_url, string $nome, string $commento, s
 <div class="li-text">$nome ($commento)</div>
 </li>\n
 EOF;
-	}
+}
 
-	function GetLinkTemplate($target_url, $nome, $commento, $featured_img_url): string
-	{
-		return <<<EOF
+function GetLinkTemplate($target_url, $nome, $commento, $featured_img_url): string
+{
+    return <<<EOF
 <li>
 <a href="$target_url">			
 <div class="li-img">
@@ -481,45 +482,102 @@ EOF;
 <div class="li-text">$nome </div>
 </a>$commento</li>\n
 EOF;
+}
+
+	/**
+	 * @param $target_url
+	 * @param $nome
+	 * @param $featured_img_url
+	 * @return string
+	 */
+	function GetLinkTemplateCarousel($target_url, $nome, $featured_img_url): string
+	{
+		$k = <<<EOF
+	<div class="tile">
+                    <div class="tile__media">
+                        <img class="tile__img" src="$featured_img_url" alt="$nome" />
+                    </div>
+                    <div class="tile__details">
+                        <div class="tile__title">
+                            <a href="$target_url"> $nome</a>
+                        </div>
+                    </div>
+                </div>	
+EOF;
+
+		return $k;
 	}
 
-	#endregion
+function GetLinkWithImageCarousel(string $target_url, string $nome)
+{
+    $target_url = ReplaceTargetUrlIfStaging($target_url);
+    global $post, $MY_DEBUG; //il post corrente
+    $result ="";
 
-	#region Pulsanti editor TinyMCE
+    $target_postid = url_to_postid($target_url);
 
-	add_action( 'init', 'revious_microdata_buttons' );
-
-	function revious_microdata_buttons() {
-		add_filter("mce_external_plugins", "revious_microdata_add_tinymce_plugins");
-		add_filter('mce_buttons', 'revious_microdata_register_buttons');
-	}
-
-	function revious_microdata_add_tinymce_plugins($plugin_array) {
-		$plugin_array['revious_microdata'] = plugins_url( '/js_css/revious-microdata.js', __FILE__ );
-		$plugin_array['QuestionAndAnswer'] = plugins_url( '/js_css/revious-microdata.js', __FILE__ );
-		return $plugin_array;
-	}
-
-	function revious_microdata_register_buttons($buttons) {
-		array_push( $buttons, 'md_telefono_btn');
-		array_push( $buttons, 'md_prezzo_btn');
-		array_push( $buttons, 'DomandeERisposte_btn');
-		return $buttons;
-	}
-
-	#endregion
-
-	function load_css_single_pages()
+    if ($target_postid == 0)
     {
-		if(is_single())
-		{
-			$plugin_url = plugin_dir_url( __FILE__ );
-			wp_enqueue_style( 'css_single_pages', trailingslashit( $plugin_url ) . '/js_css/revious-microdata.css', array(  ) );
-		}
-		//else if(is_category() || is_tag())
-	}
+        if( $MY_DEBUG)
+            return "target_postid == 0";
+        else
+            return "";
+    }
+
+    $target_post = get_post($target_postid);
+
+    if ($target_post->post_status === "publish")
+    {
+        $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
+        $result = GetLinkTemplateCarousel($target_url, $nome, $featured_img_url);
+    }
+    else
+    {
+        if( $MY_DEBUG)
+            $result.="NON PUBBLICATO: $target_url";
+        else
+            $result.="<!-- NON PUBBLICATO -->";
+    }
+
+    return $result;
+}
+
+#region Pulsanti editor TinyMCE
+
+add_action( 'init', 'revious_microdata_buttons' );
+
+function revious_microdata_buttons() {
+    add_filter("mce_external_plugins", "revious_microdata_add_tinymce_plugins");
+    add_filter('mce_buttons', 'revious_microdata_register_buttons');
+}
+
+function revious_microdata_add_tinymce_plugins($plugin_array) {
+    $plugin_array['revious_microdata'] = plugins_url( '/js_css/revious-microdata.js', __FILE__ );
+    $plugin_array['QuestionAndAnswer'] = plugins_url( '/js_css/revious-microdata.js', __FILE__ );
+    return $plugin_array;
+}
+
+function revious_microdata_register_buttons($buttons) {
+    array_push( $buttons, 'md_telefono_btn');
+    array_push( $buttons, 'md_prezzo_btn');
+    array_push( $buttons, 'DomandeERisposte_btn');
+    return $buttons;
+}
+
+#endregion
+
+function load_css_single_pages()
+{
+    if(is_single())
+    {
+        $plugin_url = plugin_dir_url( __FILE__ );
+        wp_enqueue_style( 'css_single_pages', trailingslashit( $plugin_url ) . '/js_css/revious-microdata.css', array(  ) );
+    }
+    //else if(is_category() || is_tag())
+}
 
 	#endregion
+
 
 
 

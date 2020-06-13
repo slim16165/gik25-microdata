@@ -101,8 +101,8 @@
 		error_reporting(E_ALL);
 		ini_set('display_errors', 'On');
 		ini_set('error_reporting', E_ALL);
-		define('MY_DEBUG', true);
-		define('WP_DEBUG_DISPLAY', true);
+		//define('MY_DEBUG', true);
+		//define('WP_DEBUG_DISPLAY', true);
 
 		$MY_DEBUG = true;
 
@@ -126,6 +126,7 @@
 			$target_url = str_replace("www.chiecosa.it", "wordpress-217146-983380.cloudwaysapps.com", $target_url);
 			$target_url = str_replace("www.nonsolodiete.it", "wordpress-217146-992662.cloudwaysapps.com", $target_url);
 			$target_url = str_replace("www.superinformati.com", "wordpress-217146-1004348.cloudwaysapps.com", $target_url);
+			$target_url = str_replace("www.totaldesign.it", "wordpress-217146-1330173.cloudwaysapps.com", $target_url);
 		}
 		return $target_url;
 	}
