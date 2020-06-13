@@ -162,8 +162,14 @@ EOF
 	//	remove_filter('the_content', 'wptexturize');
 	//	remove_filter('the_content', 'convert_chars');
 
+
+
+	#endregion
+
+	#region Shortcode Domande e risposte
+
 	//Evita di applicare la funzione
-	apply_filters( 'no_texturize_shortcodes', array('registerNoTexturizeShortcodes'));
+	add_filter( 'no_texturize_shortcodes', 'registerNoTexturizeShortcodes', 1);
 
 	remove_filter( 'the_content', 'wpautop' );
 	add_filter( 'the_content', 'wpautop' , 9);

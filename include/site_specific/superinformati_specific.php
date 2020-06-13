@@ -33,6 +33,7 @@ function link_analisi_sangue_handler($atts, $content = null)
 	$result .= "<h4>Globuli Rossi</h4>";
 
 	$result .= GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/globuli-rossi.htm", "Globuli rossi", "", false, false);
+	$result .= GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/reticolociti.htm", "Reticolociti", "(Globuli rossi non del tutto formati)", false, false);
 
 	$result .= GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/mch.htm", "MCH",
 		"(contenuto corpuscolare medio di emoglobina)", false, false);
