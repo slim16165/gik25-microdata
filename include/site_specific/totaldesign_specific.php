@@ -16,7 +16,7 @@ function link_colori_handler($atts, $content = null)
 
     $result = "<style>$css</style>
 	<div class='contain'>
-        <h5>Articoli sui colori</h5>
+        <h3>Articoli sui colori</h3>
 		    <p>	Colori Specifici </p>
 		        <div class='row'>
 					<div class='row__inner'>";

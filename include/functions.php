@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		require_once "class/Utility/ServerHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
 		require_once "class/TagHelper.php";
+		require_once "class/ColorWidget.php";
 	});
 	require_once "class/ExcludePostFrom.php";
 
