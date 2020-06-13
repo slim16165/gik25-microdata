@@ -4,15 +4,144 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-	/**
-	 * Created by PhpStorm.
-	 * User: g.salvi
-	 * Date: 09/06/2020
-	 * Time: 17:04
-	 */
-
 	class ColorWidget
 	{
+	    public static function Initialize()
+        {
+            add_action('wp_head', array(__CLASS__, 'carousel_js'));
+        }
+
+        public static function get_carousel_css()
+        {
+            return /** @lang CSS */
+                <<<EOF
+div.contain {
+    padding: 0 10px;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    box-sizing: border-box;
+    min-height: 100vh;
+    align-items: center;
+    width: 100%;
+}
+
+div.contain a:link,
+div.contain a:hover,
+div.contain a:active,
+div.contain a:visited {
+    -webkit-transition: color 150ms;
+    transition: color 150ms;
+    color: #7a7a7a;
+    text-decoration: none;
+}
+
+div.contain a:hover {
+    color: #7f8c8d;
+    text-decoration: underline;
+}
+
+.row {
+    width: 100%;
+}
+
+.row__inner {
+    -webkit-transition: 450ms -webkit-transform;
+    transition: 450ms -webkit-transform;
+    transition: 450ms transform;
+    transition: 450ms transform, 450ms -webkit-transform;
+    font-size: 0;
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+.tile {
+    position: relative;
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+    margin-right: 2px;
+    margin-top: 5px;
+    /*font-size: 20px;*/
+    cursor: pointer;
+    -webkit-transition: 450ms all;
+    transition: 450ms all;
+    -webkit-transform-origin: center;
+    transform-origin: center;    
+}
+
+.tile__img {
+    width: 120px;
+    height: 120px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.tile__details {
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    top: 0;
+    font-size: 12px;
+    opacity: 1;
+    -webkit-transition: 450ms opacity;
+    transition: 450ms opacity;
+    font-weight: 600;
+}
+
+.tile:hover .tile__details {
+    opacity: 1;
+}
+
+.tile__title {
+    position: absolute;    
+    padding: 0px;
+    width: 120px;
+    line-height: 12px;    
+    bottom: -3px;
+    height: 25px;
+}
+
+.row__inner:hover .tile:hover {
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+    opacity: 1;
+}
+
+.tile:hover ~ .tile {
+    -webkit-transform: translate3d(13px, 0, 0);
+    transform: translate3d(13px, 0, 0);
+}
+
+EOF;
+        }
+
+        public static function carousel_js()
+        {
+            ?>
+            <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script>
+
+                $(document).ready(function () {
+                    $('.row__inner > .tile').hover(
+                        function () {
+                            $(this).siblings().css('opacity', '0.1');
+                        },
+                        function () {
+                            $(this).siblings().css('opacity', '1');;
+                        }
+                    );
+                });
+            </script>
+
+            <?php
+        }
+
+
+
+
+
 		public static function defineHTML($post)
 		{ ?>
             <div class="swiper-container">
