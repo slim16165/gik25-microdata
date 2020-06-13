@@ -19,8 +19,13 @@ EnableErrorLogging();
 //Avoid link and pages for tags of just one link
 TagHelper::add_filter_DisableTagWith1Post();
 QuestionSchema::AddShortcode();
+OptimizationHelper::ConditionalLoadCssOnPosts();
 
-add_action('wp_enqueue_scripts', 'load_css_single_pages', 1001);
+
+
+
+
+
 add_action('admin_head', 'add_LogRocket');
 
 add_action('after_setup_theme', 'wnd_default_image_settings');
@@ -35,19 +40,7 @@ function wnd_default_image_settings()
 }
 
 
-function load_css_single_pages()
-{
-    if (is_single()) {
-        $plugin_url = plugin_dir_url(__FILE__);
-        wp_enqueue_style('css_single_pages', trailingslashit($plugin_url) . 'assets/css/revious-microdata.css', array());
 
-        // Register the style like this for a plugin:
-        //wp_register_style('revious-quotes-styles', plugins_url('/revious_microdata.css', __FILE__), array(), '1.7.5', 'all');
-        // For either a plugin or a theme, you can then enqueue the style:
-        //wp_enqueue_style('revious-quotes-styles');
-    }
-    //else if(is_category() || is_tag())
-}
 
 #region Script & CSS loading
 

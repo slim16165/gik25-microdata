@@ -129,7 +129,7 @@ EOF;
                             $(this).siblings().css('opacity', '0.1');
                         },
                         function () {
-                            $(this).siblings().css('opacity', '1');;
+                            $(this).siblings().css('opacity', '1');
                         }
                     );
                 });
@@ -246,8 +246,62 @@ EOF;
 </script>
 TAG;
 
-		}
-	}
+    }
+
+    /**
+     * @param $target_url
+     * @param $nome
+     * @param $featured_img_url
+     * @return string
+     */
+    public static function GetLinkTemplateCarousel($target_url, $nome, $featured_img_url): string
+    {
+        $k = <<<EOF
+	<div class="tile">
+        <div class="tile__media">
+            <a href="$target_url"><img class="tile__img" src="$featured_img_url" alt="$nome" /></a>
+        </div>
+        <div class="tile__details">
+            <div class="tile__title">
+                <a href="$target_url"> $nome</a>
+            </div>
+        </div>
+    </div>	
+EOF;
+
+        return $k;
+    }
+
+    public static function GetLinkWithImageCarousel(string $target_url, string $nome)
+    {
+        $target_url = ReplaceTargetUrlIfStaging($target_url);
+        global $post, $MY_DEBUG; //il post corrente
+        $result = "";
+
+        $target_postid = url_to_postid($target_url);
+
+        if ($target_postid == 0) {
+            if ($MY_DEBUG)
+                return "target_postid == 0";
+            else
+                return "";
+        }
+
+        $target_post = get_post($target_postid);
+
+        if ($target_post->post_status === "publish") {
+            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
+            $result = ColorWidget::GetLinkTemplateCarousel($target_url, $nome, $featured_img_url);
+        } else {
+            if ($MY_DEBUG)
+                $result .= "NON PUBBLICATO: $target_url";
+            else
+                $result .= "<!-- NON PUBBLICATO -->";
+        }
+
+        return $result;
+    }
+}
 
 ?>
 
