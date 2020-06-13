@@ -1,11 +1,8 @@
 <?php
-	/**
-	 * Created by PhpStorm.
-	 * User: g.salvi
-* Date: 23/09/2019
-* Time: 14:36
-*/
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
 
 	spl_autoload_register(function($className) {
 //		include_once $_SERVER['DOCUMENT_ROOT'] . "/class/$className.class.php";
@@ -14,7 +11,6 @@
 		require_once "class/Utility/MyString.class.php";
 //		require_once("packets/highlight/Highlight/Highlighter.php");
 		require_once "class/Utility/ServerHelper.class.php";
-		require_once "class/ShortCodeHelper.class.php";
 		require_once "class/Schema/QuestionSchema.class.php";
 		require_once "class/TagHelper.php";
 	});
@@ -26,8 +22,7 @@
 
     function CheckJsonError(string $json): string
 	{
-	    $errormessage = "";
-		$json_last_error = json_last_error();
+	    $json_last_error = json_last_error();
 
 		switch ($json_last_error)
 		{
@@ -144,83 +139,4 @@
         return $result;
     }
 
-    #region Script & CSS loading
 
-	function add_LogRocket()
-	{
-		if ( defined( 'DOING_AJAX' ))
-		{
-			return;
-		}
-
-        $domain = ServerHelper::getSecondLevelDomain();
-		//$domain = getSecondLevelDomain();
-
-
-        $user = wp_get_current_user();
-		echo /** @lang javascript */
-		<<<TAG
-<script src="https://cdn.lr-ingest.io/LogRocket.min.js" crossorigin="anonymous"></script>
-<script>window.LogRocket && window.LogRocket.init('hdyhlv/si', {mergeIframes: true});
-LogRocket.identify('{$user->user_login}-$domain', {
-  name: '{$user->user_nicename}-$domain',
-  email: '{$user->user_email}',
-  website: '$domain'
-});
-</script>
-TAG;
-
-	}
-
-	//define('DISALLOW_FILE_EDIT',true);
-
-	function wpse_297026_update_user_activity() {
-		update_user_meta( get_current_user_id(), '<last_activity>', time() );
-	}
-	add_action( 'init', 'wpse_297026_update_user_activity' );
-
-
-
-//	add_action('wp_head', 'add_Teads');
-
-//	add_filter('the_posts', 'conditionally_add_scripts_and_styles'); // the_posts gets triggered before wp_head
-//	function conditionally_add_scripts_and_styles($posts){
-//		if (empty($posts)) return $posts;style-post-UnusedCSS+UnCSS.css
-//
-//	$shortcode_found = false; // use this flag to see if styles and scripts need to be enqueued
-//	foreach ($posts as $post) {
-//		if (stripos($post-&gt;post_content, '[code]') !== false) {
-//			$shortcode_found = true; // bingo!
-//			break;
-//		}
-//	}
-//
-//	if ($shortcode_found) {
-//		// enqueue here
-//		wp_enqueue_style('my-style', '/style.css');
-//		wp_enqueue_script('my-script', '/script.js');
-//	}
-//
-//	return $posts;
-//}
-
-	#endregion
-
-
-
-
-
-
-
-
-
-//	add_action('pre_get_posts', 'exclude_posts_from_home');
-//	add_action('pre_get_posts', 'exclude_posts_from_feed');
-//	add_action('pre_get_posts', 'exclude_posts_from_archives');
-//	add_action('pre_get_posts', 'exclude_posts_from_search');
-
-	if(!function_exists("exclude_posts_from_everywhere"))
-		exit("la funzione non è definita");
-
-	add_action('pre_get_posts', 'exclude_posts_from_everywhere');
-	add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', 'exclude_posts_from_sitemap_by_post_ids', 10000);

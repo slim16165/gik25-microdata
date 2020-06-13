@@ -1,5 +1,10 @@
 <?php
-	/******************************************************************************
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
+
+/******************************************************************************
 	 *                                                                            *
 	 *    This file is part of RPB Chessboard, a WordPress plugin.                *
 	 *    Copyright (C) 2013-2019  Yoann Le Montagner <yo35 -at- melix.net>       *

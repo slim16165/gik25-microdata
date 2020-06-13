@@ -1,4 +1,9 @@
-<?php  
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+  exit; // Exit if accessed directly.
+}
+
 /*
  * Name: Shortcode WPautop Control
  * Description: Allows you to turn off autop in individual shortcodes. It is inteded to be used within
@@ -165,7 +170,7 @@ if(!function_exists('chiedolabs_shortcode_wpautop_control')){
         $pee = preg_replace('|<p>\s*</p>|', '', $pee);
 
         // Add a closing <p> inside <div>, <address>, or <form> tag if missing.
-        $pee = preg_replace('!<p>([^<]+)<\/(div|address|form)>!', "<p>$1</p><\/$2>", $pee);
+        $pee = preg_replace('!<p>([^<]+)</(div|address|form)>!', "<p>$1</p><\/$2>", $pee);
 
         // If an opening or closing block element tag is wrapped in a <p>, unwrap it.
         $pee = preg_replace('!<p>\s*(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee);
@@ -202,7 +207,7 @@ if(!function_exists('chiedolabs_shortcode_wpautop_control')){
         $pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*<br />!', "$1", $pee);
 
         // If a <br /> tag is before a subset of opening or closing block tags, remove it.
-        $pee = preg_replace('!<br />(\s*<\/?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)[^>]*>)!', '$1', $pee);
+        $pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)[^>]*>)!', '$1', $pee);
         $pee = preg_replace( "|\n</p>$|", '</p>', $pee );
 
         // Replace placeholder <pre> tags with their original content.

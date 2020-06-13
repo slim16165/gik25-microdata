@@ -1,10 +1,8 @@
 <?php
-	/**
-	 * Created by PhpStorm.
-	 * User: g.salvi
-	 * Date: 21/10/2019
-	 * Time: 15:03
-	 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
 
 	class MyString
 	{
