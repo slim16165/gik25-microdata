@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
@@ -11,9 +11,8 @@ class QuestionSchema
         add_shortcode('domande_e_risposte', array(__CLASS__, 'domande_e_risposte_handler'), 8);
     }
 
-
     //Vanno evitati wptexturize() e wpautop()
-    static function domande_e_risposte_handler($atts, $content = null)
+    public static function domande_e_risposte_handler($atts, $content = null)
     {
         //	add_filter('run_wptexturize', '__return_false');
         $result = "\n\n";
@@ -46,18 +45,27 @@ TAG;
         $question_array_json = array();
         $question_array_html = array();
 
+        $i = 1;
         foreach ($jsonDecoded as $domandeRisposte)
         {
             foreach ($domandeRisposte as $domandaRisposta)
             {
-                if ($domandaRisposta["domanda"] == null || $domandaRisposta["risposta"] == null)
+                $question = $domandaRisposta["domanda"];
+                $answer = $domandaRisposta["risposta"];
+
+                if ($question == null || $answer == null)
                 {
                     $question_array_json[] = "ERRORE: Non ci possono essere domande o risposte vuote";
                     $question_array_html[] = "<span style='color: red; font-size: xx-large; font-weight: bold;'>ERRORE: Non ci possono essere domande o risposte vuote</span>";
                 }
 
-                $question_array_json[] = QuestionSchema::RenderJson($domandaRisposta["domanda"], $domandaRisposta["risposta"]);
-                $question_array_html[] = QuestionSchema::RenderHTML($domandaRisposta["domanda"], $domandaRisposta["risposta"]);
+                $question_array_json[] = QuestionSchema::RenderJson($question, $answer);
+                $question_array_html[] = QuestionSchema::RenderHTML($question, $answer);
+
+                if (class_exists('ACF')) {
+                    update_field("domanda_{$i}", $question);
+                    update_field("risposta_{$i}", $answer);
+                }
             }
         }
 
@@ -94,8 +102,7 @@ TAG;
         return $result;
     }
 
-
-    static function RenderJson($question, $answer)
+    public static function RenderJson($question, $answer)
     {
         $question_parsed = htmlspecialchars($question);
         $answer_parsed = htmlspecialchars($answer);
@@ -112,7 +119,7 @@ TAG;
 TAG;
     }
 
-    static function RenderHTML($question, $answer)
+    public static function RenderHTML($question, $answer)
     {
         $question_parsed = htmlspecialchars($question);
         $answer_parsed = htmlspecialchars($answer);
