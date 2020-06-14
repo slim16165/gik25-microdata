@@ -1,139 +1,136 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
+
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-
-
-function GetLinkWithImage(string $target_url, string $nome, string $commento = "", bool $removeIfSelf = false, bool $withImage = true)
+class ListOfPostsHelper
 {
-    $target_url = ReplaceTargetUrlIfStaging($target_url);
+    private bool $linkSelf;
+    private bool $removeIfSelf;
+    private bool $withImage;
 
-    global $post, $MY_DEBUG; //il post corrente
-    $current_post = $post;
-    $result ="";
 
-    if(!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
-        $commento = " ($commento)";
-
-    $current_permalink = get_permalink( $current_post->ID );
-
-    //Check if the current post is the same of the target_url
-    $sameFile2 = strcmp($current_permalink, $target_url);
-    $sameFile = $sameFile2 == 0;
-
-////DEBUG
-//    $val = <<<TAG
-//<p>current_permalink: $current_permalink<br/>
-//target_url: $target_url<br/>
-//sameFile2: $sameFile2<br/>
-//sameFile: $sameFile<br/>
-//</p>
-//TAG;
-//    return $val;
-
-    if($sameFile && $removeIfSelf)
+    function __construct($removeIfSelf, $withImage, $linkSelf)
     {
-        if( $MY_DEBUG )
-            return "sameFile && removeIfSelf";
-        else
-            return "";
+        $this->removeIfSelf = $removeIfSelf;
+        $this->linkSelf = $linkSelf;
+        $this->withImage = $withImage;
     }
 
-    $target_postid = url_to_postid($target_url);
-
-    if ($target_postid == 0)
+    public function GetPostData(string &$target_url, &$isSameFile, &$ShouldReturnNow)
     {
-        if( $MY_DEBUG)
-            return "target_postid == 0";
-        else
-            return "";
+        $target_url = ReplaceTargetUrlIfStaging($target_url);
+
+        global $MY_DEBUG;
+        $ShouldReturnNow = "";
+
+        //Check if the current post is the same of the target_url
+        $isSameFile = self::IsSameFile($target_url);
+
+        if ($isSameFile && $this->removeIfSelf)
+        {
+            if ($MY_DEBUG)
+                $ShouldReturnNow = "sameFile && removeIfSelf";
+            else
+                $ShouldReturnNow = "";
+        }
+
+        $target_postid = url_to_postid($target_url);
+
+        if ($target_postid == 0) {
+            if ($MY_DEBUG)
+                $ShouldReturnNow = "target_postid == 0";
+            else
+                $ShouldReturnNow = "";
+        }
+
+        $target_post = get_post($target_postid);
+
+        if ($target_post->post_status !== "publish") {
+            $ShouldReturnNow .= "NON PUBBLICATO: $target_url";
+        }
+
+        return $target_post;
     }
 
-    $target_post = get_post($target_postid);
-
-    if( $MY_DEBUG )
-        $result.="259-";
-
-    if ($target_post->post_status === "publish")
+    /**
+     * Check if the current post is the same of the target_url
+     * @param string $target_url
+     * @return bool
+     */
+    public static function IsSameFile(string $target_url): bool
     {
-        #region debug
-        if( $MY_DEBUG)
-            $result.="266-";
-        #endregion
-
-        if($withImage)
-            $result.= GetTemplateWithThumbnail($target_url, $nome, $commento, $removeIfSelf, $target_post, $sameFile);
-        else
-            $result.= GetTemplateNoThumbnail($target_url, $nome, $commento, $removeIfSelf, $sameFile);
+        global $post;
+        $current_post = $post;
+        $current_permalink = get_permalink($current_post->ID);
+        $sameFile2 = strcmp($current_permalink, $target_url);
+        $sameFile = $sameFile2 == 0;
+        return $sameFile;
     }
-    else
+
+    public function GetLinkWithImage(string $target_url, string $nome, string $commento = "")
     {
-        if( $MY_DEBUG)
-            $result.="NON PUBBLICATO: $target_url";
+        $result = "";
+
+        $target_post = self::GetPostData($target_url, $noLink, $ShouldReturnNow);
+
+        if ($ShouldReturnNow)
+            return $ShouldReturnNow;
+
+        //In caso contrario il post è pubblicato
+        if (!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
+            $commento = " ($commento)";
+
+        if ($this->withImage)
+            $result .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
         else
-            $result.="<!-- NON PUBBLICATO -->";
+            $result .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+
+        return $result;
     }
 
-    return $result;
-}
-
-
-function GetTemplateNoThumbnail(string $target_url, string $nome, string $commento, bool $removeIfSelf, $sameFile): string
-{
-    if (!$sameFile) {
-        if (IsNullOrEmptyString($commento))
-            return "<li><a href=\"$target_url\">$nome</a></li>\n";
-        else
-            return "<li><a href=\"$target_url\">$nome</a> $commento</li>\n";
-    }
-    else if(!$removeIfSelf)
+    public static function GetTemplateNoThumbnail(string $target_url, string $nome, string $commento, $noLink): string
     {
-        if (IsNullOrEmptyString($commento))
-            return "<li>$nome (articolo corrente)</li>\n";
-        else
-            return "<li>$nome $commento (articolo corrente)</li>\n";
+        if ($noLink) {
+
+            if (IsNullOrEmptyString($commento))
+                return "<li>$nome (articolo corrente)</li>\n";
+            else
+                return "<li>$nome $commento (articolo corrente)</li>\n";
+        } else {
+            if (IsNullOrEmptyString($commento))
+                return "<li><a href=\"$target_url\">$nome</a></li>\n";
+            else
+                return "<li><a href=\"$target_url\">$nome</a> $commento</li>\n";
+        }
     }
-    else
-        return "";
 
-}
+    public static function GetTemplateWithThumbnail(string $target_url, string $anchorText, string $comment, $target_post, $noLink): string
+    {
+        $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
 
-function GetTemplateWithThumbnail(string $target_url, string $nome, string $commento, bool $removeIfSelf, $target_post, $sameFile): string
-{
-    $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-
-    if ($sameFile) {
-        $result = GetNoLinkTemplate("", $nome, $commento, $removeIfSelf);
-    } else {
-        $result = GetLinkTemplate($target_url, $nome, $commento, $featured_img_url);
-    }
-    return $result;
-}
-
-function GetNoLinkTemplate(string $target_url, string $nome, string $commento, string  $featured_img_url): string
-{
-    return <<<EOF
+        if ($noLink) {
+            return <<<EOF
 <li>
 <div class="li-img">
-	<img style="width=50px; height: 50px;" src="$featured_img_url" alt="$nome" />		
+	<img style="width=50px; height: 50px;" src="$featured_img_url" alt="$anchorText" />		
 </div>
-<div class="li-text">$nome ($commento)</div>
+<div class="li-text">$anchorText ($comment)</div>
 </li>\n
 EOF;
-}
-
-function GetLinkTemplate($target_url, $nome, $commento, $featured_img_url): string
-{
-    return <<<EOF
+        } else {
+            return <<<EOF
 <li>
 <a href="$target_url">			
 <div class="li-img">
-	<img style="width=50px; height: 50px;" src="$featured_img_url" alt="$nome" />		
+	<img style="width=50px; height: 50px;" src="$featured_img_url" alt="$anchorText" />		
 </div>
-<div class="li-text">$nome </div>
-</a>$commento</li>\n
+<div class="li-text">$anchorText </div>
+</a>$comment</li>\n
 EOF;
-}
+        }
+    }
 
+}

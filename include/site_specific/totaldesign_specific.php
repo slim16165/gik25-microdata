@@ -92,23 +92,25 @@ function link_colori_handler($atts, $content = null)
 
 function grafica3d_handler($atts, $content = null)
 {
+    $l = new ListOfPostsHelper(false,true,false );
+
     $result = "<div class='twocolumns'>
 	<h3>Programmi di Grafica 3D</h3>";
 
     $result .= "<ul class='thumbnail-list'>";
-    $result .= GetLinkWithImage("https://www.totaldesign.it/freecad/", "Freecad 3D");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/homestyler-2/", "Homestyler");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/autodesk-revit/", "Autodesk Revit");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/archicad/", "Archicad");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/maya-3d/", "Maya 3D");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/blender-3d/", "Maya 3D");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/librecad/", "Librecad");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/draftsight/", "Draftsight");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/lumion/", "Lumion Grafica 3D");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/rhinoceros-mac/", "Rhinoceros");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/sketchup-2/", "Schetchup");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/freecad/", "Freecad 3D");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/homestyler-2/", "Homestyler");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/autodesk-revit/", "Autodesk Revit");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/archicad/", "Archicad");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/maya-3d/", "Maya 3D");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/blender-3d/", "Maya 3D");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/librecad/", "Librecad");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/draftsight/", "Draftsight");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/lumion/", "Lumion Grafica 3D");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/rhinoceros-mac/", "Rhinoceros");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/sketchup-2/", "Schetchup");
 
-    $result .= GetLinkWithImage("https://www.totaldesign.it/migliori-programmi-gratuiti-per-la-progettazione-3d/", "Migliori Programmi Gratuiti per la progettazione 3D");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/migliori-programmi-gratuiti-per-la-progettazione-3d/", "Migliori Programmi Gratuiti per la progettazione 3D");
 
     $result .= "</ul></div>";
     return $result;
@@ -116,43 +118,45 @@ function grafica3d_handler($atts, $content = null)
 
 function archistars_handler($atts, $content = null)
 {
+    $l = new ListOfPostsHelper(false,true,false );
+
     $result = "<div class='twocolumns'>
 	<h3>Programmi di Grafica 3D</h3>";
 
     $result .= "<ul class='thumbnail-list'>";
-    $result .= GetLinkWithImage("https://www.totaldesign.it/renzo-piano/", "Renzo Piano");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/zaha-hadid/", "Zaha Hadid");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/stefano-boeri/", "Stefano Boeri");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/fucksas/", "Fucksas");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/franck-o-gehry/", "Franck O. Gehry");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/norman-foster/", "Norman Foster");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/oma-rem-koolhaas/", "OMA Rem Koolhaas");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/mario-botta/", "Mario Botta");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/jean-nouvel/", "Jean Nouvel");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/santiago-calatrava/", "Santiago Calatrava");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/mario-cucinella/", "Mario Cucinella");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/mvrdv/", "MVRDV");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/herzog-de-meuron/", "Herzog de Meuron");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/david-chipperfield/", "David Chipperfield");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/kengo-kuma/", "Kengo Kuma");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/matteo-thun/", "Matteo Thun");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/sanaa/", "SANAA");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/daniel-libeskind/", "Daniel Libeskind");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/steven-holl/", "Steven Holl");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/richard-meier/", "Richard Meier");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/som/", "SOM");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/snohetta/", "Snøhetta");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/toyo-ito/", "Toyo Ito");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/archea-associati/", "Archea Associati");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/diller-scofidio-renfro/", "Diller Scofidio + Renfro");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/gensler/", "Gensler");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/unstudio/", "UNStudio");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/coop-himmelblau/", "Coop-Himmelblau");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/grafton-architects/", "Grafton Architects");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/bjarke-ingels-group/", "Bjarke Ingels Group");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/heatherwick-studio/", "Heatherwick Studio");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/nemesi-partners/", "Nemesi & Partners");
-    $result .= GetLinkWithImage("https://www.totaldesign.it/asymptote-architecture/", "Asymptote Architecture");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/renzo-piano/", "Renzo Piano");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/zaha-hadid/", "Zaha Hadid");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/stefano-boeri/", "Stefano Boeri");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/fucksas/", "Fucksas");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/franck-o-gehry/", "Franck O. Gehry");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/norman-foster/", "Norman Foster");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/oma-rem-koolhaas/", "OMA Rem Koolhaas");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/mario-botta/", "Mario Botta");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/jean-nouvel/", "Jean Nouvel");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/santiago-calatrava/", "Santiago Calatrava");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/mario-cucinella/", "Mario Cucinella");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/mvrdv/", "MVRDV");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/herzog-de-meuron/", "Herzog de Meuron");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/david-chipperfield/", "David Chipperfield");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/kengo-kuma/", "Kengo Kuma");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/matteo-thun/", "Matteo Thun");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/sanaa/", "SANAA");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/daniel-libeskind/", "Daniel Libeskind");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/steven-holl/", "Steven Holl");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/richard-meier/", "Richard Meier");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/som/", "SOM");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/snohetta/", "Snøhetta");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/toyo-ito/", "Toyo Ito");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/archea-associati/", "Archea Associati");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/diller-scofidio-renfro/", "Diller Scofidio + Renfro");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/gensler/", "Gensler");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/unstudio/", "UNStudio");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/coop-himmelblau/", "Coop-Himmelblau");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/grafton-architects/", "Grafton Architects");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/bjarke-ingels-group/", "Bjarke Ingels Group");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/heatherwick-studio/", "Heatherwick Studio");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/nemesi-partners/", "Nemesi & Partners");
+    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/asymptote-architecture/", "Asymptote Architecture");
 
     $result .= "</ul></div>";
     return $result;
