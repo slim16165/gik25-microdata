@@ -26,7 +26,8 @@ class OptimizationHelper
         if (is_single())
         {
             $plugin_url = plugin_dir_url(__FILE__);
-            wp_enqueue_style('css_single_pages', trailingslashit($plugin_url) . 'assets/css/revious-microdata.css', array());
+            //https://www.totaldesign.it/wp-content/plugins/gik25-microdata/include/class/Utility/assets/css/revious-microdata.css?ver=5.4.2
+            wp_enqueue_style('css_single_pages', trailingslashit($plugin_url) . '../../../assets/css/revious-microdata.css', array());
 
             // Register the style like this for a plugin:
             //wp_register_style('revious-quotes-styles', plugins_url('/revious_microdata.css', __FILE__), array(), '1.7.5', 'all');
