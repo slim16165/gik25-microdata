@@ -8,6 +8,7 @@ require_once("functions.php");
 // require_once("Shortcodes/microdata_boxinformativo_perfectpullquote.php");//migrated from gik25-quotes.php
 // require_once("Shortcodes/microdata_prezzo_telefono.php");
 
+require_once("Shortcodes/microdata_blinkingbutton.php");
 require_once("Shortcodes/microdata_boxinformativo.php");//migrated from gik25-quotes.php, converted to PHP class
 require_once("Shortcodes/microdata_flexlist.php");
 require_once("Shortcodes/microdata_flipbox.php");

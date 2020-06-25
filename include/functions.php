@@ -158,3 +158,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         return $result;
 	}
+
+function get_progress_bar() {
+
+	$progress_bar_html = <<<ABC
+		<div class="md-progress-bar-container">
+			<div class="md-progress-bar" id="md-progress-bar"></div>
+		</div>
+ABC;
+
+	return $progress_bar_html;
+	
+}
+
+add_action('wp_enqueue_scripts', 'mdpb_scripts_styles');
+
+function mdpb_scripts_styles() {
+	wp_register_style('mdpb-styles', plugins_url('/gik25-microdata/assets/css/mdpb.css'), array(), '', 'all');
+	wp_enqueue_style('mdpb-styles');
+	wp_register_script('mdpb-script', plugins_url('/gik25-microdata/assets/js/mdpb.js'), array('jquery'));
+	wp_enqueue_script('mdpb-script');
+}
