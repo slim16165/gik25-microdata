@@ -6,6 +6,21 @@ if (!defined('ABSPATH')) {
 class QuestionSchema
 {
 
+    public function __construct() {
+        add_filter('mce_external_plugins', array($this, 'revious_microdata_add_tinymce_plugins_quest'));
+        add_filter('mce_buttons', array($this, 'revious_microdata_register_buttons'));
+    }
+
+    public function revious_microdata_add_tinymce_plugins_quest($plugin_array) {
+        $plugin_array['QuestionAndAnswer'] = plugins_url('../../../assets/js/revious-microdata.js', __FILE__);
+        return $plugin_array;
+    }
+
+    public function revious_microdata_register_buttons($buttons) {
+        array_push($buttons, 'DomandeERisposte_btn');
+        return $buttons;
+    }
+
     static function AddShortcode()
     {
         add_shortcode('domande_e_risposte', array(__CLASS__, 'domande_e_risposte_handler'), 8);
@@ -130,3 +145,5 @@ TAG;
 TAG;
     }
 }
+
+$questionSchema = new QuestionSchema();

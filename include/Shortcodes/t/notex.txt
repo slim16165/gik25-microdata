@@ -1,0 +1,13 @@
+
+//client says the below is not needed, original location shortcode_vari.php
+//Evita di applicare la funzione
+// apply_filters( 'no_texturize_shortcodes', array('registerNoTexturizeShortcodes'));
+
+// remove_filter( 'the_content', 'wpautop' );
+// add_filter( 'the_content', 'wpautop' , 9);
+
+// function registerNoTexturizeShortcodes( $shortcodes )
+// {
+//     $shortcodes[] = 'domande_e_risposte';
+//     return $shortcodes; //array_merge($shortcodes, array('domande_e_risposte'));
+// }

@@ -5,10 +5,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once("functions.php");
-require_once("Shortcodes/microdata_telefono.php");
+// require_once("Shortcodes/microdata_boxinformativo_perfectpullquote.php");//migrated from gik25-quotes.php
+// require_once("Shortcodes/microdata_prezzo_telefono.php");
+
+require_once("Shortcodes/microdata_boxinformativo.php");//migrated from gik25-quotes.php, converted to PHP class
+require_once("Shortcodes/microdata_flexlist.php");
+require_once("Shortcodes/microdata_flipbox.php");
+require_once("Shortcodes/microdata_perfectpullquote.php");//migrated from gik25-quotes.php, converted to PHP class
 require_once("Shortcodes/microdata_prezzo.php");
-require_once("Shortcodes/shortcode_vari.php");
-require_once("Shortcodes/tinymce.php");
+require_once("Shortcodes/microdata_quote.php");
+require_once("Shortcodes/microdata_slidingbox.php");
+require_once("Shortcodes/microdata_telefono.php");
+require_once("Shortcodes/microdata_youtube.php");
+
+//require_once("Shortcodes/microdata_wp_users.php");//temp for testing
+// require_once("Shortcodes/shortcode_vari.php");
+
+// require_once("Shortcodes/tinymce.php");
 require_once("class/Schema/QuestionSchema.class.php");
 require_once("ListOfPostsHelper.php");
 require_once("class/Utility/OttimizzazioneNewspaper.php");
@@ -20,21 +33,19 @@ EnableErrorLogging();
 TagHelper::add_filter_DisableTagWith1Post();
 QuestionSchema::AddShortcode();
 OptimizationHelper::ConditionalLoadCssOnPosts();
-
-
-
-
+OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainEnabledShortcodes();
 
 
 add_action('admin_head', 'add_LogRocket');
 
-add_action('after_setup_theme', 'wnd_default_image_settings');
+// add_action('after_setup_theme', 'wnd_default_image_settings');
 //add_filter( 'xmlrpc_enabled', '__return_false' );
 
 //Change the default image settings in the Backend
 function wnd_default_image_settings()
 {
-    update_option('image_default_align', 'left');
+    // update_option('image_default_align', 'left');
+    update_option('image_default_align', 'right');
     update_option('image_default_link_type', 'none');
     update_option('image_default_size', 'full-size');
 }
