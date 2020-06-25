@@ -47,7 +47,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pareti-soggiorno/", "Colori pareti soggiorno");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-porpora/", "Color Porpora");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ambra/", "Colore Ambra");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-avio-abbinamenti-pareti-e-significato/", "Colore Avio");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-avio/", "Colore Avio");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-glicine/", "Colore Glicine");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-malva/", "Colore Malva");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-porpora/", "Colore Porpora");
@@ -59,6 +59,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu/", "Colore Blu");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-fucsia/", "Colore Fucsia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ecru/", "Colore Ecru");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/verde-tiffany/", "Colore Verde Tiffany");
     $result .= " </div></div>
         <p>
             Colori Pantone
@@ -118,46 +119,49 @@ function grafica3d_handler($atts, $content = null)
 
 function archistars_handler($atts, $content = null)
 {
-    $l = new ListOfPostsHelper(false,true,false );
 
-    $result = "<div class='twocolumns'>
-	<h3>Programmi di Grafica 3D</h3>";
+    $css = ColorWidget::get_carousel_css();
 
-    $result .= "<ul class='thumbnail-list'>";
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/renzo-piano/", "Renzo Piano");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/zaha-hadid/", "Zaha Hadid");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/stefano-boeri/", "Stefano Boeri");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/fucksas/", "Fucksas");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/franck-o-gehry/", "Franck O. Gehry");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/norman-foster/", "Norman Foster");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/oma-rem-koolhaas/", "OMA Rem Koolhaas");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/mario-botta/", "Mario Botta");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/jean-nouvel/", "Jean Nouvel");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/santiago-calatrava/", "Santiago Calatrava");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/mario-cucinella/", "Mario Cucinella");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/mvrdv/", "MVRDV");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/herzog-de-meuron/", "Herzog de Meuron");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/david-chipperfield/", "David Chipperfield");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/kengo-kuma/", "Kengo Kuma");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/matteo-thun/", "Matteo Thun");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/sanaa/", "SANAA");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/daniel-libeskind/", "Daniel Libeskind");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/steven-holl/", "Steven Holl");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/richard-meier/", "Richard Meier");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/som/", "SOM");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/snohetta/", "Snøhetta");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/toyo-ito/", "Toyo Ito");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/archea-associati/", "Archea Associati");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/diller-scofidio-renfro/", "Diller Scofidio + Renfro");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/gensler/", "Gensler");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/unstudio/", "UNStudio");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/coop-himmelblau/", "Coop-Himmelblau");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/grafton-architects/", "Grafton Architects");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/bjarke-ingels-group/", "Bjarke Ingels Group");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/heatherwick-studio/", "Heatherwick Studio");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/nemesi-partners/", "Nemesi & Partners");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/asymptote-architecture/", "Asymptote Architecture");
+    $result = "<style>$css</style>
+	<div class='contain'>
+        <h3>Architetti</h3>		   
+		        <div class='row'>
+					<div class='row__inner'>";
 
-    $result .= "</ul></div>";
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/renzo-piano/", "Renzo Piano");       
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/zaha-hadid/", "Zaha Hadid");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/stefano-boeri/", "Stefano Boeri");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/fucksas/", "Fucksas");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/franck-o-gehry/", "Franck O. Gehry");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/norman-foster/", "Norman Foster");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/oma-rem-koolhaas/", "OMA Rem Koolhaas");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/mario-botta/", "Mario Botta");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/jean-nouvel/", "Jean Nouvel");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/santiago-calatrava/", "Santiago Calatrava");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/mario-cucinella/", "Mario Cucinella");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/mvrdv/", "MVRDV");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/herzog-de-meuron/", "Herzog de Meuron");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/david-chipperfield/", "David Chipperfield");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/kengo-kuma/", "Kengo Kuma");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/matteo-thun/", "Matteo Thun");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/sanaa/", "SANAA");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/daniel-libeskind/", "Daniel Libeskind");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/steven-holl/", "Steven Holl");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/richard-meier/", "Richard Meier");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/som/", "SOM");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/snohetta/", "Snøhetta");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/toyo-ito/", "Toyo Ito");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/archea/", "Archea Associati");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/diller-scofidio-renfro/", "Diller Scofidio + Renfro");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/gensler/", "Gensler");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/unstudio/", "UNStudio");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/coop-himmelblau/", "Coop-Himmelblau");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/grafton-architects/", "Grafton Architects");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/bjarke-ingels-group/", "Bjarke Ingels Group");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/heatherwick-studio/", "Heatherwick Studio");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/nemesi-partners/", "Nemesi & Partners");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/asymptote-architecture/", "Asymptote Architecture");
+
+    $result .= "</div></div></div>";
     return $result;
 }

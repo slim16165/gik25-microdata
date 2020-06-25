@@ -27,7 +27,7 @@ require_once("ListOfPostsHelper.php");
 require_once("class/Utility/OttimizzazioneNewspaper.php");
 
 
-EnableErrorLogging();
+//EnableErrorLogging();
 
 //Avoid link and pages for tags of just one link
 TagHelper::add_filter_DisableTagWith1Post();
