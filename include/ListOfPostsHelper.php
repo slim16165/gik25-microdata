@@ -7,9 +7,9 @@ if (!defined('ABSPATH')) {
 
 class ListOfPostsHelper
 {
-    private bool $linkSelf;
-    private bool $removeIfSelf;
-    private bool $withImage;
+    private $linkSelf;
+    private $removeIfSelf;
+    private $withImage;
 
 
     function __construct($removeIfSelf, $withImage, $linkSelf)
@@ -89,6 +89,21 @@ class ListOfPostsHelper
             $result .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
 
         return $result;
+    }
+
+    public function GetLinksWithImages(array $links_data) {
+
+        $links_html = '';
+
+        foreach($links_data as $k => $v) {
+            if(isset($v['commento']))
+                $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome'], $v['commento']);
+            else
+            $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome']);
+        }
+
+        return $links_html;
+
     }
 
     public static function GetTemplateNoThumbnail(string $target_url, string $nome, string $commento, $noLink): string

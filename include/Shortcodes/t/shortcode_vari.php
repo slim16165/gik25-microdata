@@ -10,8 +10,10 @@ add_shortcode('flexlist', 'flexlist_handler');
 
 function youtube_handler($atts, $content = null)
 {
-    $result = wp_oembed_get($atts["url"]);
-    return $result;
+    if(isset($atts["url"])) {
+        $result = wp_oembed_get($atts["url"]);
+        return $result;
+    }
 }
 
 function quote_handler($atts, $content = null)

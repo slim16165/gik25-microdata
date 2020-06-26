@@ -1,0 +1,99 @@
+.mdsb-wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 300px;
+    max-width: 300px !important;
+    min-width: 300px !important;
+    height: 200px; 
+    /* border: 1px solid black; */
+    /* background: url("images/car1.jpg") no-repeat center center; */
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 10px;
+}
+
+.mdsb-wrapper > img {
+    width: 100%;
+    /* height: 100%; */
+}
+
+.mdsb {
+    position: absolute;
+    left: -300px;
+    width: 300px;
+    height: 200px;
+    /* background: rgb(240, 88, 88); */
+    background-image: linear-gradient(to top,#d65a5a 0,#e89090 100%);
+    transition: 0.3s;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    z-index: 10;
+}
+
+.mdsb-wrapper:hover .mdsb {
+    transition: 0.3s;
+    left: 0;
+}
+.mdsb > a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    text-decoration: none !important;
+}
+.mdsb > a:hover {
+    text-decoration: none !important;
+}
+.mdsb .fa.fa-search {
+    font-size: 20px;
+    color: #fff;
+}
+.mdsb-inner {
+    position: absolute;
+    z-index: 20;
+    left: 125px;
+    top: 75px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    /* background: orchid; */
+    background: #f3a2a2;
+}
+.mdsb-inner:hover {
+    /* background: orchid; */
+    /* background: #fecfcf; */
+    /* opacity: 0.5; */
+    background: #f7b5b5;
+}
+.mdsb-inner > a  {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    text-decoration: none !important;
+    line-height: 50px;
+    text-align: center;
+}
+.mdsb-inner > a:hover  {
+    text-decoration: none !important;
+}
+
+.mdsb-wrapper-outer {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+}
+
+@media screen and (max-width: 768px) {
+    .mdsb-wrapper-outer {
+        display: flex;
+        flex-wrap: wrap;
+        /* justify-content: space-evenly; */
+    }
+}

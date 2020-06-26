@@ -1,6 +1,5 @@
 <?php
 
-
 class OptimizationHelper
 {
     public static function ConditionalLoadJsCss_Colori()
@@ -11,7 +10,7 @@ class OptimizationHelper
     static function _conditionalLoadJsCss_Colori()
     {
         global $post;
-        $postConTagColori = TagHelper::find_post_id_from_taxonomy("colori", 'post_tag');
+        $postConTagColori = TagHelper::find_post_id_from_taxonomy("colori", 'post_tag');//args: term_name "colori", taxonomy_type 'post_tag'
         if (in_array($post->ID, $postConTagColori))
             ColorWidget::carousel_js();
     }
@@ -19,6 +18,40 @@ class OptimizationHelper
     public static function ConditionalLoadCssOnPosts()
     {
         add_action('wp_enqueue_scripts', array(__CLASS__, 'load_css_or_js_specific_pages'), 1001);
+    }
+
+    public static function ConditionalLoadCssJsOnPostsWhichContainEnabledShortcodes() //configurable in plugin settings.
+    {
+        add_action('wp_enqueue_scripts', array(__CLASS__, 'load_css_js_on_posts_which_contain_enabled_shortcodes'), 1001);
+    }
+
+    public static function load_css_js_on_posts_which_contain_enabled_shortcodes()
+    {
+        if (is_single())
+        {
+            $enabled_shortcode_found = false;
+
+            $shortcode_names_arr = get_option('revious_microdata_option_name');
+            $shortcode_names = $shortcode_names_arr['shortcode_names'];
+
+            if(!empty($shortcode_names)) {
+                $shortcode_names_arr_2 = explode(',', $shortcode_names);
+            }
+
+            global $post;
+            foreach($shortcode_names_arr_2 as $shortcode_name) {
+                if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, $shortcode_name) ) {
+                    $enabled_shortcode_found = true;
+                }
+            }
+
+            if($enabled_shortcode_found) {
+                //enqueue css, js
+                wp_enqueue_style('css_for_enabled_shortcodes',  plugins_url() . '/gik25-microdata/assets/css/css-for-enabled-shortcodes.css');
+                wp_enqueue_script('css_for_enabled_shortcodes', plugins_url() . '/gik25-microdata/assets/js/js-for-enabled-shortcodes.js');
+            }
+        }
+        
     }
 
     public static function load_css_or_js_specific_pages()

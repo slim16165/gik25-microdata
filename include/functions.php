@@ -116,7 +116,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 		var_dump($timediff); //in seconds
 	}
 
-	function ReplaceTargetUrlIfStaging($target_url) : string
+	// function ReplaceTargetUrlIfStaging($target_url) : string
+	// {
+	// 	if (MyString::Contains(ServerHelper::getDomain(), "cloudwaysapps.com"))
+	// 	{
+	// 		$target_url = str_replace("www.chiecosa.it", "wordpress-217146-983380.cloudwaysapps.com", $target_url);
+	// 		$target_url = str_replace("www.nonsolodiete.it", "wordpress-217146-992662.cloudwaysapps.com", $target_url);
+	// 		$target_url = str_replace("www.superinformati.com", "wordpress-217146-1004348.cloudwaysapps.com", $target_url);
+	// 		$target_url = str_replace("www.totaldesign.it", "wordpress-217146-1330173.cloudwaysapps.com", $target_url);
+	// 		//wordpress-251650-1339580.cloudwaysapps.com
+	// 		$target_url = str_replace("www.nonsolodiete.it", "wordpress-251650-1339580.cloudwaysapps.com", $target_url);
+			
+	// 	}
+	// 	return $target_url;
+	// }
+
+	function ReplaceTargetUrlIfStaging($target_url)
 	{
 		if (MyString::Contains(ServerHelper::getDomain(), "cloudwaysapps.com"))
 		{
@@ -124,6 +139,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$target_url = str_replace("www.nonsolodiete.it", "wordpress-217146-992662.cloudwaysapps.com", $target_url);
 			$target_url = str_replace("www.superinformati.com", "wordpress-217146-1004348.cloudwaysapps.com", $target_url);
 			$target_url = str_replace("www.totaldesign.it", "wordpress-217146-1330173.cloudwaysapps.com", $target_url);
+			//wordpress-251650-1339580.cloudwaysapps.com
+			$target_url = str_replace("www.nonsolodiete.it", "wordpress-251650-1339580.cloudwaysapps.com", $target_url);
+			
 		}
 		return $target_url;
 	}
@@ -139,6 +157,4 @@ if ( ! defined( 'ABSPATH' ) ) {
         }
 
         return $result;
-    }
-
-
+	}
