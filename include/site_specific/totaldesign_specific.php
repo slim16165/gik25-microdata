@@ -60,6 +60,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-fucsia/", "Colore Fucsia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ecru/", "Colore Ecru");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/verde-tiffany/", "Colore Verde Tiffany");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-magenta/", "Colore Magenta");
     $result .= " </div></div>
         <p>
             Colori Pantone
@@ -93,27 +94,29 @@ function link_colori_handler($atts, $content = null)
 
 function grafica3d_handler($atts, $content = null)
 {
-    $l = new ListOfPostsHelper(false,true,false );
+    $css = ColorWidget::get_carousel_css();
 
-    $result = "<div class='twocolumns'>
-	<h3>Programmi di Grafica 3D</h3>";
+    $result = "<style>$css</style>
+	<div class='contain'>
+        <h3>Programmi di Grafica 3D</h3>		   
+		        <div class='row'>
+					<div class='row__inner'>";
 
-    $result .= "<ul class='thumbnail-list'>";
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/freecad/", "Freecad 3D");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/homestyler-2/", "Homestyler");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/autodesk-revit/", "Autodesk Revit");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/archicad/", "Archicad");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/maya-3d/", "Maya 3D");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/blender-3d/", "Maya 3D");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/librecad/", "Librecad");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/draftsight/", "Draftsight");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/lumion/", "Lumion Grafica 3D");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/rhinoceros-mac/", "Rhinoceros");
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/sketchup-2/", "Schetchup");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/freecad/", "Freecad 3D");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/homestyler-2/", "Homestyler");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/autodesk-revit/", "Autodesk Revit");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/archicad/", "Archicad");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/maya-3d/", "Maya 3D");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/blender-3d/", "Maya 3D");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/librecad/", "Librecad");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/draftsight/", "Draftsight");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/lumion/", "Lumion Grafica 3D");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/rhinoceros-mac/", "Rhinoceros");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/sketchup-2/", "Schetchup");
 
-    $result .= $l->GetLinkWithImage("https://www.totaldesign.it/migliori-programmi-gratuiti-per-la-progettazione-3d/", "Migliori Programmi Gratuiti per la progettazione 3D");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/migliori-programmi-gratuiti-per-la-progettazione-3d/", "Migliori Programmi Gratuiti per la progettazione 3D");
 
-    $result .= "</ul></div>";
+    $result .= "</div></div></div>";
     return $result;
 }
 
