@@ -171,11 +171,14 @@ ABC;
 	
 }
 
-add_action('wp_enqueue_scripts', 'mdpb_scripts_styles');
+
 
 function mdpb_scripts_styles() {
 	wp_register_style('mdpb-styles', plugins_url('/gik25-microdata/assets/css/mdpb.css'), array(), '', 'all');
 	wp_enqueue_style('mdpb-styles');
+  wp_register_style('revious-microdata', plugins_url('/gik25-microdata/assets/css/revious-micrrodata.css'), array(), '', 'all');
+  wp_enqueue_style('revious-microdata');
 	wp_register_script('mdpb-script', plugins_url('/gik25-microdata/assets/js/mdpb.js'), array('jquery'));
 	wp_enqueue_script('mdpb-script');
 }
+add_action('wp_enqueue_scripts', 'mdpb_scripts_styles');
