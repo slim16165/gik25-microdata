@@ -102,10 +102,10 @@
 
 
 // item creation dynamically
-let createArr = (n) =>
+var createArr = (n) =>
 {
-    let arr = []
-    for (let i = 0; i < n; i++) {
+    var arr = []
+    for (var i = 0; i < n; i++) {
         arr.push(
             {type: 'label', text: 'Domanda'},
             {type: 'textbox', name: `domanda${i+1}`, multiline : true, style: 'width: 100%'},
@@ -127,15 +127,15 @@ function encodeHTML(str){
 }
 
 // onsubmit handled dynamically
-let handleQuesData = (data, n) =>
+var handleQuesData = (data, n) =>
 {
-    let quesdata = '[domande_e_risposte]<br/>';
+    var quesdata = '[domande_e_risposte]<br/>';
 
-    let domande_risposte = [];
-    for (let i = 0; i < n; i++)
+    var domande_risposte = [];
+   var i = 0; i < n; i++ 
     {
-        let domanda_i = encodeHTML(data[`domanda${i+1}`]);
-        let risposta_i = encodeHTML(data[`risposta${i+1}`]);
+        var domanda_i = encodeHTML(data[`domanda${i+1}`]);
+        var risposta_i = encodeHTML(data[`risposta${i+1}`]);
 
         domanda_i = JSON.stringify(domanda_i);
         risposta_i = JSON.stringify(risposta_i);
@@ -153,7 +153,7 @@ let handleQuesData = (data, n) =>
     return quesdata +'<br/>[/domande_e_risposte]';
 }
 
-let numItem = 5;
+var numItem = 5;
 
 (function() {
     tinymce.create("tinymce.plugins.QuestionAndAnswer", {
@@ -235,16 +235,3 @@ let numItem = 5;
     // Register plugin
     tinymce.PluginManager.add("QuestionAndAnswer", tinymce.plugins.QuestionAndAnswer);
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-

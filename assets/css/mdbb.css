@@ -1,0 +1,47 @@
+.mdbb-wrapper {
+    position: relative;
+    width: 100px;
+    height: 80px;
+    background: #ddd;
+    margin: 100px auto;
+    cursor: pointer;
+    text-align: center;
+    color: rgb(13, 71, 161);
+    font-family: Roboto;
+    font-size: 13px;
+}
+.mdbb-wrapper a {
+    text-decoration: none;
+    color: rgb(13, 71, 161);
+}
+.mdbb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 25px;
+    width: 25px;
+    height: 25px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: #999;
+    opacity: 1;
+    transition: border-width 1s, border-radius 1s, width 1s, height 1s, opacity 1s, left 1s, top 1s;
+    visibility: hidden;
+}
+.mdbb-active {
+    visibility: visible;
+    left: -50px;
+    top: -50px;
+    border-radius: 100px;
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+    border-width: 0px;
+}
+.mdbb-row {
+    display: flex;
+    align-content: space-between;
+}
+.mdbb-icon-wrap {
+    /* text-align: center; */
+}
