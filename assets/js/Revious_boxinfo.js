@@ -32,25 +32,25 @@
                     // ed.execCommand("boxinfo");
 
                     ed.windowManager.open( {
-                        title: 'Container',
+                        title: 'Box Info',
                         body: [{
                             type: 'listbox',
                             name: 'style',
                             label: 'Style',
                             'values': [
-                                {text: 'Clear', value: 'clear'},
-                                {text: 'White', value: 'white'},
-                                {text: 'Colour 1', value: 'colour1'},
-                                {text: 'Colour 2', value: 'colour2'},
-                                {text: 'Colour 3', value: 'colour3'},
+                                {text: 'Add Boxinfo', value: 'clear'},
+                                // {text: 'White', value: 'white'},
+                                // {text: 'Colour 1', value: 'colour1'},
+                                // {text: 'Colour 2', value: 'colour2'},
+                                // {text: 'Colour 3', value: 'colour3'},
                             ]
                         } /*add in the following with the comma */ ,
                             {   type: 'container',
-                                html: '<p>Enter your Text here</p>'
+                                html: '<p>Wrap the content in Box Info</p>'
                             }
                         ],
                         onsubmit: function( e ) {
-                            ed.insertContent( '[container style="' + e.data.style + '"]<br /><br />[/container]');
+                            ed.insertContent( '[boxinformativo title=\"Curiosità\"]' + ed.selection.getContent().replace(/<\/?p[^>]*>/g, " ") + '[/boxinformativo]<br/><br/>');
                         }});
                 }
             });
