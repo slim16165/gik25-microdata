@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) {
 class MicrodataSlidingbox {
 
     public function __construct() {
-        add_shortcode('microdata_slidingbox', array($this, 'shortcode'));
+        add_shortcode(PLUGIN_NAME_PREFIX . 'slidingbox', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'mdsb_styles'));
     }
 

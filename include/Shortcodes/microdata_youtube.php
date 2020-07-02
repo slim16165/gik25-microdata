@@ -6,7 +6,7 @@ if(!defined('ABSPATH')) {
 class Youtube {
 
     public function __construct() {
-        add_shortcode('youtube', array($this, 'shortcode'));
+        add_shortcode(PLUGIN_NAME_PREFIX . 'youtube', array($this, 'shortcode'));
     }
 
     public function shortcode($atts, $content = null) {

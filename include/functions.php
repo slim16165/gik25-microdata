@@ -182,3 +182,5 @@ function mdpb_scripts_styles() {
 	wp_enqueue_script('mdpb-script');
 }
 add_action('wp_enqueue_scripts', 'mdpb_scripts_styles');
+
+define('PLUGIN_NAME_PREFIX', 'md_');

@@ -39,9 +39,11 @@ class OptimizationHelper
             }
 
             global $post;
-            foreach($shortcode_names_arr_2 as $shortcode_name) {
-                if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, $shortcode_name) ) {
-                    $enabled_shortcode_found = true;
+            if(isset($shortcode_names_arr_2)) {
+                foreach($shortcode_names_arr_2 as $shortcode_name) {
+                    if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, $shortcode_name) ) {
+                        $enabled_shortcode_found = true;
+                    }
                 }
             }
 
@@ -51,7 +53,7 @@ class OptimizationHelper
                 wp_enqueue_script('css_for_enabled_shortcodes', plugins_url() . '/gik25-microdata/assets/js/js-for-enabled-shortcodes.js');
             }
         }
-        
+
     }
 
     public static function load_css_or_js_specific_pages()
@@ -59,7 +61,7 @@ class OptimizationHelper
         if (is_single())
         {
             $plugin_url = plugin_dir_url(__FILE__);
-            wp_enqueue_style('css_single_pages', trailingslashit($plugin_url) . 'assets/css/revious-microdata.css', array());
+            wp_enqueue_style('css_single_pages', plugins_url() . '/gik25-microdata/assets/css/revious-microdata.css');
             //If the line over is not working check if the bottom works.. I don't remember which is the fix
 	    //wp_enqueue_style('css_single_pages', trailingslashit($plugin_url) . '../../../assets/css/revious-microdata.css', array());
 

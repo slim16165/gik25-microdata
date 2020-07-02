@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) {
 class Boxinformativo {
     
     public function __construct() {
-        add_shortcode('boxinformativo', array($this, 'shortcode'));
+        add_shortcode(PLUGIN_NAME_PREFIX . 'boxinformativo', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'boxinformativo_styles'));
         add_filter('mce_external_plugins', array($this, 'boxinformativo_add_buttons'));
         add_filter('mce_buttons', array($this, 'boxinformativo_register_buttons'));

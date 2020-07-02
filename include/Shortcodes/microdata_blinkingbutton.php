@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) {
 class MicrodataBlinkingButton {
 
     public function __construct() {
-        add_shortcode('microdata_blinkingbutton', array($this, 'shortcode'));
+        add_shortcode(PLUGIN_NAME_PREFIX . 'blinkingbutton', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'mdbb_styles'));
         add_action('wp_enqueue_scripts', array($this, 'mdbb_scripts'));
     }
