@@ -1,4 +1,4 @@
-window.onload = init;
+//window.onload = init;
 
 function init() {
     //alert('js-for-enabled-shortcodes.js');

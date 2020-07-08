@@ -5,19 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once("functions.php");
-// require_once("Shortcodes/microdata_boxinformativo_perfectpullquote.php");//migrated from gik25-quotes.php
-// require_once("Shortcodes/microdata_prezzo_telefono.php");
 
-require_once("Shortcodes/microdata_blinkingbutton.php");
-require_once("Shortcodes/microdata_boxinformativo.php");//migrated from gik25-quotes.php, converted to PHP class
-require_once("Shortcodes/microdata_flexlist.php");
-require_once("Shortcodes/microdata_flipbox.php");
-require_once("Shortcodes/microdata_perfectpullquote.php");//migrated from gik25-quotes.php, converted to PHP class
-require_once("Shortcodes/microdata_prezzo.php");
-require_once("Shortcodes/microdata_quote.php");
-require_once("Shortcodes/microdata_slidingbox.php");
-require_once("Shortcodes/microdata_telefono.php");
-require_once("Shortcodes/microdata_youtube.php");
+require_once("Shortcodes/blinkingbutton.php");
+require_once("Shortcodes/boxinfo.php");//migrated from gik25-quotes.php, converted to PHP class
+require_once("Shortcodes/flexlist.php");
+require_once("Shortcodes/flipbox.php");
+require_once("Shortcodes/perfectpullquote.php");//migrated from gik25-quotes.php, converted to PHP class
+require_once("Shortcodes/prezzo.php");
+require_once("Shortcodes/quote.php");
+require_once("Shortcodes/slidingbox.php");
+require_once("Shortcodes/telefono.php");
+require_once("Shortcodes/youtube.php");
 
 //require_once("Shortcodes/microdata_wp_users.php");//temp for testing
 // require_once("Shortcodes/shortcode_vari.php");
