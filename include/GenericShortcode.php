@@ -17,16 +17,13 @@ require_once("Shortcodes/slidingbox.php");
 require_once("Shortcodes/telefono.php");
 require_once("Shortcodes/youtube.php");
 
-//require_once("Shortcodes/microdata_wp_users.php");//temp for testing
-// require_once("Shortcodes/shortcode_vari.php");
-
 // require_once("Shortcodes/tinymce.php");
 require_once("class/Schema/QuestionSchema.class.php");
 require_once("ListOfPostsHelper.php");
 require_once("class/Utility/OttimizzazioneNewspaper.php");
 
 
-//EnableErrorLogging();
+EnableErrorLogging();
 
 //Avoid link and pages for tags of just one link
 TagHelper::add_filter_DisableTagWith1Post();
