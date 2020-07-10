@@ -9,14 +9,17 @@ class ListOfPostsHelper
 {
     private $linkSelf;
     private $removeIfSelf;
-    private $withImage;
+    // private $withImage;
+    public $withImage;
+    public static $listOfPostsStyle;
 
 
-    function __construct($removeIfSelf, $withImage, $linkSelf)
+    function __construct($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle = '')
     {
         $this->removeIfSelf = $removeIfSelf;
         $this->linkSelf = $linkSelf;
         $this->withImage = $withImage;
+        self::$listOfPostsStyle = $listOfPostsStyle;
     }
 
     public function GetPostData(string &$target_url, &$isSameFile, &$ShouldReturnNow)
@@ -92,7 +95,7 @@ class ListOfPostsHelper
     }
 
     public function GetLinksWithImages(array $links_data) {
-
+        
         $links_html = '';
 
         foreach($links_data as $k => $v) {
@@ -126,11 +129,18 @@ class ListOfPostsHelper
     {
         $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
 
+        if(!$featured_img_url) {
+            $featured_img_html = '<img style="width=50px; height: 50px;" src="' . plugins_url() . '/gik25-microdata/assets/images/placeholder-200x200.png" alt="' . $anchorText . '" />';
+        }
+        else {
+            $featured_img_html = '<img style="width=50px; height: 50px;" src="' . $featured_img_url . '" alt="' . $anchorText . '" />';
+        }
+
         if ($noLink) {
             return <<<EOF
 <li>
 <div class="li-img">
-	<img style="width=50px; height: 50px;" src="$featured_img_url" alt="$anchorText" />		
+    $featured_img_html
 </div>
 <div class="li-text">$anchorText ($comment)</div>
 </li>\n
@@ -140,12 +150,138 @@ EOF;
 <li>
 <a href="$target_url">			
 <div class="li-img">
-	<img style="width=50px; height: 50px;" src="$featured_img_url" alt="$anchorText" />		
+    $featured_img_html		
 </div>
 <div class="li-text">$anchorText </div>
 </a>$comment</li>\n
 EOF;
         }
+
+    }
+
+}
+
+class ListOfPostsHelperChild extends ListOfPostsHelper
+{
+
+    function __construct($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle)
+    {
+        $this->removeIfSelf = $removeIfSelf;
+        $this->linkSelf = $linkSelf;
+        $this->withImage = $withImage;
+        self::$listOfPostsStyle = $listOfPostsStyle;
+    }
+
+    public function GetLinksWithImages(array $links_data) {
+        
+        $i = 0;
+        $column_links_number = ceil( count($links_data) / self::$listOfPostsStyle );
+        $links_div_open = '<div class="list-of-posts-layout-' . self::$listOfPostsStyle . '">';
+        $links_div_close = '</div>';
+        $links_ul_open = '<ul>';
+        $links_ul_close = '</ul>';
+
+        if(self::$listOfPostsStyle == 1) {
+            //use one column layout
+            $links_html = '';
+    
+            foreach($links_data as $k => $v) {
+                if(isset($v['commento']))
+                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome'], $v['commento']);
+                else
+                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome']);
+            }
+    
+            $links_html = $links_div_open . $links_ul_open . $links_html . $links_ul_close . $links_div_close;
+            return $links_html;
+        }
+        elseif(self::$listOfPostsStyle == 2) {
+            //use two column layout
+            $links_html = '';
+            $links_html_col_1 = '';
+            $links_html_col_2 = '';
+
+            foreach($links_data as $k => $v) {
+                if(isset($v['commento']))
+                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome'], $v['commento']);
+                else
+                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome']);
+    
+                $i++;
+    
+                if($column_links_number == $i) {
+                    //first col complete
+                    $links_html_col_1 = $links_ul_open . $links_html . $links_ul_close;
+                    $links_html = '';
+                }
+            }
+
+            $links_html_col_2 = $links_ul_open . $links_html . $links_ul_close;
+            $links_html = $links_html_col_1 . $links_html_col_2;
+
+            $links_html = $links_div_open . $links_html . $links_div_close;
+    
+            return $links_html;
+        }
+
+    }
+
+    public function GetLinkWithImage(string $target_url, string $nome, string $commento = "")
+    {
+        
+        $result = "";
+
+        $target_post = self::GetPostData($target_url, $noLink, $ShouldReturnNow);
+
+        if ($ShouldReturnNow)
+            return $ShouldReturnNow;
+
+        //In caso contrario il post è pubblicato
+        if (!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
+            $commento = " ($commento)";
+
+        //var_dump($this->withImage);exit;
+        if ($this->withImage)
+            $result .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+        else
+            $result .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+
+        return $result;
+    }
+
+    public static function GetTemplateWithThumbnail(string $target_url, string $anchorText, string $comment, $target_post, $noLink): string
+    {
+
+        $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
+
+        if(!$featured_img_url) {
+            $featured_img_html = '<img style="width=50px; height: 50px;" src="' . plugins_url() . '/gik25-microdata/assets/images/placeholder-200x200.png" alt="' . $anchorText . '" />';
+        }
+        else {
+            $featured_img_html = '<img style="width=50px; height: 50px;" src="' . $featured_img_url . '" alt="' . $anchorText . '" />';
+        }
+
+        if ($noLink) {
+            return <<<EOF
+<li>
+<div class="li-img">
+    $featured_img_html
+</div>
+<div class="li-text">$anchorText ($comment)</div>
+</li>\n
+EOF;
+        } else {
+            return <<<EOF
+<li>
+<a href="$target_url">			
+<div class="li-img">
+    $featured_img_html		
+</div>
+<div class="li-text">$anchorText </div>
+</a>$comment</li>\n
+EOF;
+        }
+
     }
 
 }

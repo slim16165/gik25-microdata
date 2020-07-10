@@ -53,10 +53,14 @@
       ed.addButton("pullquote-menu", {
         type: "menubutton",
         border: "1 1 1 1",
-        text: "Pullquote",
-        tooltip: "Add a left, right, or full-width pullquote",
-        icon: true,
-        image: url + "/quote-left.png",
+        // text: "Pullquote",
+        text: "Quote",
+        // tooltip: "Add a left, right, or full-width pullquote",
+        tooltip: "Add a left, right, or full-width quote",
+        //icon: true,
+        icon: " fa fa-quote-left",
+        //fa fa-quote-left
+        //image: url + "/quote-left.png",
         size: "small",
         menu: [
           {

@@ -59,11 +59,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	function link_diete_handler($atts, $content = null)
 	{
-        $l = new ListOfPostsHelper(false,true,false );
+		$list_layout = 1;// one column
+		$list_layout = 2;// two columns
+		$l = new ListOfPostsHelperChild(false, true, false, $list_layout);
 
-		$result = "<h3>Lista principali Diete</h3>
-		<div class='thumbnail-list'>";
-
+		$result = "<h3>Lista principali Diete</h3>";
+	//	<div class='thumbnail-list'>";
 //		find_post_id_from_taxonomy("dieta");
 
 		$links_data = array(
@@ -137,11 +138,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			)
 		);
 
-		$result .= "<ul class='thumbnail-list'>";
+		//$result .= "<ul class='thumbnail-list'>";
 
 		$result .= $l->GetLinksWithImages($links_data);
 
-		$result .= "</ul></div>";
+		//$result .= "</ul></div>";
 		return $result;
 	}
 

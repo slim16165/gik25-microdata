@@ -9,6 +9,7 @@ header#site-header {
     width: 100%;
     height: 5px;
     background: #ccc;
+  /* position: fixed; */
 }
 .md-progress-bar {
     height: 5px;
