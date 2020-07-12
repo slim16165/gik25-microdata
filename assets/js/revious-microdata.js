@@ -196,8 +196,9 @@ var numItem = 5;
         border: "1 1 1 1",
         text: "Domande",
         tooltip: "Aggiunge lo schema Question & Answers",
-        icon: true,
-        image: url + "/quote-left.png",
+        //icon: true,
+        icon: " fa fa-question-circle",
+        //image: url + "/quote-left.png",
         size: "small",
         onclick: function () {
           ed.execCommand("DomandeERisposte");

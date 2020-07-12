@@ -32,8 +32,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			return $domain;
 		}
 
-		public static function getSecondLevelDomain()
+		public static function getSecondLevelDomainOnly()
 		{
+		    //i.e. superinformati.com → superinformati
 			$domain = $_SERVER["SERVER_NAME"];
 
 			if (preg_match('/\b([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}\b/im', $domain, $regs)) {

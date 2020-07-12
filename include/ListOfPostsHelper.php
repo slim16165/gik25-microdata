@@ -7,10 +7,11 @@ if (!defined('ABSPATH')) {
 
 class ListOfPostsHelper
 {
-    private $linkSelf;
-    private $removeIfSelf;
+    
+    protected $removeIfSelf;
     // private $withImage;
     public $withImage;
+    protected $linkSelf;
     public static $listOfPostsStyle;
 
 
@@ -19,9 +20,11 @@ class ListOfPostsHelper
         $this->removeIfSelf = $removeIfSelf;
         $this->linkSelf = $linkSelf;
         $this->withImage = $withImage;
+        $this->linkSelf = $linkSelf;
         self::$listOfPostsStyle = $listOfPostsStyle;
     }
 
+    // public function GetPostData(string &$target_url, &$isSameFile, &$ShouldReturnNow)
     public function GetPostData(string &$target_url, &$isSameFile, &$ShouldReturnNow)
     {
         $target_url = ReplaceTargetUrlIfStaging($target_url);
@@ -44,7 +47,7 @@ class ListOfPostsHelper
 
         if ($target_postid == 0) {
             if ($MY_DEBUG)
-                $ShouldReturnNow = "target_postid == 0";
+                $ShouldReturnNow = '<h5 style="color: red;">This post does not exist, or it is on other domain, or URL is wrong (target_postid == 0)</h5>';
             else
                 $ShouldReturnNow = "";
         }
@@ -172,8 +175,8 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
         self::$listOfPostsStyle = $listOfPostsStyle;
     }
 
-    public function GetLinksWithImages(array $links_data) {
-        
+    public function GetLinksWithImages(array $links_data)
+    {
         $i = 0;
         $column_links_number = ceil( count($links_data) / self::$listOfPostsStyle );
         $links_div_open = '<div class="list-of-posts-layout-' . self::$listOfPostsStyle . '">';

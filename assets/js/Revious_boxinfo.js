@@ -23,10 +23,13 @@
       // Pullquote Menu Button http://www.tinymce.com/wiki.php/api4:class.tinymce.ui.MenuButton
       ed.addButton("boxinfo-menu", {
         border: "1 1 1 1",
-        text: "Boxinfo",
+        // text: "Boxinfo",
+        text: "Info",
         tooltip: "Aggiunge il box azzurro rettangolare coi bordi sopra e sotto",
-        icon: true,
-        image: url + "/quote-left.png",
+        //icon: true,
+        icon: " fa fa-info-circle",
+        //fa fa-info-circle
+        //image: url + "/quote-left.png",
         size: "small",
         onclick: function () {
           ed.execCommand("boxinfo");

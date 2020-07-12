@@ -12,6 +12,7 @@ require_once("Shortcodes/flexlist.php");
 require_once("Shortcodes/flipbox.php");
 require_once("Shortcodes/perfectpullquote.php");//migrated from gik25-quotes.php, converted to PHP class
 require_once("Shortcodes/prezzo.php");
+require_once("Shortcodes/progressbar.php");
 require_once("Shortcodes/quote.php");
 require_once("Shortcodes/slidingbox.php");
 require_once("Shortcodes/telefono.php");
@@ -23,7 +24,7 @@ require_once("ListOfPostsHelper.php");
 require_once("class/Utility/OttimizzazioneNewspaper.php");
 
 
-EnableErrorLogging();
+//EnableErrorLogging();
 
 //Avoid link and pages for tags of just one link
 TagHelper::add_filter_DisableTagWith1Post();
