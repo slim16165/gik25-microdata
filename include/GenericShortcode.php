@@ -59,7 +59,7 @@ function add_LogRocket()
         return;
     }
 
-    $domain = ServerHelper::getSecondLevelDomain();
+    $domain = ServerHelper::getSecondLevelDomainOnly();
     //$domain = getSecondLevelDomain();
 
 

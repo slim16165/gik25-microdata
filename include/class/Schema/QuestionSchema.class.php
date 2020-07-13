@@ -5,7 +5,6 @@ if (!defined('ABSPATH')) {
 
 class QuestionSchema
 {
-
     public function __construct() {
         add_filter('mce_external_plugins', array($this, 'revious_microdata_add_tinymce_plugins_quest'));
         add_filter('mce_buttons', array($this, 'revious_microdata_register_buttons'));
@@ -99,14 +98,12 @@ TAG;
         //Chiusura Json
         $result .= <<<TAG
 ]} </script>
-
 TAG;
 
         $result .= <<<TAG
 
 <h3 id="DomandeERisposte">Domande frequenti</h3> 
 <div class="schema-faq-section">
-
 TAG;
         $htmlDomande = implode("", $question_array_html);
         $result .= $htmlDomande;
