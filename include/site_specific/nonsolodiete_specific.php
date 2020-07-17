@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler');
 	add_shortcode('link_vitamine', 'link_vitamine_handler');
 	add_shortcode('link_diete', 'link_diete_handler');
+	add_shortcode('link_diete2', 'link_diete_handler2');
 
 	function link_vitamine_handler($atts, $content = null)
 	{
@@ -59,11 +60,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	function link_diete_handler($atts, $content = null)
 	{
-        $l = new ListOfPostsHelper(false,true,false );
+		$list_layout = 1;// one column
+		$list_layout = 2;// two columns
+		$l = new ListOfPostsHelperChild(false, true, false, $list_layout);
 
-		$result = "<h3>Lista principali Diete</h3>
-		<div class='thumbnail-list'>";
-
+		$result = "<h3>Lista principali Diete</h3>";
+	//	<div class='thumbnail-list'>";
 //		find_post_id_from_taxonomy("dieta");
 
 		$links_data = array(
@@ -137,11 +139,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			)
 		);
 
-		$result .= "<ul class='thumbnail-list'>";
+		//$result .= "<ul class='thumbnail-list'>";
 
 		$result .= $l->GetLinksWithImages($links_data);
 
-		$result .= "</ul></div>";
+		//$result .= "</ul></div>";
 		return $result;
 	}
 
@@ -321,5 +323,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$result .= $l->GetLinksWithImages($links_data_5);
 
 		$result .= "</ul>";
+		return $result;
+	}
+
+	function link_diete_handler2($atts, $content = null)
+	{
+		//$list_layout = 1;// one column
+		$list_layout = 2;// two columns
+
+		if(isset($atts['list_layout'])) $list_layout = (int) $atts['list_layout'];
+
+		$l = new ListOfPostsHelperChild(false, true, false, $list_layout);
+		
+		$tag = 'analisi del sangue';// $tag = 'Horror';
+		
+		if(isset($atts['tag'])) $tag = $atts['tag'];
+		
+		$result = '<h3>Posts by tag: <i style="color: maroon;">' . $tag . '</i></h3>';
+
+		$result .= $l->GetLinksWithImagesByTag($tag);
+
 		return $result;
 	}

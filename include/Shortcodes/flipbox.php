@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) {
 class MicrodataFlipbox {
 
     public function __construct() {
-        add_shortcode('microdata_flipbox', array($this, 'shortcode'));
+        add_shortcode(PLUGIN_NAME_PREFIX . 'flipbox', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'mdfb_styles'));
     }
 

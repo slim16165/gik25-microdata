@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler');
+add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler_2');
 add_shortcode('sedi_inps', 'sedi_inps_handler');
 
 /**
@@ -12,7 +12,7 @@ add_shortcode('sedi_inps', 'sedi_inps_handler');
  * @param null $content
  * @return string
  */
-function link_analisi_sangue_handler($atts, $content = null)
+function link_analisi_sangue_handler_2($atts, $content = null)
 {
     $l = new ListOfPostsHelper(false,true,false );
     

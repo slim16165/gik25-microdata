@@ -87,7 +87,7 @@ class ReviousMicrodataSettingsPage
         // );      
         add_settings_field(
             'shortcode_names', 
-            'Enabled Shortcodes Names (comma separated)', 
+            'Load CSS/JS for these shortcodes', 
             array( $this, 'shortcode_names_callback' ), 
             'revious-microdata-setting-admin', 
             'setting_section_id'
@@ -157,8 +157,99 @@ class ReviousMicrodataSettingsPage
 
     public function shortcode_names_callback()
     {
+        // var_dump(class_exists('abc'));exit;
+        // var_dump(class_exists('MicrodataBlinkingButton'));exit;
+        global $shortcode_tags;
+        $plugin_shortcodes = array();
+        $plugin_shortcodes_html = '';
+
+        foreach($shortcode_tags as $k => $v) {
+            //echo $shortcode_tag . '<br>';
+            // echo $k . '<br>';
+            //var_dump(strpos($k, PLUGIN_NAME_PREFIX)) . '<br>';
+            $needle_found = strpos($k, PLUGIN_NAME_PREFIX);
+            if(is_int($needle_found) &&  $needle_found == 0) {
+                $plugin_shortcodes[] = $k;
+            }
+        }
+        //exit;
+        //var_dump($plugin_shortcodes);exit;
+
+        foreach($plugin_shortcodes as $plugin_shortcode) {
+            $plugin_shortcodes_html .= '<input id="' . $plugin_shortcode . '" type="checkbox" name="plugin_shortcodes[]" value="'
+                 . $plugin_shortcode . '">&nbsp;<label for="' . $plugin_shortcode . '">' . $plugin_shortcode . '</label><br>';
+        }
+
+        $js_script = <<<BBB
+            <script>
+                window.addEventListener('load', function() {
+
+                    var btnSubmit = document.getElementById('submit');
+                    var shortcodeNames = document.getElementById('shortcode_names');
+                    var shortcodeNamesStr = shortcodeNames.value;
+                    var shortcodeNamesArr = shortcodeNamesStr.split(',');
+                    var enabledShortcodes = '';
+                    var pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
+
+                    console.log(shortcodeNamesArr);
+                    console.log(pluginShortcodes);
+
+                    for(var i = 0; i < pluginShortcodes.length; i++) {
+                        console.log(shortcodeNamesArr.includes(pluginShortcodes[i].value));
+                        if(shortcodeNamesArr.includes(pluginShortcodes[i].value)) {
+                            pluginShortcodes[i].checked = 'checked';
+                        }
+                    }
+
+                    btnSubmit.addEventListener('click', function(e) {
+                        //e.preventDefault();//temp
+                        //alert(this.value);
+                        //var pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
+                        console.log(pluginShortcodes);
+                        for(var i = 0; i < pluginShortcodes.length; i++) {
+                            if(pluginShortcodes[i].checked) {
+                                enabledShortcodes += pluginShortcodes[i].value + ',';
+                            }
+                        }
+                        //enabledShortcodes.substring(0, enabledShortcodes.length - 1);
+                        enabledShortcodes = enabledShortcodes.slice(0, -1);
+                        shortcodeNames.value = enabledShortcodes;
+                    });
+
+                });
+                
+            </script>
+BBB;
+
+        $plugin_shortcodes_html = '<div id="plugin_shortcodes_wrap" style="height: 200px; overflow-y: scroll;">' . $plugin_shortcodes_html . '</div>';
+
+        echo $plugin_shortcodes_html . $js_script;
+        // var_dump($shortcode_tags);exit;
+        // echo ''; 
+        // print_r($shortcode_tags); 
+        // echo '';exit;
+        
+        // if(class_exists('MicrodataBlinkingButton')) {
+        //     $shortcode_names_arr[] = 'microdata_blinkingbutton';
+        // }
+        // if(class_exists('Boxinformativo')) {
+        //     $shortcode_names_arr[] = 'boxinformativo';
+        // }
+        // if(class_exists('Flexlist')) {
+        //     $shortcode_names_arr[] = 'flexlist';
+        // }
+        // if(class_exists('MicrodataFlipbox')) {
+        //     $shortcode_names_arr[] = 'microdata_flipbox';
+        // }
+        // if(class_exists('MicrodataFlipbox')) {
+        //     $shortcode_names_arr[] = 'microdata_flipbox';
+        // }
+        // if(class_exists('MicrodataFlipbox')) {
+        //     $shortcode_names_arr[] = 'microdata_flipbox';
+        // }
+
         printf(
-            '<input type="text" id="shortcode_names" name="revious_microdata_option_name[shortcode_names]" value="%s" />',
+            '<input size="500" type="hidden" id="shortcode_names" name="revious_microdata_option_name[shortcode_names]" value="%s" />',
             isset( $this->options['shortcode_names'] ) ? esc_attr( $this->options['shortcode_names']) : ''
         );
     }

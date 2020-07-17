@@ -23,13 +23,14 @@ class QuestionSchema
 
     static function AddShortcode()
     {
-        add_shortcode('domande_e_risposte', array(__CLASS__, 'domande_e_risposte_handler'), 8);
+        add_shortcode(PLUGIN_NAME_PREFIX . 'domande_e_risposte', array(__CLASS__, 'domande_e_risposte_handler'), 8);
     }
 
     //Vanno evitati wptexturize() e wpautop()
     public static function domande_e_risposte_handler($atts, $content = null)
     {
         //	add_filter('run_wptexturize', '__return_false');
+        //var_dump(class_exists('ACF'));exit;
         $result = "\n\n";
         $result .= "<!--adinj_exclude_start-->\n";
         $jsonIniziale = str_replace(
@@ -77,9 +78,11 @@ TAG;
                 $question_array_json[] = QuestionSchema::RenderJson($question, $answer);
                 $question_array_html[] = QuestionSchema::RenderHTML($question, $answer);
 
+                //var_dump(class_exists('ACF'));exit;
                 if (class_exists('ACF')) {
                     update_field("domanda_{$i}", $question);
                     update_field("risposta_{$i}", $answer);
+                    $i++;
                 }
             }
         }

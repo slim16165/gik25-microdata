@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) {
 class Telefono {
 
     public function __construct() {
-        add_shortcode('microdata_telefono', array($this, 'shortcode'));
+        add_shortcode(PLUGIN_NAME_PREFIX . 'telefono', array($this, 'shortcode'));
         add_filter('mce_external_plugins', array($this, 'revious_microdata_add_tinymce_plugins'));
         add_filter('mce_buttons', array($this, 'revious_microdata_register_telefono_buttons'));
     }
