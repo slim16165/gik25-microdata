@@ -18,7 +18,6 @@ class ListOfPostsHelper
     function __construct($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle = '')
     {
         $this->removeIfSelf = $removeIfSelf;
-        $this->linkSelf = $linkSelf;
         $this->withImage = $withImage;
         $this->linkSelf = $linkSelf;
         self::$listOfPostsStyle = $listOfPostsStyle;
@@ -175,6 +174,57 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
         self::$listOfPostsStyle = $listOfPostsStyle;
     }
 
+    public function GetPostsDataByTag(&$isSameFile, &$ShouldReturnNow, $tag = '')
+    {
+        //die('child GetPostData');
+        // var_dump($isSameFile);
+        // var_dump($ShouldReturnNow);
+
+        //goto aaa;
+
+        global $MY_DEBUG;
+        $ShouldReturnNow = "";
+        $target_posts = array();
+
+        //Check if the current post is the same of the target_url
+        //$isSameFile = self::IsSameFile($target_url);
+
+        if ($isSameFile && $this->removeIfSelf)
+        {
+            if ($MY_DEBUG)
+                $ShouldReturnNow = "sameFile && removeIfSelf";
+            else
+                $ShouldReturnNow = "";
+        }
+        //var_dump($tags);exit;
+        if(!empty($tag)) {
+
+            $target_postids = TagHelper::find_post_id_from_taxonomy($tag, 'post_tag');
+
+            if(empty($target_postids)) {
+                if ($MY_DEBUG)
+                    $ShouldReturnNow = '<h5 style="color: red;">There are no posts tagged with \'' . $tag . '\'</h5>';
+                else
+                    $ShouldReturnNow = "";
+            }
+
+            foreach($target_postids as $target_postid) {
+                $target_post = get_post($target_postid);
+                if ($target_post->post_status !== "publish") {
+                    $ShouldReturnNow .= "NON PUBBLICATO: " . get_permalink($target_post->ID);
+                }
+                $target_posts[] = $target_post;
+            }
+            //var_dump($target_post);exit;
+            return $target_posts;
+
+        } 
+        else {
+            return false;
+        }
+
+    }
+
     public function GetLinksWithImages(array $links_data)
     {
         $i = 0;
@@ -281,8 +331,84 @@ EOF;
     $featured_img_html		
 </div>
 <div class="li-text">$anchorText </div>
-</a>$comment</li>\n
+                    </a>$comment
+                </li>\n
 EOF;
+        }
+
+    }
+
+    public function GetLinksWithImagesByTag($tag)
+    {
+        $i = 0;
+        $links_html = '';
+        //$column_links_number = ceil( count($links_data) / self::$listOfPostsStyle );
+        $links_div_open = '<div class="list-of-posts-layout-' . self::$listOfPostsStyle . '">';
+        $links_div_close = '</div>';
+        $links_ul_open = '<ul>';
+        $links_ul_close = '</ul>';
+
+        //$result = "";
+
+        $target_posts = self::GetPostsDataByTag($noLink, $ShouldReturnNow, $tag);
+
+        $column_links_number = ceil( count($target_posts) / self::$listOfPostsStyle );
+
+        if ($ShouldReturnNow)
+            return $ShouldReturnNow;
+
+        //var_dump($this->withImage);exit;
+
+        if(self::$listOfPostsStyle == 1) {
+            //use one column layout
+
+            foreach($target_posts as $target_post) {
+                $target_url = get_the_permalink($target_post->ID);
+                $nome = $target_post->post_title;
+                $commento = '';
+                if ($this->withImage)
+                    // $result .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+                    $links_html .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+                else
+                    // $result .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+                    $links_html .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+            }
+            
+            $links_html = $links_div_open . $links_ul_open . $links_html . $links_ul_close . $links_div_close;
+
+            return $links_html;
+        }
+        elseif(self::$listOfPostsStyle == 2) {
+            //use two column layout
+            $links_html_col_1 = '';
+            $links_html_col_2 = '';
+
+            foreach($target_posts as $target_post) {
+                $target_url = get_the_permalink($target_post->ID);
+                $nome = $target_post->post_title;
+                $commento = '';
+                if ($this->withImage)
+                    // $result .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+                    $links_html .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+                else
+                    // $result .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+                    $links_html .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+
+                $i++;
+        
+                if($column_links_number == $i) {
+                    //first col complete
+                    $links_html_col_1 = $links_ul_open . $links_html . $links_ul_close;
+                    $links_html = '';
+                }
+            }
+
+            $links_html_col_2 = $links_ul_open . $links_html . $links_ul_close;
+            $links_html = $links_html_col_1 . $links_html_col_2;
+
+            $links_html = $links_div_open . $links_html . $links_div_close;
+    
+            return $links_html;
         }
 
     }

@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 class QuestionSchema
 {
+
     public function __construct() {
         add_filter('mce_external_plugins', array($this, 'revious_microdata_add_tinymce_plugins_quest'));
         add_filter('mce_buttons', array($this, 'revious_microdata_register_buttons'));
@@ -29,6 +30,7 @@ class QuestionSchema
     public static function domande_e_risposte_handler($atts, $content = null)
     {
         //	add_filter('run_wptexturize', '__return_false');
+        //var_dump(class_exists('ACF'));exit;
         $result = "\n\n";
         $result .= "<!--adinj_exclude_start-->\n";
         $jsonIniziale = str_replace(
@@ -76,9 +78,11 @@ TAG;
                 $question_array_json[] = QuestionSchema::RenderJson($question, $answer);
                 $question_array_html[] = QuestionSchema::RenderHTML($question, $answer);
 
+                //var_dump(class_exists('ACF'));exit;
                 if (class_exists('ACF')) {
                     update_field("domanda_{$i}", $question);
                     update_field("risposta_{$i}", $answer);
+                    $i++;
                 }
             }
         }
@@ -98,12 +102,14 @@ TAG;
         //Chiusura Json
         $result .= <<<TAG
 ]} </script>
+
 TAG;
 
         $result .= <<<TAG
 
 <h3 id="DomandeERisposte">Domande frequenti</h3> 
 <div class="schema-faq-section">
+
 TAG;
         $htmlDomande = implode("", $question_array_html);
         $result .= $htmlDomande;

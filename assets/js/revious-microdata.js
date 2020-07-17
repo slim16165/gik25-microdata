@@ -104,14 +104,16 @@ var createArr = (n) => {
       { type: "label", text: "Domanda" },
       {
         type: "textbox",
-        name: `domanda${i + 1}`,
+        // name: `domanda${i + 1}`,
+        name: `domanda${i}`,
         multiline: true,
         style: "width: 100%",
       },
       { type: "label", text: "Risposta" },
       {
         type: "textbox",
-        name: `risposta${i + 1}`,
+        // name: `risposta${i + 1}`,
+        name: `risposta${i}`,
         multiline: true,
         style: "width: 100%",
       }
@@ -134,12 +136,13 @@ var handleQuesData = (data, n) => {
   var quesdata = "[md_domande_e_risposte]<br/>";
 
   var domande_risposte = [];
-  var i = 0;
-  i < n;
-  i++;
-  {
-    var domanda_i = encodeHTML(data[`domanda${i + 1}`]);
-    var risposta_i = encodeHTML(data[`risposta${i + 1}`]);
+  // var i = 0; i < n; i++;
+  // console.log(i);// alert(i);
+  for (var i = 0; i < n; i++) {
+    // var domanda_i = encodeHTML(data[`domanda${i + 1}`]);
+    // var risposta_i = encodeHTML(data[`risposta${i + 1}`]);
+    var domanda_i = encodeHTML(data[`domanda${i}`]);
+    var risposta_i = encodeHTML(data[`risposta${i}`]);
 
     domanda_i = JSON.stringify(domanda_i);
     risposta_i = JSON.stringify(risposta_i);
@@ -154,7 +157,9 @@ var handleQuesData = (data, n) => {
       );
     }
   }
+
   quesdata += domande_risposte.join(",<br/>");
+
   return quesdata + "<br/>[/md_domande_e_risposte]";
 };
 
