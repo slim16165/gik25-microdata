@@ -164,7 +164,7 @@ add_action('wp_enqueue_scripts', 'mdpb_scripts_styles');
 define('PLUGIN_NAME_PREFIX', 'md_');
 
 // add_filter('parse_query', 'wh_hideOthersRolePost');
-add_filter('parse_query', 'md_hide_others_roles_posts');
+//add_filter('parse_query', 'md_hide_others_roles_posts');
 
 // function wh_hideOthersRolePost($query) {
 function md_hide_others_roles_posts($query) {
@@ -239,3 +239,18 @@ function md_hide_others_roles_posts($query) {
     }
 
 }
+
+function md_scripts_styles()
+{
+    // wp_register_style('md-admin-fa-styles', plugins_url('/gik25-microdata/assets/css/all.min.css'), array(), '', 'all');
+    // //fontawesome.min
+    //wp_register_style('md-admin-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), array(), '', 'all');
+    //fontawesome.min
+    //https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css
+    wp_register_style('md-admin-fa-styles', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css');
+    wp_enqueue_style('md-admin-fa-styles');
+
+    //wp_register_style('md-admin-fa-styles', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css');
+}
+add_action('admin_init', 'md_scripts_styles');
+

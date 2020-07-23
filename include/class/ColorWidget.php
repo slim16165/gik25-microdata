@@ -191,7 +191,7 @@ EOF;
 
 
     public static function defineHTML($post)
-    { ?>
+    {?>
         <div class="swiper-container">
             <div class="swiper-wrapper text-center">
 
@@ -294,6 +294,4 @@ TAG;
 
     }
 }
-
 ?>
-

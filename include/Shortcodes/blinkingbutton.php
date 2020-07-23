@@ -8,6 +8,8 @@ class MicrodataBlinkingButton {
         add_shortcode(PLUGIN_NAME_PREFIX . 'blinkingbutton', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'mdbb_styles'));
         add_action('wp_enqueue_scripts', array($this, 'mdbb_scripts'));
+        add_filter('mce_external_plugins', array($this, 'mdbb_register_plugin'));
+        add_filter('mce_buttons', array($this, 'mdbb_register_button'));
     }
 
     public function shortcode($atts, $content = null) {
@@ -49,6 +51,16 @@ ABC;
     public function mdbb_scripts() {
         wp_register_script('mdbb-script', plugins_url('/gik25-microdata/assets/js/mdbb.js'), array('jquery'));
         wp_enqueue_script('mdbb-script');
+    }
+
+    public function mdbb_register_plugin($plugin_array) {
+        $plugin_array['md_blinkingbutton'] = plugins_url('/gik25-microdata/assets/js/blinkingbutton.js');
+        return $plugin_array;
+    }
+
+    public function mdbb_register_button($buttons) {
+        array_push($buttons, 'md_blinkingbutton-menu');
+        return $buttons;
     }
 
 }
