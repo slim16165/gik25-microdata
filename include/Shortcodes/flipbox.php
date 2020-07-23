@@ -7,6 +7,8 @@ class MicrodataFlipbox {
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'flipbox', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'mdfb_styles'));
+        add_filter('mce_external_plugins', array($this, 'mdfb_register_plugin'));
+        add_filter('mce_buttons', array($this, 'mdfb_register_button'));
     }
 
     public function shortcode($atts, $content = null) {
@@ -52,6 +54,16 @@ ABC;
         wp_register_style('mdfb-fa-styles', plugins_url('/gik25-microdata/assets/css/all.min.css'), array(), '5.13.1', 'all');
         wp_enqueue_style('mdfb-styles');
         wp_enqueue_style('mdfb-fa-styles');
+    }
+
+    public function mdfb_register_plugin($plugin_array) {
+        $plugin_array['md_flipbox'] = plugins_url('/gik25-microdata/assets/js/flipbox.js');
+        return $plugin_array;
+    }
+    
+    public function mdfb_register_button($buttons) {
+        array_push($buttons, 'md_flipbox-menu');
+        return $buttons;
     }
 
 }

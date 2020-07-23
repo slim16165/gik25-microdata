@@ -7,6 +7,8 @@ class MicrodataSlidingbox {
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'slidingbox', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'mdsb_styles'));
+        add_filter('mce_external_plugins', array($this, 'mdsb_register_plugin'));
+        add_filter('mce_buttons', array($this, 'mdsb_register_button'));
     }
 
     public function shortcode($atts, $content = null) {
@@ -46,6 +48,16 @@ AAA;
         wp_register_style('mdsb-fa-styles', plugins_url('/gik25-microdata/assets/css/all.min.css'), array(), '5.13.1', 'all');
         wp_enqueue_style('mdsb-styles');
         wp_enqueue_style('mdsb-fa-styles');
+    }
+
+    public function mdsb_register_plugin($plugins) {
+        $plugins['md_slidingbox'] = plugins_url('/gik25-microdata/assets/js/slidingbox.js');
+        return $plugins;
+    }
+
+    public function mdsb_register_button($buttons) {
+        array_push($buttons, 'md_slidingbox-menu');
+        return $buttons;
     }
 
 }
