@@ -7,8 +7,8 @@ class Prezzo {
 
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'prezzo', array($this, 'shortcode'));
-        add_filter('mce_external_plugins', array($this, 'revious_microdata_add_tinymce_plugins'));
-        add_filter('mce_buttons', array($this, 'revious_microdata_register_prezzo_buttons'));
+        add_filter('mce_external_plugins', array($this, 'mdp_register_plugin'));
+        add_filter('mce_buttons', array($this, 'mdp_register_button'));
     }
 
     public function shortcode($atts, $content = null) {
@@ -23,14 +23,14 @@ EOF
             ."</span>";
     }
 
-    public function revious_microdata_add_tinymce_plugins($plugin_array) {
-        $plugins_url = plugins_url('gik25-microdata/assets/js/revious-microdata.js', 'revious-microdata');
-        $plugin_array['revious_microdata'] = $plugins_url;
+    public function mdp_register_plugin($plugin_array) {
+        $plugins_url = plugins_url('gik25-microdata/assets/js/prezzo.js');
+        $plugin_array['md_prezzo'] = $plugins_url;
         return $plugin_array;
     }
 
-    public function revious_microdata_register_prezzo_buttons($buttons) {
-        array_push($buttons, 'md_prezzo_btn');
+    public function mdp_register_button($buttons) {
+        array_push($buttons, 'md_prezzo-menu');
         return $buttons;
     }
 

@@ -21,7 +21,6 @@
 
       ed.addButton("md_slidingbox-menu", {
         border: "1 1 1 1",
-        // text: "Boxinfo",
         text: "Sliding Box",
         tooltip: "Insert Sliding Box shortcode",
         //icon: true,

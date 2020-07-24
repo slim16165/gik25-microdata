@@ -50,9 +50,9 @@ AAA;
         wp_enqueue_style('mdsb-fa-styles');
     }
 
-    public function mdsb_register_plugin($plugins) {
-        $plugins['md_slidingbox'] = plugins_url('/gik25-microdata/assets/js/slidingbox.js');
-        return $plugins;
+    public function mdsb_register_plugin($plugin_array) {
+        $plugin_array['md_slidingbox'] = plugins_url('/gik25-microdata/assets/js/slidingbox.js');
+        return $plugin_array;
     }
 
     public function mdsb_register_button($buttons) {

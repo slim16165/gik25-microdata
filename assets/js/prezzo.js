@@ -1,5 +1,11 @@
+/* ======================================
+ *
+ *
+ * ======================================
+ */
+
 (function () {
-  tinymce.create("tinymce.plugins.md_blinkingbutton", {
+  tinymce.create("tinymce.plugins.md_prezzo", {
     /**
      * Initializes the plugin, this will be executed after the plugin has been created.
      * This call is done before the editor instance has finished it's initialization so use the onInit event
@@ -9,28 +15,25 @@
      * @param {string} url Absolute URL to where the plugin is located.
      */
     init: function (ed, url) {
-      ed.addCommand("md_blinkingbutton", function () {
+      ed.addCommand("md_prezzo", function () {
         var selected_text = ed.selection.getContent();
         var return_text = "";
         return_text =
-          '[md_blinkingbutton fa_icon="fa fa-bars" url="" text="Sample Blinking Button"]' +
+          "[md_prezzo]" +
           selected_text.replace(/<\/?p[^>]*>/g, " ") +
-          "[/md_blinkingbutton]<br/><br/>";
+          "[/md_prezzo]";
         ed.execCommand("mceInsertContent", 0, return_text);
       });
 
-      ed.addButton("md_blinkingbutton-menu", {
+      ed.addButton("md_prezzo-menu", {
         border: "1 1 1 1",
-        text: "Blinking Button",
-        tooltip: "Insert blinking button shortcode",
-        //icon: true,
-        icon: " fa fa-info-circle",
-        //fa fa-info-circle
-        //image: url + "./../images/quote-left.png",
+        text: "Prezzo",
+        tooltip: "Aggiunge i microdata di schema utili a Google",
+        icon: true,
+        image: url + "/quote-left.png",
         size: "small",
         onclick: function () {
-          ed.execCommand("md_blinkingbutton");
-          return;
+          ed.execCommand("md_prezzo");
         },
       });
     },
@@ -57,18 +60,15 @@
      */
     getInfo: function () {
       return {
-        longname: "md_blinkingbutton",
+        longname: "md_prezzo",
         author: "Revious",
         authorurl: "",
         infourl: "",
-        version: "1.7.5",
+        version: "1.7.6",
       };
     },
   });
 
   // Register plugin
-  tinymce.PluginManager.add(
-    "md_blinkingbutton",
-    tinymce.plugins.md_blinkingbutton
-  );
+  tinymce.PluginManager.add("md_prezzo", tinymce.plugins.md_prezzo);
 })();
