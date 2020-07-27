@@ -43,10 +43,10 @@ ABC;
         wp_enqueue_style('mdpb-styles');
         // wp_register_style('revious-microdata', plugins_url('/gik25-microdata/assets/css/revious-micrrodata.css'), array(), '', 'all');
         // wp_enqueue_style('revious-microdata');
-        wp_register_script('mdpb-script', plugins_url('/gik25-microdata/assets/js/mdpb.js'), array('jquery'));
+        wp_register_script('mdpb-script', plugins_url('/gik25-microdata/assets/js/progressbar.js'), array('jquery'));
         wp_enqueue_script('mdpb-script');
     }
 
 }
 
-$microdata_progressbar = new MicrodataProgressbar();
+//$microdata_progressbar = new MicrodataProgressbar();

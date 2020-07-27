@@ -38,7 +38,7 @@ class Boxinformativo {
     }
 
     public function boxinformativo_add_buttons($plugin_array) {
-        $plugin_array['Revious_boxinfo'] = plugins_url('/gik25-microdata/assets/js/Revious_boxinfo.js');
+        $plugin_array['Revious_boxinfo'] = plugins_url('/gik25-microdata/assets/js/boxinfo.js');
         return $plugin_array;
     }
     
