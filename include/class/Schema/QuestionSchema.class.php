@@ -11,7 +11,7 @@ class QuestionSchema
     }
 
     public function revious_microdata_add_tinymce_plugins_quest($plugin_array) {
-        $plugin_array['QuestionAndAnswer'] = plugins_url('../../../assets/js/revious-microdata.js', __FILE__);
+        $plugin_array['QuestionAndAnswer'] = plugins_url('../../../assets/js/qa.js', __FILE__);
         return $plugin_array;
     }
 

@@ -26,7 +26,7 @@
         //icon: true,
         icon: " fa fa-info-circle",
         //fa fa-info-circle
-        //image: url + "./../images/quote-left.png",
+        image: url + "./../images/icon-sliding-box.png",
         size: "small",
         onclick: function () {
           ed.execCommand("md_slidingbox");

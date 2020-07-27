@@ -254,3 +254,36 @@ function md_scripts_styles()
 }
 add_action('admin_init', 'md_scripts_styles');
 
+add_action('save_post', 'add_permalink_to_posts_table', 100, 2);
+function add_permalink_to_posts_table($id, $post) {
+
+    global $wpdb;
+    $permalink_col_exists = false;
+    $table = $wpdb->prefix . 'posts';
+    // $q = 'DESCRIBE ' . $wpdb->prefix . 'posts';
+    $q = 'DESCRIBE ' . $table;
+    //$res = $wpdb->query($q);
+    $res = $wpdb->get_results($q, 'OBJECT');
+    //var_dump($res);exit;
+    foreach($res as $tbl_col) {
+        if($tbl_col->Field == 'permalink') {
+            //var_dump($tbl_col->Field);exit;
+            $permalink_col_exists = true;
+        }
+    }
+    // var_dump($wpdb);exit;
+    if($permalink_col_exists) {
+        //update 'permalink' col
+        $post_permalink = get_permalink($post->ID);
+        //$table = $wpdb->prefix;
+        $data = array(
+            'permalink' => $post_permalink
+        );
+        $where = array(
+            'ID' => $post->ID
+        );
+        // $wpdb->update($table, $data, $where, $format = null, $where_format = null);
+        $wpdb->update($table, $data, $where);
+    }
+
+}

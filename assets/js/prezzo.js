@@ -30,7 +30,9 @@
         text: "Prezzo",
         tooltip: "Aggiunge i microdata di schema utili a Google",
         icon: true,
-        image: url + "/quote-left.png",
+        //icon: ' fa fa-eur',
+        icon: " fa fa-money",
+        //image: url + "/quote-left.png",
         size: "small",
         onclick: function () {
           ed.execCommand("md_prezzo");

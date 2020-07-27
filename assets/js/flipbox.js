@@ -9,7 +9,6 @@
      * @param {string} url Absolute URL to where the plugin is located.
      */
     init: function (ed, url) {
-      // Left-Aligned Pullquote
       ed.addCommand("md_flipbox", function () {
         var selected_text = ed.selection.getContent();
         var return_text = "";
@@ -26,10 +25,10 @@
         // text: "Boxinfo",
         text: "Flipbox",
         tooltip: "Insert flipbox shortcode",
-        //icon: true,
+        icon: true,
         icon: " fa fa-info-circle",
         //fa fa-info-circle
-        //image: url + "./../images/quote-left.png",
+        image: url + "./../images/icon-flipbox.png",
         size: "small",
         onclick: function () {
           ed.execCommand("md_flipbox");
