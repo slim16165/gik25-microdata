@@ -6,6 +6,7 @@ class Perfectpullquote {
     
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'perfectpullquote', array($this, 'shortcode'));
+        add_shortcode('perfectpullquote', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'perfectpullquote_styles'));
         add_filter('mce_external_plugins', array($this, 'perfectpullquote_add_buttons'));
         add_filter('mce_buttons', array($this, 'perfectpullquote_register_buttons'));
