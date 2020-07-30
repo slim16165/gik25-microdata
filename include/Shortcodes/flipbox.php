@@ -57,7 +57,7 @@ ABC;
     }
 
     public function mdfb_register_plugin($plugin_array) {
-        $plugin_array['md_flipbox'] = plugins_url('/gik25-microdata/assets/js/flipbox.js');
+        $plugin_array['md_flipbox'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/flipbox.js');
         return $plugin_array;
     }
     

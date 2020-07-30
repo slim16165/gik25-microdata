@@ -58,7 +58,7 @@ EOF;
     }
 
     public function mdt_register_plugin($plugin_array) {
-        $plugins_url = plugins_url('gik25-microdata/assets/js/telefono.js');
+        $plugins_url = plugins_url('gik25-microdata/assets/js/TinyMCE/telefono.js');
         $plugin_array['md_telefono'] = $plugins_url;
         return $plugin_array;
     }

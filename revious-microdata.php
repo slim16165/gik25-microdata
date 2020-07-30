@@ -3,7 +3,7 @@
 Plugin Name: Revious Microdata
 Plugin URI:
 Description: Add beautifully styled quotes to your Wordpress posts
-Version:     1.1.1
+Version:     1.1.2
 Author:      Gianluigi Salvi
  */
 

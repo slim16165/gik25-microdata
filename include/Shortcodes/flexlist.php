@@ -31,3 +31,4 @@ class Flexlist {
 }
 
 $flexlist = new Flexlist();
+//TODO: the button for TinyMCE is missing

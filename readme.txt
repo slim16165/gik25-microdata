@@ -20,7 +20,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog ##
 
-### 1.1.1 ###
+### 1.1.2 ###
+* Refactored TinyMCE js to a subfolder
 
+### 1.1.1 ###
 * Renamed progress bar to a more speaking name
 

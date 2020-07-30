@@ -20,7 +20,7 @@ class Youtube {
     }
 
     public function mdy_register_plugin($plugin_array) {
-        $plugin_array['md_youtube'] = plugins_url('/gik25-microdata/assets/js/youtube.js');
+        $plugin_array['md_youtube'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/youtube.js');
         return $plugin_array;
     }
 

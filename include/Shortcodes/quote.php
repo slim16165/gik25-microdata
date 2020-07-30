@@ -17,4 +17,5 @@ class Quote {
 
 }
 
+//TODO: manca il pulsante per TinyMCE
 $quote = new Quote();

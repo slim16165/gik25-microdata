@@ -54,7 +54,7 @@ ABC;
     }
 
     public function mdbb_register_plugin($plugin_array) {
-        $plugin_array['md_blinkingbutton'] = plugins_url('/gik25-microdata/assets/js/blinkingbutton.js');
+        $plugin_array['md_blinkingbutton'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/blinkingbutton.js');
         return $plugin_array;
     }
 

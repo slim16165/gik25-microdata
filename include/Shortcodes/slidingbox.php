@@ -51,7 +51,7 @@ AAA;
     }
 
     public function mdsb_register_plugin($plugin_array) {
-        $plugin_array['md_slidingbox'] = plugins_url('/gik25-microdata/assets/js/slidingbox.js');
+        $plugin_array['md_slidingbox'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/slidingbox.js');
         return $plugin_array;
     }
 

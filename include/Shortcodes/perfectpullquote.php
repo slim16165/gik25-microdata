@@ -123,7 +123,7 @@ class Perfectpullquote {
     }
 
     public function perfectpullquote_add_buttons($plugin_array) {
-        $plugin_array['gik25_quotes'] = plugins_url( '/gik25-microdata/assets/js/gik25-quotes.js' );
+        $plugin_array['gik25_quotes'] = plugins_url( '/gik25-microdata/assets/js/TinyMCE/quotes.js' );
         return $plugin_array;
     }
     

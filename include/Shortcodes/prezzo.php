@@ -25,7 +25,7 @@ EOF
     }
 
     public function mdp_register_plugin($plugin_array) {
-        $plugins_url = plugins_url('gik25-microdata/assets/js/prezzo.js');
+        $plugins_url = plugins_url('gik25-microdata/assets/js/TinyMCE/prezzo.js');
         $plugin_array['md_prezzo'] = $plugins_url;
         return $plugin_array;
     }
