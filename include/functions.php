@@ -163,81 +163,51 @@ add_action('wp_enqueue_scripts', 'mdpb_scripts_styles');
 
 define('PLUGIN_NAME_PREFIX', 'md_');
 
-// add_filter('parse_query', 'wh_hideOthersRolePost');
+
+
+//Limit the visibility of some post for specific users
 //add_filter('parse_query', 'md_hide_others_roles_posts');
-
-// function wh_hideOthersRolePost($query) {
-function md_hide_others_roles_posts($query) {
+function md_hide_others_roles_posts($query)
+{
     global $pagenow;
-    global $current_user;
 
-    // $editor_1_id = 2;
-    // $editor_2_id = 3;
-    $editor_1_id = 199;
-    $editor_2_id = 200;
-
-    // $my_custom_post_type = 'companies'; // <-- replace it with your post_type slug
-    // $my_custom_role = ['members', 'recruiter']; // <-- replace it with your role slug
-    $my_custom_post_type = 'post'; // <-- replace it with your post_type slug
-    //$my_custom_role = ['editor']; // <-- replace it with your role slug
-    // $my_custom_role = ['administrator', 'editor']; 
-    $my_custom_role = ['editor']; 
-
-    //if user is not logged in or the logged in user is admin then dont do anything
-    if (!is_user_logged_in() && !is_admin())
+    //if user is not logged exit
+    if (!is_user_logged_in())
         return;
 
-    $user_roles = $current_user->roles;
-    //var_dump($current_user->roles);exit;
-    $user_role = array_shift($user_roles);
+    $limited_users = array(/*'indexo3', */'Gerardatt', 'GiuseppeAmbrosio', 'SaraMarchiano');
+    $authors_post_to_hide = array(/*4,*/ 7 /* 'Gianluigi Salvi'*/); //TODO: finish to implement the array version
 
-    if(!in_array($user_role, $my_custom_role))
+    $current_user = wp_get_current_user();
+
+    if (!in_array($current_user->nickname, $limited_users))
         return;
 
-    $current_user_id = get_current_user_id();
-    //var_dump($current_user_id);exit;
+    list($users, $author__in) = GetAllUsersButExcluded($authors_post_to_hide);
 
-    if($current_user_id == $editor_1_id) {
-        $user_excluded = $editor_2_id;
+    if (count($users))
+    {
+        if ($pagenow == 'edit.php')
+        {
+            $query->query_vars['author__in'] = $author__in;
+        }
     }
-    elseif ($current_user_id == $editor_2_id) {
-        $user_excluded = $editor_1_id;
-    }
-    else {
-        return;
-    }
-    
+}
 
-    $users_excluded = array($user_excluded);
-
+function GetAllUsersButExcluded(array $authors_post_to_hide): array
+{
     $user_args = [
-        //'role' => $user_role,
         'fields ' => 'ID',
-        'exclude' => $users_excluded
+        'exclude' => $authors_post_to_hide
     ];
-
-    //getting all the user_id with the specific role.
     $users = get_users($user_args);
-    //print_r($users);
 
-    if (!count($users)) {
-        return;
-    }
-    $author__in = []; // <- variable to store all User ID with specific role
-    foreach ($users as $user) {
+    $author__in = [];
+    foreach ($users as $user)
+    {
         $author__in[] = $user->ID;
     }
-
-    // if (is_admin() && $pagenow == 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] == $my_custom_post_type){
-    //     //retriving post from specific authors which has the above mentioned role.
-    //     $query->query_vars['author__in'] = $author__in;
-    // }
-
-    if (is_admin() && $pagenow == 'edit.php') {
-        //retriving post from specific authors which has the above mentioned role.
-        $query->query_vars['author__in'] = $author__in;
-    }
-
+    return array($users, $author__in);
 }
 
 function md_scripts_styles()
@@ -252,11 +222,12 @@ function md_scripts_styles()
 
     //wp_register_style('md-admin-fa-styles', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css');
 }
+
 add_action('admin_init', 'md_scripts_styles');
 
 add_action('save_post', 'add_permalink_to_posts_table', 100, 2);
-function add_permalink_to_posts_table($id, $post) {
-
+function add_permalink_to_posts_table($id, $post)
+{
     global $wpdb;
     $permalink_col_exists = false;
     $table = $wpdb->prefix . 'posts';
@@ -265,14 +236,17 @@ function add_permalink_to_posts_table($id, $post) {
     //$res = $wpdb->query($q);
     $res = $wpdb->get_results($q, 'OBJECT');
     //var_dump($res);exit;
-    foreach($res as $tbl_col) {
-        if($tbl_col->Field == 'permalink') {
+    foreach ($res as $tbl_col)
+    {
+        if ($tbl_col->Field == 'permalink')
+        {
             //var_dump($tbl_col->Field);exit;
             $permalink_col_exists = true;
         }
     }
     // var_dump($wpdb);exit;
-    if($permalink_col_exists) {
+    if ($permalink_col_exists)
+    {
         //update 'permalink' col
         $post_permalink = get_permalink($post->ID);
         //$table = $wpdb->prefix;
@@ -285,5 +259,4 @@ function add_permalink_to_posts_table($id, $post) {
         // $wpdb->update($table, $data, $where, $format = null, $where_format = null);
         $wpdb->update($table, $data, $where);
     }
-
 }
