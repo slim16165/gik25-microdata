@@ -17,7 +17,7 @@ jQuery(document).ready(function ($) {
     var firstNavHtml = firstNav.html();
     // console.log(firstNav);
     // console.log(firstNavHtml);
-    console.log(firstNavHtml + pb);
+    //console.log(firstNavHtml + pb);
     var firstNavNewHtml = firstNavHtml + pb;
     firstNav.html(firstNavNewHtml);
     // navEls.each(function (i) {
