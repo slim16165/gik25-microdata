@@ -20,6 +20,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog ##
 
+### 1.1.3 ###
+* Fixed the path of faq.js
+
 ### 1.1.2 ###
 * Refactored TinyMCE js to a subfolder
 

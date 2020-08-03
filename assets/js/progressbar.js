@@ -33,19 +33,19 @@ jQuery(document).ready(function ($) {
     //$("#md-progress-bar-container").remove();
   }
 
-  var siteHeaderHeight = $("header#site-header").height();
-  var progressBarHeight = $(".md-progress-bar-container").height();
+  let siteHeaderHeight = $("header#site-header").height();
+  let progressBarHeight = $(".md-progress-bar-container").height();
 
   $("body").css("marginTop", siteHeaderHeight + progressBarHeight);
 
   $(window).scroll(function () {
-    var windowSrollTop = $(window).scrollTop();
+    let windowSrollTop = $(window).scrollTop();
 
-    var height =
-      document.documentElement.scrollHeight -
-      document.documentElement.clientHeight;
+    let height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
 
-    var scrollRatio = (windowSrollTop / height) * 100;
+    let scrollRatio = (windowSrollTop / height) * 100;
 
     $("#md-progress-bar").css("width", scrollRatio + "%");
   });

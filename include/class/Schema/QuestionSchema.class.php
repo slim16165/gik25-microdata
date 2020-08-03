@@ -11,7 +11,7 @@ class QuestionSchema
     }
 
     public function revious_microdata_add_tinymce_plugins_quest($plugin_array) {
-        $plugin_array['QuestionAndAnswer'] = plugins_url('../../../assets/js/faq.js', __FILE__);
+        $plugin_array['QuestionAndAnswer'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/faq.js');
         return $plugin_array;
     }
 
