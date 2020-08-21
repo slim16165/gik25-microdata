@@ -6,9 +6,11 @@ class MicrodataFlipbox {
 
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'flipbox', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts', array($this, 'mdfb_styles'));
-        add_filter('mce_external_plugins', array($this, 'mdfb_register_plugin'));
-        add_filter('mce_buttons', array($this, 'mdfb_register_button'));
+        add_action('wp_enqueue_scripts',    array($this, 'mdfb_styles'));
+
+        add_action('admin_enqueue_scripts', array($this, 'mdfb_admin_scripts'));
+        add_filter('mce_external_plugins',  array($this, 'mdfb_register_plugin'));
+        add_filter('mce_buttons',           array($this, 'mdfb_register_button'));
     }
 
     public function shortcode($atts, $content = null) {
@@ -51,8 +53,11 @@ ABC;
 
     public function mdfb_styles() {
         wp_register_style('mdfb-styles', plugins_url('/gik25-microdata/assets/css/mdfb.css'), array(), '', 'all');
-        wp_register_style('mdfb-fa-styles', plugins_url('/gik25-microdata/assets/css/all.min.css'), array(), '5.13.1', 'all');
         wp_enqueue_style('mdfb-styles');
+    }
+
+    public function mdfb_admin_scripts() {
+        wp_register_style('mdfb-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), array(), '5.13.1', 'all');
         wp_enqueue_style('mdfb-fa-styles');
     }
 

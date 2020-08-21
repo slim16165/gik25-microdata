@@ -6,17 +6,17 @@ class MicrodataProgressbar {
 
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'progressbar', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts', array($this, 'mdpb_scripts_styles'));
+        add_action('wp_enqueue_scripts', array($this, 'md_progressbar_scripts_styles'));
     }
 
     public function shortcode($atts, $content = null) {
 
-        $mdpb = shortcode_atts(array(
+        $md_progressbar = shortcode_atts(array(
                 'progressbar_speed' => '0.6'
             ), $atts);
 
-        if(isset($mdpb['progressbar_speed']) && !empty($mdpb['progressbar_speed'])) {
-            $progressbar_speed = $mdpb['progressbar_speed'];
+        if(isset($md_progressbar['progressbar_speed']) && !empty($md_progressbar['progressbar_speed'])) {
+            $progressbar_speed = $md_progressbar['progressbar_speed'];
         }
         else {
             $progressbar_speed =  '0.6';
@@ -38,13 +38,13 @@ ABC;
 
     }
 
-    function mdpb_scripts_styles() {
-        wp_register_style('mdpb-styles', plugins_url('/gik25-microdata/assets/css/mdpb.css'), array(), '', 'all');
-        wp_enqueue_style('mdpb-styles');
+    function md_progressbar_scripts_styles() {
+        wp_register_style('md_progressbar-styles', plugins_url('/gik25-microdata/assets/css/md_progressbar.css'), array(), '', 'all');
+        wp_enqueue_style('md_progressbar-styles');
         // wp_register_style('revious-microdata', plugins_url('/gik25-microdata/assets/css/revious-micrrodata.css'), array(), '', 'all');
         // wp_enqueue_style('revious-microdata');
-        wp_register_script('mdpb-script', plugins_url('/gik25-microdata/assets/js/progressbar.js'), array('jquery'));
-        wp_enqueue_script('mdpb-script');
+        wp_register_script('md_progressbar-script', plugins_url('/gik25-microdata/assets/js/progressbar.js'), array('jquery'));
+        wp_enqueue_script('md_progressbar-script');
     }
 
 }

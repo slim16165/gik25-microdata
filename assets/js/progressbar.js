@@ -1,52 +1,54 @@
-jQuery(document).ready(function ($) {
-  if ($("#md-progress-bar-container")) {
-    // var pb = jQuery.parseHTML(
-    //   decodeURI(
-    //     '<div class="md-progress-bar-container" id="md-progress-bar-container"><div class="md-progress-bar" id="md-progress-bar"></div></div>'
-    //   )
-    // );
+jQuery(document).ready(function ($)
+{
+    if ($("#md-progress-bar-container"))
+    {
+        // var pb = jQuery.parseHTML(
+        //   decodeURI(
+        //     '<div class="md-progress-bar-container" id="md-progress-bar-container"><div class="md-progress-bar" id="md-progress-bar"></div></div>'
+        //   )
+        // );
 
-    var pb =
-      '<div class="md-progress-bar-container" id="md-progress-bar-container"><div class="md-progress-bar" id="md-progress-bar"></div></div>';
-    // var pb2 = $("<div />")
-    //   .attr("id", "md-progress-bar-container")
-    //   .addClass("md-progress-bar-container");
-    var navEls = $("nav");
-    var firstNav = $("nav:first");
-    //firstNavEl.hide();
-    var firstNavHtml = firstNav.html();
-    // console.log(firstNav);
-    // console.log(firstNavHtml);
-    //console.log(firstNavHtml + pb);
-    var firstNavNewHtml = firstNavHtml + pb;
-    firstNav.html(firstNavNewHtml);
-    // navEls.each(function (i) {
-    //   if (i == 0) {
-    //     // navEls[i].append(pb);
-    //     //navEls[i].append("<h1>test</h1>");
-    //     console.log(navEls[i].html());
-    //     var firsNavHtml = navEls[i].html();
-    //     firsNavHtml = firsNavHtml + pb;
-    //     navEls[i].html(firsNavHtml);
-    //   }
-    // });
-    //$("#md-progress-bar-container").remove();
-  }
+        const pb =
+            '<div class="md-progress-bar-container" id="md-progress-bar-container"><div class="md-progress-bar" id="md-progress-bar"></div></div>';
+        // var pb2 = $("<div />")
+        //   .attr("id", "md-progress-bar-container")
+        //   .addClass("md-progress-bar-container");
+        const navEls = $("nav");
+        const firstNav = $("nav:first");
+        //firstNavEl.hide();
+        const firstNavHtml = firstNav.html();
+        // console.log(firstNav);
+        // console.log(firstNavHtml);
+        //console.log(firstNavHtml + pb);
+        const firstNavNewHtml = firstNavHtml + pb;
+        firstNav.html(firstNavNewHtml);
+        // navEls.each(function (i) {
+        //   if (i == 0) {
+        //     // navEls[i].append(pb);
+        //     //navEls[i].append("<h1>test</h1>");
+        //     console.log(navEls[i].html());
+        //     var firsNavHtml = navEls[i].html();
+        //     firsNavHtml = firsNavHtml + pb;
+        //     navEls[i].html(firsNavHtml);
+        //   }
+        // });
+        //$("#md-progress-bar-container").remove();
+    }
 
-  let siteHeaderHeight = $("header#site-header").height();
-  let progressBarHeight = $(".md-progress-bar-container").height();
+    let siteHeaderHeight = $("header#site-header").height();
+    let progressBarHeight = $(".md-progress-bar-container").height();
 
-  $("body").css("marginTop", siteHeaderHeight + progressBarHeight);
+    $("body").css("marginTop", siteHeaderHeight + progressBarHeight);
 
-  $(window).scroll(function () {
-    let windowSrollTop = $(window).scrollTop();
+    $(window).scroll(function () {
+        let windowSrollTop = $(window).scrollTop();
 
-    let height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
+        let height =
+            document.documentElement.scrollHeight -
+            document.documentElement.clientHeight;
 
-    let scrollRatio = (windowSrollTop / height) * 100;
+        let scrollRatio = (windowSrollTop / height) * 100;
 
-    $("#md-progress-bar").css("width", scrollRatio + "%");
-  });
+        $("#md-progress-bar").css("width", scrollRatio + "%");
+    });
 });

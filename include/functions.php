@@ -149,17 +149,17 @@ ABC;
 }
 
 
-function mdpb_scripts_styles()
+function md_progressbar_scripts_styles()
 {
-    wp_register_style('mdpb-styles', plugins_url('/gik25-microdata/assets/css/mdpb.css'), array(), '', 'all');
-    wp_enqueue_style('mdpb-styles');
+    wp_register_style('md_progressbar-styles', plugins_url('/gik25-microdata/assets/css/md_progressbar.css'), array(), '', 'all');
+    wp_enqueue_style('md_progressbar-styles');
     wp_register_style('revious-microdata', plugins_url('/gik25-microdata/assets/css/revious-microdata.css'), array(), '', 'all');
     wp_enqueue_style('revious-microdata');
-    wp_register_script('mdpb-script', plugins_url('/gik25-microdata/assets/js/progressbar.js'), array('jquery'));
-    wp_enqueue_script('mdpb-script');
+    wp_register_script('md_progressbar-script', plugins_url('/gik25-microdata/assets/js/progressbar.js'), array('jquery'));
+    wp_enqueue_script('md_progressbar-script');
 }
 
-add_action('wp_enqueue_scripts', 'mdpb_scripts_styles');
+add_action('wp_enqueue_scripts', 'md_progressbar_scripts_styles');
 
 define('PLUGIN_NAME_PREFIX', 'md_');
 
@@ -212,7 +212,7 @@ function GetAllUsersButExcluded(array $authors_post_to_hide): array
 
 function md_scripts_styles()
 {
-    // wp_register_style('md-admin-fa-styles', plugins_url('/gik25-microdata/assets/css/all.min.css'), array(), '', 'all');
+    // wp_register_style('md-admin-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), array(), '', 'all');
     // //fontawesome.min
     //wp_register_style('md-admin-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), array(), '', 'all');
     //fontawesome.min

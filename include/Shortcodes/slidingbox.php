@@ -6,18 +6,20 @@ class MicrodataSlidingbox {
 
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'slidingbox', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts', array($this, 'mdsb_styles'));
-        add_filter('mce_external_plugins', array($this, 'mdsb_register_plugin'));
-        add_filter('mce_buttons', array($this, 'mdsb_register_button'));
+        add_action('wp_enqueue_scripts',    array($this, 'mdsb_styles'));
+
+        add_action('admin_enqueue_scripts', array($this, 'mdsb_admin_scripts'));
+        add_filter('mce_external_plugins',  array($this, 'mdsb_register_plugin'));
+        add_filter('mce_buttons',           array($this, 'mdsb_register_button'));
     }
 
     public function shortcode($atts, $content = null) {
 
-        $mdsb = shortcode_atts(array(
+        $mdsb = shortcode_atts([
                 'fa_icon' => 'fa fa-search',
                 'bg_img' => plugins_url('/gik25-microdata/assets/images/car1.jpg'),
                 'url' => false
-            ), $atts);
+        ], $atts);
 
         if($mdsb['url']) {
             $mdsb_url = $mdsb['url'];
@@ -45,9 +47,12 @@ AAA;
 
     public function mdsb_styles() {
         wp_register_style('mdsb-styles', plugins_url('/gik25-microdata/assets/css/mdsb.css'), array(), '', 'all');
-        wp_register_style('mdsb-fa-styles', plugins_url('/gik25-microdata/assets/css/all.min.css'), array(), '5.13.1', 'all');
         wp_enqueue_style('mdsb-styles');
-        wp_enqueue_style('mdsb-fa-styles');
+    }
+
+    public function mdsb_admin_scripts() {
+        wp_register_style('mdbb-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), [], '5.13.1', 'all');
+        wp_enqueue_style ('mdbb-fa-styles');
     }
 
     public function mdsb_register_plugin($plugin_array) {
