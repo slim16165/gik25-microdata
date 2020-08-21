@@ -260,3 +260,19 @@ function add_permalink_to_posts_table($id, $post)
         $wpdb->update($table, $data, $where);
     }
 }
+
+//// PHP Console autoload
+//$dir = dirname( __FILE__ );
+//if (preg_match('%^.+?/plugins/%imx', $dir, $regs)) {
+//    $pluginsfolder = $regs[0];
+//} else {
+//    $pluginsfolder = "";
+//}
+//
+//require_once $pluginsfolder . 'wp-php-console/vendor/autoload.php';
+//
+//// make PC class available in global PHP scope
+//if ( ! class_exists( 'PC', false ) ) PhpConsole\Helper::register();
+//
+//// send $my_var with tag 'my_tag' to the JavaScript console through PHP Console Server Library and PHP Console Chrome Plugin
+////PhpConsole\Helper::debug( get_term_link( $term ) , 'tag');
