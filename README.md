@@ -22,6 +22,9 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 # Changelog
 
+##### 1.1.5 _(2020-08-22)_
+* Fixed issue with 5px margin in tag body (Progress bar + Elementor) 
+
 ##### 1.1.4 _(2020-08-21)_
 * Renamed progress bar assets to a more speaking name
 * Separated loading of css and js for FE/BE (should be continued)
