@@ -88,6 +88,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-neutri/", "Colori Neutri");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-caldi-freddi-e-neutri/", "Colori Neutri e Freddi");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/abbinamento-colori/", "Abbinamento colori");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/pareti-colorate/", "Pareti colorate");
 
 
     $result .= "</div></div></div>";
