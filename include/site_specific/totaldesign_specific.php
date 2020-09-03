@@ -32,6 +32,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-rosa-antico/", "Colore Rosa Antico");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde/", "Colore Verde");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-giallo/", "Colore Giallo");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/giallo-ocra/", "Colore Giallo Ocra");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-oro/", "Colore Oro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ciano/", "Colore Ciano");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-corallo/", "Colore Corallo");
