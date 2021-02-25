@@ -8,6 +8,8 @@ add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler_2');
 add_shortcode('sedi_inps', 'sedi_inps_handler');
 add_shortcode('link_vitamine', 'link_vitamine_handler');
 add_shortcode('link_diete', 'link_diete_handler');
+add_shortcode('link_dimagrimento', 'link_dimagrimento_handler');
+
 
 /**
  * @param $atts
@@ -97,6 +99,284 @@ function link_analisi_sangue_handler_2($atts, $content = null)
 	$result .= "</ul>";
 	return $result;
 }
+
+function link_dimagrimento_handler($atts, $content = null)
+{
+    $l = new ListOfPostsHelper(false, true, false);
+    $links_data = array(
+        array(
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-pancia.htm",
+            'nome' => "Dimagrire pancia"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/diete/come-dimagrire-metodi.htm",
+            'nome' => "Come dimagrire"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-in-menopausa.htm",
+            'nome' => "Dimagrire in Menopausa"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/i-migliori-integratori-e-farmaci-per-perdere-peso.htm",
+            'nome' => "Integratori per dimagrire"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/estetica-cosmesi/dimagrire-in-fretta-senza-diete-criolipolisi-o-aqualyx.htm",
+            'nome' => "Dimagrire in fretta"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-corsa-programma.htm",
+            'nome' => "Dimagrire correndo"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/maternita/dieta-in-gravidanza.htm",
+            'nome' => "Dimagrire in gravidanza"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/non-riesco-a-dimagrire.htm",
+            'nome' => "Non riesco a dimagrire: cause"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-con-la-cyclette-trucchi-e-programma-per-perdere-peso-pedalando.htm",
+            'nome' => "Dimagrire con la cyclette"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/diete/come-dimagrire-i-fianchi.htm",
+            'nome' => "Dimagrire i fianchi"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-in-fretta.htm",
+            'nome' => "Dimagrire 5 o 10 kg"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/tutti-i-farmaci-e-gli-integratori-efficaci-per-dimagrire-velocemente.htm",
+            'nome' => "Farmaci per dimagrire"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/alimentazione/cibi-che-fanno-dimagrire-calorie-negative.htm",
+            'nome' => "Cibi che fanno dimagrire"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-gambe-e-cosce.htm",
+            'nome' => "Dimagrire cosce"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-camminando.htm",
+            'nome' => "Dimagrire camminando"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-velocemente.htm",
+            'nome' => "Dimagrire in una settimana"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-come-trovare-forza-volonta.htm",
+            'nome' => "Trucchi per dimagrire"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/total-crunch-funziona.htm",
+            'nome' => "Dimagrire con Total Crunch"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/come-allenarsi-a-casa.htm",
+            'nome' => "Allenarsi a casa"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/come-dimagrisco.htm",
+            'nome' => "Come dimagrisco in fretta?"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/calcolare-peso-forma.htm",
+            'nome' => "Calcolo peso forma e peso ideale"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/stretching.htm",
+            'nome' => "Stretching"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/allenamento-pha.htm",
+            'nome' => "Allenamento PHA"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/kayla-itsines-bgg.htm",
+            'nome' => "Allenamento BGG"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/cellulite/esercizi-anticellulite-gambe-cosce-glutei-braccia.htm",
+            'nome' => "Esercizi anticellulite"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/spinning.htm",
+            'nome' => "Spinning"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/pillole-dimagranti-davvero-efficaci-esistono.htm",
+            'nome' => "Pillole dimagranti efficaci"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/home-fitness.htm",
+            'nome' => "Home fitness"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/diete/perdere-3-kg-in-una-settimana.htm",
+            'nome' => "Perdere 3 kg in una settimana"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/5-migliori-app-per-allenarsi.htm",
+            'nome' => "App per allenarsi a casa"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/estetica-cosmesi/cellulite-i-10-trattamenti-di-medicina-estetica-piu-efficaci-nel-2015.htm",
+            'nome' => "Come eliminare la cellulite"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/allenamento-funzionale.htm",
+            'nome' => "Allenamento funzionale"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/cerotti-per-dimagrire.htm",
+            'nome' => "Cerotti dimagranti"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-le-braccia.htm",
+            'nome' => "Esercizi braccia"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/esercizi-addominali.htm",
+            'nome' => "Esercizi addominali"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/aerobica-e-anaerobica.htm",
+            'nome' => "Attività aerobica e anaerobica"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/dieta-perdere-5-kg-in-1-mese.htm",
+            'nome' => "Perdere 5 kg in un mese"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/esercizi-trx.htm",
+            'nome' => "Esercizi TRX"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/lo-yoga-modifica-il-genoma.htm",
+            'nome' => "Yoga"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/massa-magra.htm",
+            'nome' => "Massa magra"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/5-consigli-per-allenarsi-come-un-professionista.htm",
+            'nome' => "Allenarsi in maniera efficace"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/meditazione.htm",
+            'nome' => "Meditazione"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/massa-corporea-indice.htm",
+            'nome' => "Indice di Massa corporea"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/misurare-il-grasso-corporeo-per-dimagrire-migliorando-le-diete.htm",
+            'nome' => "Massa grassa"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/perdere-peso-e-pancia-piatta-velocemente.htm",
+            'nome' => "Sgonfiare la pancia"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/bellezza/come-rassodare-il-seno.htm",
+            'nome' => "Rassodare il seno"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/tabata-training.htm",
+            'nome' => "Allenamento Tabata"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/hiit.htm",
+            'nome' => "Allenamento HIIT"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/integratori-termogenici.htm",
+            'nome' => "Integratori termogenici"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/integratori/integratori-palestra.htm",
+            'nome' => "Integratori palestra"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/bcaa-gli-aminoacidi-ramificati-leucina-isoleucina-e-valina.htm",
+            'nome' => "BCAA"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/come-allenarsi-con-manubri.htm",
+            'nome' => "Allenarsi con i manubri"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/esercizi-corpo-libero-casa.htm",
+            'nome' => "Esercizi a corpo libero"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/allenarsi-con-elastici.htm",
+            'nome' => "Allenarsi con gli elastici"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/allenare-glutei-a-casa.htm",
+            'nome' => "Allenare i glutei"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/camminata-veloce.htm",
+            'nome' => "Camminata Veloce"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/bruciare-i-grassi.htm",
+            'nome' => "Bruciare i grassi velocemente"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/perdere-peso-in-una-settimana.htm",
+            'nome' => "Come perdere peso in una settimana"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/panca-palestra.htm",
+            'nome' => "Panca da palestra"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/panca-addominale.htm",
+            'nome' => "Panca addominali"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/cellulite/cellulite-rimedi-naturali.htm",
+            'nome' => "Rimedi Naturali cellulite"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/estetica-cosmesi/smagliature-cause.htm",
+            'nome' => "Smagliature"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/estetica-cosmesi/come-eliminare-le-smagliature.htm",
+            'nome' => "Come eliminare le smagliature"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/estetica-cosmesi/cellulite-i-10-trattamenti-di-medicina-estetica-piu-efficaci-nel-2015.htm",
+            'nome' => "Trattamenti contro la cellulite"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/cellulite/cellulite-le-cause-i-rimedi-le-novita-per-la-cura-nel-2018.htm",
+            'nome' => "Cellulite"
+        )
+    );
+
+    $result = "<h3>Lista dei principali metodi per dimagrire e tonificare</h3>
+		<div class='thumbnail-list'>";
+
+    $result .= "<ul class='thumbnail-list'>";
+
+    $result .= $l->GetLinksWithImages($links_data);
+
+    $result .= "</ul></div>";
+    return $result;
+}
+
 
 function link_vitamine_handler($atts, $content = null)
 {
