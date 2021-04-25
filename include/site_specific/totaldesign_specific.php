@@ -4,6 +4,11 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+if (function_exists("register_sidebar")) {
+    register_sidebar();
+}
+
+
 OptimizationHelper::ConditionalLoadJsCss_Colori();
 
 add_shortcode('link_colori', 'link_colori_handler');
@@ -28,6 +33,8 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde-acqua/", "Colore Verde Acqua");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde-salvia/", "Colore Verde Salvia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/color-petrolio-verde/", "Color Petrolio");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/verde-tiffany/", "Colore Verde Tiffany");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/verde-smeraldo/", "Colore Verde Smeraldo");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-turchese/", "Color Turchese");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/grigio-chiaro/", "Colore Grigio Chiaro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-bianco/", "Colore Bianco");
@@ -66,7 +73,6 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu/", "Colore Blu");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-fucsia/", "Colore Fucsia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ecru/", "Colore Ecru");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/verde-tiffany/", "Colore Verde Tiffany");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-magenta/", "Colore Magenta");
     $result .= " </div></div>
         <p>
@@ -75,6 +81,7 @@ function link_colori_handler($atts, $content = null)
         <div class='row'>
             <div class='row__inner'>";
 
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-pantone-2021/", "Classic Giallo Pantone 2021");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/classic-blue-pantone/", "Classic Blue Pantone 2020");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pantone/", "Colori Pantone");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pantone-2016/", "Colori Pantone 2016");
@@ -90,6 +97,7 @@ function link_colori_handler($atts, $content = null)
             <div class='row__inner'>";
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-complementari/", "Colori Complementari");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-caldi-freddi-e-neutri/", "Colori Neutri e Freddi");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-freddi/", "Colori freddi");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-neutri/", "Colori Neutri");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/abbinamento-colori/", "Abbinamento colori");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/catalogo-colori-pareti/", "Colori per arredare");
@@ -167,6 +175,7 @@ function archistars_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/archea/", "Archea Associati");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/diller-scofidio-renfro/", "Diller Scofidio + Renfro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/gensler/", "Gensler");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/peter-zumthor/", "Peter Zumthor");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/unstudio/", "UNStudio");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/coop-himmelblau/", "Coop-Himmelblau");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/grafton-architects/", "Grafton Architects");
