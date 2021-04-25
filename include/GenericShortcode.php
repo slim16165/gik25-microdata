@@ -35,7 +35,7 @@ OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainEnabledShortcodes();
 
 
 add_action('admin_head', 'add_LogRocket');
-add_action('wp_head', 'add_AlliAi');
+add_action('wp_head', 'add_HeaderScript');
 
 
 // add_action('after_setup_theme', 'wnd_default_image_settings');
@@ -50,7 +50,7 @@ function wnd_default_image_settings()
     update_option('image_default_size', 'full-size');
 }
 
-function add_AlliAi()
+function add_HeaderScript()
 {
     if ( defined( 'DOING_AJAX' ))
     {
@@ -58,9 +58,8 @@ function add_AlliAi()
     }
 
     echo <<<TAG
-<!--www.alliai.com-->
-<script type="text/javascript" src="data:text/javascript;base64,LyogRnJpIEF1ZyAyMSAwNzo1MDoxOCAyMDIwIGZvciBzdXBlcmluZm9ybWF0aS5jb20gKi8KKGZ1bmN0aW9uICh3LGQscyxvLGYsanMsZmpzKSB7d1snSlMtV2lkZ2V0J109bzt3W29dID0gd1tvXSB8fCBmdW5jdGlvbiAoKSB7ICh3W29dLnEgPSB3W29dLnEgfHwgW10pLnB1c2goYXJndW1lbnRzKSB9O2pzID0gZC5jcmVhdGVFbGVtZW50KHMpLCBmanMgPSBkLmdldEVsZW1lbnRzQnlUYWdOYW1lKHMpWzBdO2pzLmlkID0gbzsganMuc3JjID0gZjsganMuYXN5bmMgPSAxOyBmanMucGFyZW50Tm9kZS5pbnNlcnRCZWZvcmUoanMsIGZqcyk7fSh3aW5kb3csIGRvY3VtZW50LCAnc2NyaXB0JywgJ2FsbGknLCAnaHR0cHM6Ly9zdGF0aWMuYWxsaWFpLmNvbS93aWRnZXQvdjEuanMnKSk7YWxsaSgnaW5pdCcsICdzaXRlX2pQUnh5VUFEZlZKNUNpU3knKTthbGxpKCdvcHRpbWl6ZScsICdhbGwnKTs="></script>
-<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<!-- Popup Ads-->
+<script src="https://popups.landingi.com/api/v2/website/install-code?apikey=cd4bfeb5-bcd0-4919-8f8e-c04d78bd7cb6"></script>
 TAG;
 
 }
