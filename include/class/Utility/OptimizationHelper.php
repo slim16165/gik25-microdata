@@ -2,19 +2,6 @@
 
 class OptimizationHelper
 {
-    public static function ConditionalLoadJsCss_Colori()
-    {
-        add_action('wp_head', array(__CLASS__, '_conditionalLoadJsCss_Colori'));
-    }
-
-    static function _conditionalLoadJsCss_Colori()
-    {
-        global $post;
-        $postConTagColori = TagHelper::find_post_id_from_taxonomy("colori", 'post_tag');//args: term_name "colori", taxonomy_type 'post_tag'
-        if (in_array($post->ID, $postConTagColori))
-            ColorWidget::carousel_js();
-    }
-
     public static function ConditionalLoadCssOnPosts()
     {
         add_action('wp_enqueue_scripts', array(__CLASS__, 'load_css_or_js_specific_pages'), 1001);
@@ -29,24 +16,7 @@ class OptimizationHelper
     {
         if (is_single())
         {
-            $enabled_shortcode_found = false;
-
-            $shortcode_names_arr    = get_option('revious_microdata_option_name');
-            $shortcode_names        = $shortcode_names_arr['shortcode_names'];
-
-            if(!empty($shortcode_names)) {
-                $shortcode_names_arr_2 = explode(',', $shortcode_names);
-            }
-
-            global $post;
-            if(isset($shortcode_names_arr_2))
-            {
-                foreach($shortcode_names_arr_2 as $shortcode_name) {
-                    if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, $shortcode_name) ) {
-                        $enabled_shortcode_found = true;
-                    }
-                }
-            }
+            $enabled_shortcode_found = self::HandleConfiguredShortcodes();
 
             if($enabled_shortcode_found)
             {
@@ -58,6 +28,7 @@ class OptimizationHelper
         }
     }
 
+    //Inglobare nell'altra e poi cancellare
     public static function load_css_or_js_specific_pages()
     {
         if (is_single())
@@ -74,5 +45,36 @@ class OptimizationHelper
             //wp_enqueue_style('revious-quotes-styles');
         }
         //else if(is_category() || is_tag())
+    }
+
+    protected static function HandleConfiguredShortcodes()
+    {
+        $enabled_shortcode_found = true;
+
+        $shortcode_names_arr = get_option('revious_microdata_option_name');
+
+        if (!empty($shortcode_names_arr))
+        {
+            $shortcode_names = $shortcode_names_arr['shortcode_names'];
+
+
+            if (!empty($shortcode_names))
+            {
+                $shortcode_names_arr_2 = explode(',', $shortcode_names);
+            }
+
+            global $post;
+            if (isset($shortcode_names_arr_2))
+            {
+                foreach ($shortcode_names_arr_2 as $shortcode_name)
+                {
+                    if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, $shortcode_name))
+                    {
+                        $enabled_shortcode_found = true;
+                    }
+                }
+            }
+        }
+        return $enabled_shortcode_found;
     }
 }

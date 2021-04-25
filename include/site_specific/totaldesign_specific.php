@@ -4,12 +4,22 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-if (function_exists("register_sidebar")) {
-    register_sidebar();
+//Optimizations
+
+ConditionalLoadJsCss_Colori();
+
+function ConditionalLoadJsCss_Colori()
+{
+    add_action('wp_head', '_conditionalLoadJsCss_Colori');
 }
 
-
-OptimizationHelper::ConditionalLoadJsCss_Colori();
+function _conditionalLoadJsCss_Colori()
+{
+    global $post;
+    $postConTagColori = TagHelper::find_post_id_from_taxonomy("colori", 'post_tag');//args: term_name "colori", taxonomy_type 'post_tag'
+    if (in_array($post->ID, $postConTagColori))
+        ColorWidget::carousel_js();
+}
 
 add_shortcode('link_colori', 'link_colori_handler');
 add_shortcode('grafica3d', 'grafica3d_handler');
