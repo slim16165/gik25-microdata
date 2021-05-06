@@ -29,7 +29,6 @@ require_once("class/Utility/OttimizzazioneNewspaper.php");
 //Avoid link and pages for tags of just one link
 TagHelper::add_filter_DisableTagWith1Post();
 QuestionSchema::AddShortcode();
-OptimizationHelper::ConditionalLoadCssOnPosts();
 OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainEnabledShortcodes();
 
 

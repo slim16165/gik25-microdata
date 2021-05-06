@@ -5,9 +5,12 @@ if(!defined('ABSPATH')) {
 class Boxinformativo {
     
     public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'boxinfo', array($this, 'shortcode'));
-        add_shortcode('boxinfo', array($this, 'shortcode'));
-        add_shortcode('boxinformativo', array($this, 'shortcode'));
+        if (is_front_page() && is_single())
+        {
+            add_shortcode(PLUGIN_NAME_PREFIX . 'boxinfo', array($this, 'shortcode'));
+            add_shortcode('boxinfo', array($this, 'shortcode'));
+            add_shortcode('boxinformativo', array($this, 'shortcode'));
+        }
         add_action('wp_enqueue_scripts', array($this, 'boxinformativo_styles'));
         add_filter('mce_external_plugins', array($this, 'boxinformativo_add_buttons'));
         add_filter('mce_buttons', array($this, 'boxinformativo_register_buttons'));
