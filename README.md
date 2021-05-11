@@ -22,6 +22,10 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 # Changelog
 
+##### 1.1.7 _(2021-05-11)_
+
+* Fixed regressione (due to lack of template_redirect) conditional loading for FE Boxinformativo 
+
 ##### 1.1.6 _(2021-05-06)_
 
 * Added conditional loading for FE / BE (only for Boxinformativo and blinkingbutton) 
