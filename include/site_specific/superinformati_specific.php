@@ -368,6 +368,10 @@ function link_dimagrimento_handler($atts, $content = null)
         array(
             'target_url' => "https://www.superinformati.com/dimagrire/allenamento-bici.htm",
             'nome' => "Allenamento Bici per dimagrire"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/ginnastica-per-dimagrire-10-kg.htm",
+            'nome' => "Ginnastica per dimagrire 10 kg"
         )
     );
 
@@ -725,6 +729,10 @@ function link_diete_handler($atts, $content = null)
         array(
             'target_url' => "https://www.superinformati.com/diete/dieta-dash.htm",
             'nome' => "Dieta Dash"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dieta/dieta-del-limone.htm",
+            'nome' => "Dieta del limone"
         )
     );
 

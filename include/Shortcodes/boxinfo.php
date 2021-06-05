@@ -4,13 +4,36 @@ if(!defined('ABSPATH')) {
 }
 class Boxinformativo {
     
-    public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'boxinfo', array($this, 'shortcode'));
-        add_shortcode('boxinfo', array($this, 'shortcode'));
-        add_shortcode('boxinformativo', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts', array($this, 'boxinformativo_styles'));
+    public function __construct()
+    {
+        //Frontend only
+        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+
+        //Backend only
         add_filter('mce_external_plugins', array($this, 'boxinformativo_add_buttons'));
         add_filter('mce_buttons', array($this, 'boxinformativo_register_buttons'));
+    }
+
+    public function pluginOptimizedLoad() : void
+    {
+        //In alternativa potrei usare !is_admin
+        $isFe = is_page() || is_singular() || is_front_page() || is_single();
+
+        if ($isFe && $this->PostContainsShortCode('boxinfo'))
+        {
+            add_shortcode(PLUGIN_NAME_PREFIX . 'boxinfo', array('Boxinformativo', 'shortcode'));
+            add_shortcode('boxinfo', array('Boxinformativo', 'shortcode'));
+            add_shortcode('boxinformativo', array('Boxinformativo', 'shortcode'));
+            add_action('wp_enqueue_scripts', array($this, 'boxinformativo_styles'));
+        }
+    }
+
+    public function PostContainsShortCode($shortcode) : bool
+    {
+        global $post;
+        if (strpos($post->post_content, $shortcode) !== false)
+            return true;
+        else return false;
     }
 
     public function shortcode($atts, $content = null) {
