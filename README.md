@@ -22,6 +22,11 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 # Changelog
 
+##### 1.1.8 _(2021-06-05)_
+
+* Fixed breadcrumb on Psicocultura author pages [requires Yoast]
+* Added elementor experiment files
+
 ##### 1.1.7 _(2021-05-11)_
 
 * Fixed regressione (due to lack of template_redirect) conditional loading for FE Boxinformativo 
