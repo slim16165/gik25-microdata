@@ -33,6 +33,7 @@ class YoastOptimizer
 
     public function yoast_seo_breadcrumb_append_link( $links )
     {
+        global $post;
         if ( is_author() || is_page('contatti'))
         {
             $breadcrumb_item[] = [
@@ -42,6 +43,27 @@ class YoastOptimizer
 
             array_splice( $links, 1, -2, $breadcrumb_item );
         }
+//        else if (is_singular('post'))
+//        {
+//            //Taking the last element of the array
+//            $x = $links[] = array_pop($links);
+//            //array(3) { ["url"]=> string(42) "https://www.psicocultura.it/comunicazione/" ["text"]=> string(53) "Comunicazione: Definizione, Elementi, Assiomi e Stili" ["id"]=> int(11827) }
+//            //$x["text"] =
+//            //var_dump($post);
+//            //exit();
+//            //get_post_meta($post->ID, '_yoast_wpseo_focusk‌​w', true);
+//
+//            /** Method 2. Use Yoast's function. **/
+//            $posttags = get_the_tags();
+//            if ($posttags)
+//            {
+//                foreach( $posttags as $tag )
+//                {
+//                    echo WPSEO_Taxonomy_Meta::get_term_meta( $tag->term_id, 'post_tag', 'focuskw' );
+//                }
+//            }
+//
+//        }
 
         return $links;
     }

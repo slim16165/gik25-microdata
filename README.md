@@ -24,6 +24,8 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 ##### 1.1.8 _(2021-06-05)_
 
+##### 1.1.8 _(2021-06-05)_
+
 * Fixed breadcrumb on Psicocultura author pages [requires Yoast]
 * Added elementor experiment files
 
