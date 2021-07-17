@@ -20,7 +20,7 @@ require_once("Shortcodes/youtube.php");
 
 // require_once("Shortcodes/tinymce.php");
 require_once("class/Schema/QuestionSchema.class.php");
-require_once("ListOfPostsHelper.php");
+require_once("class/ListOfPostsHelper.php");
 require_once("class/Utility/OttimizzazioneNewspaper.php");
 
 
@@ -56,15 +56,17 @@ function add_HeaderScript()
         return;
     }
 
+
+//    Per nonsolodiete
     echo <<<TAG
 <!-- Popup Ads-->
 <script src="https://popups.landingi.com/api/v2/website/install-code?apikey=cd4bfeb5-bcd0-4919-8f8e-c04d78bd7cb6"></script>
 TAG;
-
 }
 
-
 #region Script & CSS loading
+
+add_action('admin_head', 'add_LogRocket');
 
 function add_LogRocket()
 {

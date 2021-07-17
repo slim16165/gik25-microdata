@@ -22,6 +22,12 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 # Changelog
 
+##### 1.1.8 _(2021-07-17)_
+
+* Moved ListOfPostsHelper in folder \class
+* Added to superinformati_specific.php the handler for  scripts in header
+* Override author to "Redazione"
+
 ##### 1.1.7 _(2021-05-11)_
 
 * Fixed regressione (due to lack of template_redirect) conditional loading for FE Boxinformativo 

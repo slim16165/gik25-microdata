@@ -3,7 +3,7 @@
 Plugin Name: Revious Microdata
 Plugin URI:
 Description:
-Version:     1.1.7
+Version:     1.1.8
 Author:      Gianluigi Salvi
  */
 
