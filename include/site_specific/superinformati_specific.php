@@ -5,12 +5,47 @@ if (!defined('ABSPATH'))
     exit; // Exit if accessed directly.
 }
 
-add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler_2');
-add_shortcode('sedi_inps', 'sedi_inps_handler');
-add_shortcode('link_vitamine', 'link_vitamine_handler');
-add_shortcode('link_diete', 'link_diete_handler');
-add_shortcode('link_dimagrimento', 'link_dimagrimento_handler');
+add_shortcode('link_analisi_sangue',    'link_analisi_sangue_handler_2');
+add_shortcode('sedi_inps',              'sedi_inps_handler');
+add_shortcode('link_vitamine',          'link_vitamine_handler');
+add_shortcode('link_diete',             'link_diete_handler');
+add_shortcode('link_dimagrimento',      'link_dimagrimento_handler');
 
+add_action('wp_head', 'add_SuperinformatiHeaderScript');
+
+function add_SuperinformatiHeaderScript()
+{
+    if ( defined( 'DOING_AJAX' ))
+    {
+        return;
+    }
+
+    //Google Analytics
+    echo <<<TAG
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1GWRMSH0VQ"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1GWRMSH0VQ');
+</script>
+TAG;
+
+//    echo <<<TAG
+//<!-- Start cookieyes banner -->
+//<script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/5f030d1da0a3bb93e6e48db6.js"></script>
+//<!-- End cookieyes banner -->
+//TAG;
+}
+
+add_filter('the_author','its_my_company');
+
+function its_my_company(): string
+{
+    return 'Redazione';
+}
 
 /**
  * @param $atts

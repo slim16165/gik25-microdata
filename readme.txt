@@ -20,6 +20,11 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog ##
 
+See readme.md
+See readme.md
+See readme.md
+See readme.md
+
 ##### 1.1.6 _(2021-05-06)_
 
 * Added conditional loading for FE / BE (only for Boxinformativo and blinkingbutton)
