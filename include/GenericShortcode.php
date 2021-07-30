@@ -34,7 +34,7 @@ OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainEnabledShortcodes();
 
 
 add_action('admin_head', 'add_LogRocket');
-add_action('wp_head', 'add_HeaderScript');
+//add_action('wp_head', 'add_HeaderScript');
 
 
 // add_action('after_setup_theme', 'wnd_default_image_settings');
@@ -55,13 +55,6 @@ function add_HeaderScript()
     {
         return;
     }
-
-
-//    Per nonsolodiete
-    echo <<<TAG
-<!-- Popup Ads-->
-<script src="https://popups.landingi.com/api/v2/website/install-code?apikey=cd4bfeb5-bcd0-4919-8f8e-c04d78bd7cb6"></script>
-TAG;
 }
 
 #region Script & CSS loading

@@ -23,14 +23,15 @@ function add_SuperinformatiHeaderScript()
     //Google Analytics
     echo <<<TAG
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1GWRMSH0VQ"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-939922-3"></script>
 <script>
-window.dataLayer = window.dataLayer || [];
+  window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-1GWRMSH0VQ');
+  gtag('config', 'UA-939922-3');
 </script>
+
 TAG;
 
 //    echo <<<TAG
