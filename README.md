@@ -22,6 +22,27 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 # Changelog
 
+##### 1.1.9 _(2021-07-17)_
+
+* Moved ListOfPostsHelper in folder \class
+* Added to superinformati_specific.php the handler for  scripts in header
+* Override author to "Redazione"
+
+##### 1.1.8 _(2021-06-05)_
+
+* Fixed breadcrumb on Psicocultura author pages [requires Yoast]
+* Added elementor experiment files
+
+##### 1.1.7 _(2021-05-11)_
+
+* Fixed regressione (due to lack of template_redirect) conditional loading for FE Boxinformativo 
+
+##### 1.1.6 _(2021-05-06)_
+
+* Added conditional loading for FE / BE (only for Boxinformativo and blinkingbutton) 
+* Fixed bug in OptimizationHelper::IsShortcodeUsedInCurrentPost('md_blinkingbutton');
+* Initial improvement to OptimizationHelper
+
 ##### 1.1.5 _(2020-08-22)_
 * Fixed issue with 5px margin in tag body (Progress bar + Elementor) 
 

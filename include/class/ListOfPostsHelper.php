@@ -132,10 +132,12 @@ class ListOfPostsHelper
         $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
 
         if(!$featured_img_url) {
-            $featured_img_html = '<img style="width=50px; height: 50px;" src="' . plugins_url() . '/gik25-microdata/assets/images/placeholder-200x200.png" alt="' . $anchorText . '" />';
+            $featured_img_html =  /** @lang HTML */
+                '<img width="50" height="50" style="width=50px; height: 50px;" src="' . plugins_url() . '/gik25-microdata/assets/images/placeholder-200x200.png" alt="' . $anchorText . '" />';
         }
         else {
-            $featured_img_html = '<img style="width=50px; height: 50px;" src="' . $featured_img_url . '" alt="' . $anchorText . '" />';
+            $featured_img_html = /** @lang HTML */
+                '<img width="50" height="50" style="width=50px; height: 50px;" src="' . $featured_img_url . '" alt="' . $anchorText . '" />';
         }
 
         if ($noLink) {
