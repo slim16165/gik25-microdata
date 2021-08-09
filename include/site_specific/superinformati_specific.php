@@ -408,6 +408,10 @@ function link_dimagrimento_handler($atts, $content = null)
         array(
             'target_url' => "https://www.superinformati.com/dimagrire/ginnastica-per-dimagrire-10-kg.htm",
             'nome' => "Ginnastica per dimagrire 10 kg"
+        ),
+        array(
+            'target_url' => "https://www.superinformati.com/dimagrire/esercizi-schiena.htm",
+            'nome' => "Esercizi per la schiena"
         )
     );
 
