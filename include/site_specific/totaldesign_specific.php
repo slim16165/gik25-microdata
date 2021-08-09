@@ -81,6 +81,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-zaffiro/", "Colore Zaffiro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-viola/", "Colore Viola");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu/", "Colore Blu");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu-navy/", "Colore Blu Navy");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-fucsia/", "Colore Fucsia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ecru/", "Colore Ecru");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-magenta/", "Colore Magenta");
