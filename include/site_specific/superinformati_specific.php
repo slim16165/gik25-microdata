@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+/** @noinspection PhpUnusedParameterInspection */
 
 if (!defined('ABSPATH'))
 {
@@ -10,6 +12,7 @@ add_shortcode('sedi_inps',              'sedi_inps_handler');
 add_shortcode('link_vitamine',          'link_vitamine_handler');
 add_shortcode('link_diete',             'link_diete_handler');
 add_shortcode('link_dimagrimento',      'link_dimagrimento_handler');
+add_shortcode('link_tatuaggi',      'link_tatuaggi_handler');
 
 add_action('wp_head', 'add_SuperinformatiHeaderScript');
 
@@ -53,7 +56,7 @@ function its_my_company(): string
  * @param null $content
  * @return string
  */
-function link_analisi_sangue_handler_2($atts, $content = null)
+function link_analisi_sangue_handler_2($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
 
@@ -137,283 +140,283 @@ function link_analisi_sangue_handler_2($atts, $content = null)
     return $result;
 }
 
-function link_dimagrimento_handler($atts, $content = null)
+function link_dimagrimento_handler($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
-    $links_data = array(
-        array(
+    $links_data = [
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-pancia.htm",
             'nome' => "Dimagrire pancia"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/come-dimagrire-metodi.htm",
             'nome' => "Come dimagrire"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-in-menopausa.htm",
             'nome' => "Dimagrire in Menopausa"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/i-migliori-integratori-e-farmaci-per-perdere-peso.htm",
             'nome' => "Integratori per dimagrire"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/estetica-cosmesi/dimagrire-in-fretta-senza-diete-criolipolisi-o-aqualyx.htm",
             'nome' => "Dimagrire in fretta"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-corsa-programma.htm",
             'nome' => "Dimagrire correndo"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/maternita/dieta-in-gravidanza.htm",
             'nome' => "Dimagrire in gravidanza"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/non-riesco-a-dimagrire.htm",
             'nome' => "Non riesco a dimagrire: cause"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-con-la-cyclette-trucchi-e-programma-per-perdere-peso-pedalando.htm",
             'nome' => "Dimagrire con la cyclette"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/come-dimagrire-i-fianchi.htm",
             'nome' => "Dimagrire i fianchi"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-in-fretta.htm",
             'nome' => "Dimagrire 5 o 10 kg"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/tutti-i-farmaci-e-gli-integratori-efficaci-per-dimagrire-velocemente.htm",
             'nome' => "Farmaci per dimagrire"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/alimentazione/cibi-che-fanno-dimagrire-calorie-negative.htm",
             'nome' => "Cibi che fanno dimagrire"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-gambe-e-cosce.htm",
             'nome' => "Dimagrire cosce"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-camminando.htm",
             'nome' => "Dimagrire camminando"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-velocemente.htm",
             'nome' => "Dimagrire in una settimana"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-come-trovare-forza-volonta.htm",
             'nome' => "Trucchi per dimagrire"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/total-crunch-funziona.htm",
             'nome' => "Dimagrire con Total Crunch"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/come-allenarsi-a-casa.htm",
             'nome' => "Allenarsi a casa"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/come-dimagrisco.htm",
             'nome' => "Come dimagrisco in fretta?"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/calcolare-peso-forma.htm",
             'nome' => "Calcolo peso forma e peso ideale"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/stretching.htm",
             'nome' => "Stretching"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/allenamento-pha.htm",
             'nome' => "Allenamento PHA"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/kayla-itsines-bgg.htm",
             'nome' => "Allenamento BGG"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/cellulite/esercizi-anticellulite-gambe-cosce-glutei-braccia.htm",
             'nome' => "Esercizi anticellulite"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/spinning.htm",
             'nome' => "Spinning"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/pillole-dimagranti-davvero-efficaci-esistono.htm",
             'nome' => "Pillole dimagranti efficaci"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/home-fitness.htm",
             'nome' => "Home fitness"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/perdere-3-kg-in-una-settimana.htm",
             'nome' => "Perdere 3 kg in una settimana"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/5-migliori-app-per-allenarsi.htm",
             'nome' => "App per allenarsi a casa"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/estetica-cosmesi/cellulite-i-10-trattamenti-di-medicina-estetica-piu-efficaci-nel-2015.htm",
             'nome' => "Come eliminare la cellulite"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/allenamento-funzionale.htm",
             'nome' => "Allenamento funzionale"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/cerotti-per-dimagrire.htm",
             'nome' => "Cerotti dimagranti"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dimagrire-le-braccia.htm",
             'nome' => "Esercizi braccia"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/esercizi-addominali.htm",
             'nome' => "Esercizi addominali"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/aerobica-e-anaerobica.htm",
             'nome' => "Attività aerobica e anaerobica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dieta-perdere-5-kg-in-1-mese.htm",
             'nome' => "Perdere 5 kg in un mese"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/esercizi-trx.htm",
             'nome' => "Esercizi TRX"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/lo-yoga-modifica-il-genoma.htm",
             'nome' => "Yoga"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/massa-magra.htm",
             'nome' => "Massa magra"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/5-consigli-per-allenarsi-come-un-professionista.htm",
             'nome' => "Allenarsi in maniera efficace"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/meditazione.htm",
             'nome' => "Meditazione"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/massa-corporea-indice.htm",
             'nome' => "Indice di Massa corporea"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/misurare-il-grasso-corporeo-per-dimagrire-migliorando-le-diete.htm",
             'nome' => "Massa grassa"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/perdere-peso-e-pancia-piatta-velocemente.htm",
             'nome' => "Sgonfiare la pancia"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/bellezza/come-rassodare-il-seno.htm",
             'nome' => "Rassodare il seno"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/tabata-training.htm",
             'nome' => "Allenamento Tabata"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/hiit.htm",
             'nome' => "Allenamento HIIT"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/integratori-termogenici.htm",
             'nome' => "Integratori termogenici"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/integratori-palestra.htm",
             'nome' => "Integratori palestra"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/bcaa-gli-aminoacidi-ramificati-leucina-isoleucina-e-valina.htm",
             'nome' => "BCAA"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/come-allenarsi-con-manubri.htm",
             'nome' => "Allenarsi con i manubri"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/esercizi-corpo-libero-casa.htm",
             'nome' => "Esercizi a corpo libero"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/allenarsi-con-elastici.htm",
             'nome' => "Allenarsi con gli elastici"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/allenare-glutei-a-casa.htm",
             'nome' => "Allenare i glutei"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/camminata-veloce.htm",
             'nome' => "Camminata Veloce"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/bruciare-i-grassi.htm",
             'nome' => "Bruciare i grassi velocemente"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/perdere-peso-in-una-settimana.htm",
             'nome' => "Come perdere peso in una settimana"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/panca-palestra.htm",
             'nome' => "Panca da palestra"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/panca-addominale.htm",
             'nome' => "Panca addominali"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/cellulite/cellulite-rimedi-naturali.htm",
             'nome' => "Rimedi Naturali cellulite"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/estetica-cosmesi/smagliature-cause.htm",
             'nome' => "Smagliature"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/estetica-cosmesi/come-eliminare-le-smagliature.htm",
             'nome' => "Come eliminare le smagliature"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/estetica-cosmesi/cellulite-i-10-trattamenti-di-medicina-estetica-piu-efficaci-nel-2015.htm",
             'nome' => "Trattamenti contro la cellulite"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/cellulite/cellulite-le-cause-i-rimedi-le-novita-per-la-cura-nel-2018.htm",
             'nome' => "Cellulite"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/allenamento-bici.htm",
             'nome' => "Allenamento Bici per dimagrire"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/ginnastica-per-dimagrire-10-kg.htm",
             'nome' => "Ginnastica per dimagrire 10 kg"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/esercizi-schiena.htm",
             'nome' => "Esercizi per la schiena"
-        )
-    );
+        ]
+    ];
 
     $result = "<h3>Lista dei principali metodi per dimagrire e tonificare</h3>
 		<div class='thumbnail-list'>";
@@ -427,75 +430,75 @@ function link_dimagrimento_handler($atts, $content = null)
 }
 
 
-function link_vitamine_handler($atts, $content = null)
+function link_vitamine_handler($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
-    $links_data = array(
-        array(
+    $links_data = [
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-a.htm",
             'nome' => "Vitamina A"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamine-gruppo-b.htm",
             'nome' => "Vitamine del gruppo B"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-b1.htm",
             'nome' => "Vitamina B1"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-b2.htm",
             'nome' => "Vitamina B2"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/vitamina-b3.htm",
             'nome' => "Vitamina B3"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/vitamina-b5.htm",
             'nome' => "Vitamina B5"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-b6.htm",
             'nome' => "Vitamina B6"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/vitamina-b8.htm",
             'nome' => "Vitamina B8"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-b9.htm",
             'nome' => "Vitamina B9"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-b12.htm",
             'nome' => "Vitamina B12"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-c.htm",
             'nome' => "Vitamina C"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-d-caratteristiche.htm",
             'nome' => "Vitamina"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/carenza-vitamina-d.htm",
             'nome' => "Vitamina D"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-e.htm",
             'nome' => "Vitamina E"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-k.htm",
             'nome' => "Vitamina K"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/integratori/vitamina-k2.htm",
             'nome' => "Vitamina K2"
-        )
-    );
+        ]
+    ];
 
     $result = "<h3>Lista delle principali vitamine</h3>
 		<div class='thumbnail-list'>";
@@ -508,273 +511,410 @@ function link_vitamine_handler($atts, $content = null)
     return $result;
 }
 
-
-function link_diete_handler($atts, $content = null)
+function link_tatuaggi_handler($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
-    $links_data = array(
+    $links_data = [
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-femminili.htm",
+            'nome' => "Tatuaggi Femmin  ili"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-belli.htm",
+            'nome' => "Tatuaggi belli 2021"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/mandala-tattoo.htm",
+            'nome' => "Mandala Tattoo"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-new-school.htm",
+            'nome' => "Tatuaggi New School Tattoo"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-scritte.htm",
+            'nome' => "Tatuaggi Scritte"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/catalogo-tatuaggi-tanti-vari-e-da-poter-sfogliare.htm",
+            'nome' => "Catalogo Tatuaggi 2021"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-old-school.htm",
+            'nome' => "Tatuaggi Old School Tattoo"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/larte-del-tatuaggio-soggetti-legati-alla-natura.htm",
+            'nome' => "L'arte del Tatuaggio "
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/pixel-tattoos-tatuaggio-2-0.htm",
+            'nome' => "Pixel Tattoos"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-uomo.htm",
+            'nome' => "Tatuaggio Uomo"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-joker.htm",
+            'nome' => "Tatuaggio Joker"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-ancora.htm",
+            'nome' => "Tatuaggio ancora"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/veliero-old-school.htm",
+            'nome' => "Tatuaggio veliero"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-chicano.htm",
+            'nome' => "Tatuaggio Chicano"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-donna.htm",
+            'nome' => "Tatuaggi Donna"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-lettere.htm",
+            'nome' => "Tatuaggi Lettere"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-tribali.htm",
+            'nome' => "Tatuaggi Tribali"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-giapponesi.htm",
+            'nome' => "Tatuaggi Giapponesi"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-colorati.htm",
+            'nome' => "Tatuaggi colorati"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/estetica-cosmesi/tatuaggi-maori.htm",
+            'nome' => "Tatuaggi Maori"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-piccoli.htm",
+            'nome' => "Tatuaggi Piccoli"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-polinesiani.htm",
+            'nome' => "Tatuaggi Polinesiani"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-spalla.htm",
+            'nome' => "Tatuaggi Spalla"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-yin-e-yang.htm",
+            'nome' => "Yin e Yang"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-animali.htm",
+            'nome' => "Tatuaggi animali"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-nomi.htm",
+            'nome' => "Tatuaggi Nomi"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-fiori-di-ciliegio.htm",
+            'nome' => "Tatuaggi Fiori Tattoo"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/microdermal.htm",
+            'nome' => "Microdermal, il piercing sotto pelle"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/rimuovere-un-tatuaggio.htm",
+            'nome' => "Rimozione tatuaggi"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-numeri-romani.htm",
+            'nome' => "Tatuaggi e numeri romani"
+        ]
+    ];
 
-        array(
+    $result = "<h3>Articoli sui tatuaggi</h3>
+		<div class='thumbnail-list'>";
+
+    $result .= "<ul class='thumbnail-list'>";
+
+    $result .= $l->GetLinksWithImages($links_data);
+
+    $result .= "</ul></div>";
+    return $result;
+}
+
+
+function link_diete_handler($atts, $content = null): string
+{
+    $l = new ListOfPostsHelper(false, true, false);
+    $links_data = [
+
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-alcalina.htm",
             'nome' => "Dieta Alcalina"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-dottor-nowzaradan.htm",
             'nome' => "Dieta Dott. Nowzaradan"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-detox-menu-settimanale.htm",
             'nome' => "Dieta Detox"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-scarsdale.htm",
             'nome' => "Dieta Scarsdale"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-atkins.htm",
             'nome' => "Dieta Atkins"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-digiuno-intermittente-16-8.htm",
             'nome' => "Dieta Digiuno intermittente"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-ipocalorica.htm",
             'nome' => "Dieta Ipocalorica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-louise-parker-menu-schema.htm",
             'nome' => "Dieta Louise Parker"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-supermetabolismo.htm",
             'nome' => "Dieta del Supermetabolismo"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-carb-lovers.htm",
             'nome' => "Dieta Carb's Lover"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-disintossicante-fegato.htm",
             'nome' => "Dieta disintossicante fegato"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/la-dieta-vegana.htm",
             'nome' => "Dieta Vegana"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/dieta-iposodica-menu.htm",
             'nome' => "Dieta Iposodica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-lemme.htm",
             'nome' => "Dieta Lemme"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-lampo.htm",
             'nome' => "Dieta Lampo"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-anticellulite.htm",
             'nome' => "Dieta anticellulite"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-del-riso.htm",
             'nome' => "Dieta del riso"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-a-punti.htm",
             'nome' => "Dieta a punti"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-veloce.htm",
             'nome' => "Dieta veloce"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-mediterranea-e-cibi-sani.htm",
             'nome' => "Dieta Mediterranea"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/maternita/dieta-in-gravidanza.htm",
             'nome' => "Dieta in gravidanza"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-fruttariana.htm",
             'nome' => "Dieta fruttariana"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/cibi-dietetici.htm",
             'nome' => "Cibi dietetici"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-brasiliana.htm",
             'nome' => "Dieta brasiliana"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-della-longevita.htm",
             'nome' => "Dieta della longevità"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-dimagrante.htm",
             'nome' => "Dieta dimagrante"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-dellacqua.htm",
             'nome' => "Dieta dell'acqua"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-sirt.htm",
             'nome' => "Dieta SIRT"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-panzironi-life-120.htm",
             'nome' => "Dieta Panzironi"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-antiossidante.htm",
             'nome' => "Dieta depurativa antiossidante"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/liposuzione-alimentare-dieta-blackburn.htm",
             'nome' => "Dieta Blackburn"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-rina.htm",
             'nome' => "Dieta Rina"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-fast.htm",
             'nome' => "Dieta Fast 5.2"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-paleolitica.htm",
             'nome' => "Dieta Paleolitica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-senza-glutine.htm",
             'nome' => "Dieta senza glutine"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/dieta-liquida.htm",
             'nome' => "Dieta liquida"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-a-zona.htm",
             'nome' => "Dieta a zona"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-plank-scopri-come-perdere-10-kg-in-un-mese.htm",
             'nome' => "Perdere 10 kg con la Dieta Plank"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-senza-carboidrati-addio-pane-e-pasta.htm",
             'nome' => "Dieta senza carboidrati"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-ferrea.htm",
             'nome' => "Dieta Ferrea"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-plank.htm",
             'nome' => "Dieta Plank"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/alimentazione/dieta-equilibrata.htm",
             'nome' => "Dieta equilibrata"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/cristiano-ronaldo-dieta.htm",
             'nome' => "Dieta Cristiano Ronaldo"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-lipofidica.htm",
             'nome' => "Dieta Lipofidica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-macrobiotica.htm",
             'nome' => "Dieta Macrobiotica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-gruppo-sanguigno.htm",
             'nome' => "Dieta del gruppo sanguigno"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/diete-low-carb-iperproteiche.htm",
             'nome' => "Dieta Low Carb"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/la-dieta-tisanoreica.htm",
             'nome' => "Dieta Tisanoreica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-estiva.htm",
             'nome' => "Dieta estiva"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-dukan-la-dieta-delle-polemiche.htm",
             'nome' => "Dieta Dukan"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-drenante.htm",
             'nome' => "Dieta drenante e sgonfiante"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/alimentazione/dieta-per-colesterolo-alto.htm",
             'nome' => "Dieta per il colesterolo"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-chetogenica-funziona.htm",
             'nome' => "Dieta chetogenica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-proteica.htm",
             'nome' => "Dieta proteica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-iperproteica.htm",
             'nome' => "Dieta iperproteica"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dimagrire/dieta-mima-digiuno.htm",
             'nome' => "Dieta Mima digiuno"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-tlc.htm",
             'nome' => "Dieta TLC"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/perdere-peso-dieta-personalizzata.htm",
             'nome' => "Dieta personalizzata"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/medicina-e-salute/ricette-dietetiche-per-dimagrire.htm",
             'nome' => "Ricette dietetiche"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/alimentazione/alimentazione-corretta.htm",
             'nome' => "Alimentazione corretta"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/le-15-diete-piu-famose-e-le-piu-efficaci.htm",
             'nome' => "Le 33 diete più efficaci - articolone"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-vegetariana-bilanciata-nellapporto-dei-nutrienti.htm",
             'nome' => "Dieta vegetariana"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-del-minestrone.htm",
             'nome' => "Dieta del minestrone"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/diete/dieta-dash.htm",
             'nome' => "Dieta Dash"
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.superinformati.com/dieta/dieta-del-limone.htm",
             'nome' => "Dieta del limone"
-        )
-    );
+        ]
+    ];
 
     $result = "<h3>Lista delle principali diete</h3>
 		<div class='thumbnail-list'>";
@@ -788,7 +928,7 @@ function link_diete_handler($atts, $content = null)
 }
 
 
-function sedi_inps_handler($atts, $content = null)
+function sedi_inps_handler($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
 
