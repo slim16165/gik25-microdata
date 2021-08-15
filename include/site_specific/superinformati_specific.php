@@ -127,7 +127,7 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
     $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/sideremia.htm", "Sideremia", "");
     $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/omocisteina.htm", "Omocisteina", "");
     $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/transferrina.htm", "Transferrina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/analisi-del-sangue-in-gravidanza.htm", "Analisi del sangue in gravidanza", "");
+    $result .= $l->GetLinkWithImage("https://www.superinformati.com/maternita/analisi-del-sangue-in-gravidanza.htm", "Analisi del sangue in gravidanza", "");
     $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/transaminasi.htm", "Transaminasi", "");
     $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/carenza-di-ferro.htm", "Carenza di ferro", "");
     $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/gamma-gt-alte-e-basse.htm", "Gamma GT alte e basse", "");
@@ -634,6 +634,10 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-numeri-romani.htm",
             'nome' => "Tatuaggi e numeri romani"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-di-coppia.htm",
+            'nome' => "Tatuaggi di coppia"
         ]
     ];
 
