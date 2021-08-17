@@ -115,6 +115,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pareti-soggiorno/", "Colori pareti soggiorno");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pastello-per-arredare-la-casa/", "Colori Pastello");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/pareti-colorate/", "Pareti colorate");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-arcobaleno/", "Colori arcobaleno");
 
 
     $result .= "</div></div></div>";
