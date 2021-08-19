@@ -921,6 +921,10 @@ function link_diete_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/dieta/dieta-del-limone.htm",
             'nome' => "Dieta del limone"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/dieta/dieta-herbalife.htm",
+            'nome' => "Dieta Herbalife"
         ]
     ];
 
