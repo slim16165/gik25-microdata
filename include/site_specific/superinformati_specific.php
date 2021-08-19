@@ -638,6 +638,10 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-di-coppia.htm",
             'nome' => "Tatuaggi di coppia"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-farfalle.htm",
+            'nome' => "Tatuaggi farfalle"
         ]
     ];
 
