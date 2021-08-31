@@ -642,6 +642,10 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-farfalle.htm",
             'nome' => "Tatuaggi farfalle"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-piede.htm",
+            'nome' => "Tatuaggio piede"
         ]
     ];
 
