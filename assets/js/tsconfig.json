@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true,
+    "noImplicitAny": false
+  },
+  "compileOnSave": true,
+  "include": ["jquery", "../../../../../../../../../AppData/Roaming/JetBrains/PhpStorm2021.2/javascript/extLibs/global-types/node_modules/@types/jquery/*"],
+  "dependencies": {
+    "jquery": "^2"
+  },
+  "devdependencies": {
+    "@types/jquery": "^2",
+    "../../../../../../../../../AppData/Roaming/JetBrains/PhpStorm2021.2/javascript/extLibs/global-types/node_modules/@types/jquery/*": ""
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
