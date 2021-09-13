@@ -646,6 +646,10 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-piede.htm",
             'nome' => "Tatuaggio piede"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-stilizzati.htm",
+            'nome' => "Tatuaggi stilizzati"
         ]
     ];
 
