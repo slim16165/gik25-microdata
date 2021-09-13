@@ -2,7 +2,7 @@
 if(!defined('ABSPATH')) {
     exit;
 }
-class MicrodataFlipbox {
+class Flipbox {
 
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'flipbox', array($this, 'shortcode'));
@@ -73,4 +73,4 @@ ABC;
 
 }
 
-$microdata_flipbox = new MicrodataFlipbox();
+$microdata_flipbox = new Flipbox();

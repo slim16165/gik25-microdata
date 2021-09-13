@@ -22,6 +22,11 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 # Changelog
 
+##### 1.2.0 _(2021-07-17)_
+
+* Renamed classes inside shortcodes to match the file name
+* 
+
 ##### 1.1.9 _(2021-07-17)_
 
 * Moved ListOfPostsHelper in folder \class

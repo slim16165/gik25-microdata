@@ -2,10 +2,11 @@
 if(!defined('ABSPATH')) {
     exit;
 }
-class MicrodataProgressbar {
+
+class Progressbar {
 
     public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'progressbar', array($this, 'shortcode'));
+        add_shortcode('md_progressbar', array($this, 'shortcode'));
         add_action('wp_enqueue_scripts', array($this, 'md_progressbar_scripts_styles'));
     }
 
@@ -49,4 +50,4 @@ ABC;
 
 }
 
-$microdata_progressbar = new MicrodataProgressbar();
+$microdata_progressbar = new Progressbar();

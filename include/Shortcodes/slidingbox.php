@@ -2,7 +2,7 @@
 if(!defined('ABSPATH')) {
     exit;
 }
-class MicrodataSlidingbox {
+class Slidingbox {
 
     public function __construct() {
         add_shortcode(PLUGIN_NAME_PREFIX . 'slidingbox', array($this, 'shortcode'));
@@ -67,4 +67,4 @@ AAA;
 
 }
 
-$microdata_slidingbox = new MicrodataSlidingbox();
+$microdata_slidingbox = new Slidingbox();

@@ -2,7 +2,7 @@
 if(!defined('ABSPATH')) {
     exit;
 }
-class Boxinformativo {
+class Boxinfo {
     
     public function __construct()
     {
@@ -21,9 +21,9 @@ class Boxinformativo {
 
         if ($isFe && $this->PostContainsShortCode('boxinfo'))
         {
-            add_shortcode(PLUGIN_NAME_PREFIX . 'boxinfo', array('Boxinformativo', 'shortcode'));
-            add_shortcode('boxinfo', array('Boxinformativo', 'shortcode'));
-            add_shortcode('boxinformativo', array('Boxinformativo', 'shortcode'));
+            add_shortcode(PLUGIN_NAME_PREFIX . 'boxinfo', array('Boxinfo', 'shortcode'));
+            add_shortcode('boxinfo', array('Boxinfo', 'shortcode'));
+            add_shortcode('boxinformativo', array('Boxinfo', 'shortcode'));
             add_action('wp_enqueue_scripts', array($this, 'boxinformativo_styles'));
         }
     }
@@ -74,4 +74,4 @@ class Boxinformativo {
 
 }
 
-$boxinformativo = new Boxinformativo();
+$boxinformativo = new Boxinfo();

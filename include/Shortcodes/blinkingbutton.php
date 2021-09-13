@@ -4,7 +4,7 @@ if (!defined('ABSPATH'))
     exit;
 }
 
-class MicrodataBlinkingButton
+class BlinkingButton
 {
 
     public function __construct()
@@ -93,4 +93,4 @@ ABC;
 
 }
 
-$microdata_blinkingbutton = new MicrodataBlinkingButton();
+$microdata_blinkingbutton = new BlinkingButton();
