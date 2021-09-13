@@ -5,6 +5,8 @@ if (!defined('ABSPATH'))
     exit; // Exit if accessed directly.
 }
 
+const PLUGIN_NAME_PREFIX = 'md_';
+
 spl_autoload_register(function ($className)
 {
 //		include_once $_SERVER['DOCUMENT_ROOT'] . "/class/$className.class.php";
@@ -87,7 +89,6 @@ function CheckJsonError(string $json): string
     return $errormessage;
 }
 
-
 function EnableErrorLogging()
 {
     global $EnableErrorLogging_Called, $MY_DEBUG;
@@ -120,7 +121,6 @@ function timer()
     var_dump($timediff); //in seconds
 }
 
-
 /**
  * The provided url should be an article of this wordpress installation. This method is used to test on staging environments
  */
@@ -136,35 +136,6 @@ function ReplaceTargetUrlIfStaging($target_url)
     }
     return $target_url;
 }
-
-function get_progress_bar()
-{
-    $progress_bar_html = <<<ABC
-		<div class="md-progress-bar-container">
-			<div class="md-progress-bar" id="md-progress-bar"></div>
-		</div>
-ABC;
-
-    return $progress_bar_html;
-
-}
-
-
-function md_progressbar_scripts_styles()
-{
-    wp_register_style('md_progressbar-styles', plugins_url('/gik25-microdata/assets/css/md_progressbar.css'), array(), '', 'all');
-    wp_enqueue_style('md_progressbar-styles');
-    wp_register_style('revious-microdata', plugins_url('/gik25-microdata/assets/css/revious-microdata.css'), array(), '', 'all');
-    wp_enqueue_style('revious-microdata');
-    wp_register_script('md_progressbar-script', plugins_url('/gik25-microdata/assets/js/progressbar.js'), array('jquery'));
-    wp_enqueue_script('md_progressbar-script');
-}
-
-add_action('wp_enqueue_scripts', 'md_progressbar_scripts_styles');
-
-define('PLUGIN_NAME_PREFIX', 'md_');
-
-
 
 //Limit the visibility of some post for specific users
 //add_filter('parse_query', 'md_hide_others_roles_posts');

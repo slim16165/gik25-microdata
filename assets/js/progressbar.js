@@ -1,8 +1,8 @@
 jQuery(document).ready(function ($) {
-    if ($("#md-progress-bar-container")) {
+    if ($("#md-progress-bar-container"))
+    {
         const pb =
             '<div class="md-progress-bar-container" id="md-progress-bar-container"><div class="md-progress-bar" id="md-progress-bar"></div></div>';
-        const navEls = $("nav");
         const firstNav = $("nav:first");
         const firstNavHtml = firstNav.html();
         // console.log(firstNav);
