@@ -22,6 +22,11 @@ The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode
 
 # Changelog
 
+##### 1.2.5 _(2021-09-15)_
+* Completed the implementation of conditional css loading through OptimizationHelper.php
+* Fixed huge bug which prevented the loading of CSS revious-microdata.css
+* Avoided direct call to OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainEnabledShortcodes() from GenericShortcode.php (now done through the class constructor)
+* TODO: found a bug in blinkingbutton.php all the conditional methods should call ExecuteAfterTemplateRedirect
 
 ##### 1.2.0 _(2021-09-13)_
 

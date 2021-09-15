@@ -12,7 +12,7 @@ class BlinkingButton
 
         if (is_front_page() && is_single())
         {
-            $res = OptimizationHelper::IsShortcodeUsedInCurrentPost('md_blinkingbutton');
+            $res = OptimizationHelper::ExecuteAfterTemplateRedirect('md_blinkingbutton', array(OptimizationHelper, 'IncludeCssOnPosts'));
 
             if (!$res)
                 return;
