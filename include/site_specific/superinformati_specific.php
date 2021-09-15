@@ -197,7 +197,7 @@ function link_dimagrimento_handler($atts, $content = null): string
             'nome' => "Cibi che fanno dimagrire"
         ],
         [
-            'target_url' => "https://www.superinformati.com/medicina-e-salute/dimagrire-gambe-e-cosce.htm",
+            'target_url' => "https://www.superinformati.com/medicina-e-salute/come-dimagrire-le-cosce.htm",
             'nome' => "Dimagrire cosce"
         ],
         [
