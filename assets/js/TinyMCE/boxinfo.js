@@ -15,7 +15,7 @@
         var return_text = "";
         return_text =
           '[md_boxinfo title="Curiosità"]' +
-          selected_text.replace(/<\/?p[^>]*>/g, " ") +
+          selected_text.replace(/<\/?p[^>]*>/g, "") +
           "[/md_boxinfo]<br/><br/>";
         ed.execCommand("mceInsertContent", 0, return_text);
       });
