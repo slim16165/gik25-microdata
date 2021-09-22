@@ -2,14 +2,16 @@
 if(!defined('ABSPATH')) {
     exit;
 }
-class Perfectpullquote {
-    
-    public function __construct() {
+class Perfectpullquote extends ShortcodeBase
+{
+
+    public function __construct()
+    {
         add_shortcode('md_perfectpullquote', array($this, 'shortcode'));
         add_shortcode('perfectpullquote', array($this, 'shortcode'));
 
         //Frontend only
-        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
 
         if (is_admin())
         {

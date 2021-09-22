@@ -4,14 +4,14 @@ if (!defined('ABSPATH'))
     exit;
 }
 
-class BlinkingButton
+class BlinkingButton extends ShortcodeBase
 {
 
     public function __construct()
     {
         //$res = OptimizationHelper::ExecuteAfterTemplateRedirect('md_blinkingbutton', array(OptimizationHelper, 'IncludeCssOnPosts'));
         //Frontend only
-        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
 
         if (is_admin())
         {

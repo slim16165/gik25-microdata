@@ -3,14 +3,15 @@ declare(strict_types=1);
 if(!defined('ABSPATH')) {
     exit;
 }
-class Flipbox {
+class Flipbox extends ShortcodeBase
+{
 
     public function __construct()
     {
         add_shortcode('md_flipbox', [$this, 'shortcode']);
 
         //Frontend only
-        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
 
         if (is_admin())
         {

@@ -2,13 +2,15 @@
 if(!defined('ABSPATH')) {
     exit;
 }
-class Slidingbox {
+class Slidingbox extends ShortcodeBase
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         add_shortcode('md_slidingbox', array($this, 'shortcode'));
 
         //Frontend only
-        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
 
         if (is_admin())
         {

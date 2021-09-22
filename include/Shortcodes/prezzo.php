@@ -3,9 +3,11 @@ if(!defined('ABSPATH')) {
     exit;
 }
 
-class Prezzo {
+class Prezzo extends ShortcodeBase
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         add_shortcode('md_prezzo', array($this, 'shortcode'));
         add_shortcode('microdata_prezzo', array($this, 'shortcode'));
 

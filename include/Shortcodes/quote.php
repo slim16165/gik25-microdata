@@ -3,14 +3,17 @@ if(!defined('ABSPATH')) {
     exit;
 }
 
-class Quote {
+class Quote extends ShortcodeBase
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         add_shortcode('md_quote', array($this, 'shortcode'));
         add_shortcode('quote', array($this, 'shortcode'));
     }
 
-    public function shortcode($atts, $content = null) {
+    public function shortcode($atts, $content = null)
+    {
         $result = "<blockquote>$content</blockquote>";
         return $result;
     }
