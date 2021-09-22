@@ -10,8 +10,10 @@ Download the plugin and install it
 
 
 ## SHORTCODE
-The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode_API) that allows you to add a quote within your content. 
+The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode_API) that allows you to add a quote
+within your content.
 
+Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
