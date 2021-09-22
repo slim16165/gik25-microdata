@@ -2,9 +2,11 @@
 if(!defined('ABSPATH')) {
     exit;
 }
-class Telefono {
+class Telefono extends ShortcodeBase
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         add_shortcode('md_telefono', array($this, 'shortcode'));
         add_shortcode('microdata_telefono', array($this, 'shortcode'));
 

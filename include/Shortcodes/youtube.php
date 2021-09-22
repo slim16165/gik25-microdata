@@ -4,7 +4,7 @@ if (!defined('ABSPATH'))
     exit;
 }
 
-class Youtube
+class Youtube extends ShortcodeBase
 {
 
     public function __construct()
