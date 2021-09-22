@@ -22,7 +22,7 @@ class QuestionSchema
 
     static function AddShortcode()
     {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'domande_e_risposte', array(__CLASS__, 'domande_e_risposte_handler'), 8);
+        add_shortcode('md_domande_e_risposte', array(__CLASS__, 'domande_e_risposte_handler'), 8);
     }
 
     //Vanno evitati wptexturize() e wpautop()

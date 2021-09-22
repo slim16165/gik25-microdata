@@ -13,14 +13,14 @@ Download the plugin and install it
 The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode_API) that allows you to add a quote within your content. 
 
 
-
-## OPTIONS
-
-## FAQ
-
-## EXAMPLES
-
 # Changelog
+
+
+##### 1.3.0 _(2021-09-22)_
+* Implemented conditional loading in all shortcodes (for BE and FE)
+* in OptimizationHelper.php changed the method to accept delegates from other classes too
+* disabled a couple of unused shortcodes
+* replaced PLUGIN_NAME_PREFIX with md_
 
 ##### 1.2.5 _(2021-09-15)_
 * Completed the implementation of conditional css loading through OptimizationHelper.php

@@ -5,8 +5,9 @@ if(!defined('ABSPATH')) {
 
 class Flexlist {
 
-    public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'flexlist', array($this, 'shortcode'));
+    public function __construct()
+    {
+        add_shortcode('md_flexlist', array($this, 'shortcode'));
         add_shortcode('flexlist', array($this, 'shortcode'));
     }
 

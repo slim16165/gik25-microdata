@@ -5,11 +5,28 @@ if(!defined('ABSPATH')) {
 class Perfectpullquote {
     
     public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'perfectpullquote', array($this, 'shortcode'));
+        add_shortcode('md_perfectpullquote', array($this, 'shortcode'));
         add_shortcode('perfectpullquote', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts', array($this, 'perfectpullquote_styles'));
-        add_filter('mce_external_plugins', array($this, 'perfectpullquote_add_buttons'));
-        add_filter('mce_buttons', array($this, 'perfectpullquote_register_buttons'));
+
+        //Frontend only
+        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+
+        if (is_admin())
+        {
+            add_filter('mce_external_plugins', array($this, 'perfectpullquote_add_buttons'));
+            add_filter('mce_buttons', array($this, 'perfectpullquote_register_buttons'));
+        }
+    }
+
+    public function pluginOptimizedLoad() : void
+    {
+        //In alternativa potrei usare !is_admin
+        $isFe = is_page() || is_singular() || is_front_page() || is_single();
+
+        if ($isFe && $this->PostContainsShortCode('md_perfectpullquote'))
+        {
+            add_action('wp_enqueue_scripts', array($this, 'perfectpullquote_styles'));
+        }
     }
 
     public function shortcode($atts, $content = null) {
