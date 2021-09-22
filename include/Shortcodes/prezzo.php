@@ -6,10 +6,14 @@ if(!defined('ABSPATH')) {
 class Prezzo {
 
     public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'prezzo', array($this, 'shortcode'));
+        add_shortcode('md_prezzo', array($this, 'shortcode'));
         add_shortcode('microdata_prezzo', array($this, 'shortcode'));
-        add_filter('mce_external_plugins', array($this, 'mdp_register_plugin'));
-        add_filter('mce_buttons', array($this, 'mdp_register_button'));
+
+        if (is_admin())
+        {
+            add_filter('mce_external_plugins', array($this, 'mdp_register_plugin'));
+            add_filter('mce_buttons', array($this, 'mdp_register_button'));
+        }
     }
 
     public function shortcode($atts, $content = null) {

@@ -1,28 +1,46 @@
 <?php
+declare(strict_types=1);
 if(!defined('ABSPATH')) {
     exit;
 }
 class Flipbox {
 
-    public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'flipbox', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts',    array($this, 'mdfb_styles'));
+    public function __construct()
+    {
+        add_shortcode('md_flipbox', [$this, 'shortcode']);
 
-        add_action('admin_enqueue_scripts', array($this, 'mdfb_admin_scripts'));
-        add_filter('mce_external_plugins',  array($this, 'mdfb_register_plugin'));
-        add_filter('mce_buttons',           array($this, 'mdfb_register_button'));
+        //Frontend only
+        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+
+        if (is_admin())
+        {
+            add_action('admin_enqueue_scripts', [$this, 'mdfb_admin_scripts']);
+            add_filter('mce_external_plugins', [$this, 'mdfb_register_plugin']);
+            add_filter('mce_buttons', [$this, 'mdfb_register_button']);
+        }
     }
 
-    public function shortcode($atts, $content = null) {
+    public function pluginOptimizedLoad() : void
+    {
+        //In alternativa potrei usare !is_admin
+        $isFe = is_page() || is_singular() || is_front_page() || is_single();
 
-        $mdfb = shortcode_atts(array(
+        if ($isFe && $this->PostContainsShortCode('md_flipbox'))
+        {
+            add_action('wp_enqueue_scripts',    [$this, 'mdfb_styles']);
+        }
+    }
+
+    public function shortcode($atts, $content = null): string
+    {
+        $mdfb = shortcode_atts([
                 'fa_icon' => 'fas fa-shopping-cart',
                 'title' => 'Sample Title',
                 'sub_title' => 'Sample Sub Title',
                 // 'url' => site_url(),
                 'url' => false,
                 'text'  => 'Lorem ipsum dolar sit amet lorem ipsum dolar sit amet lorem ipsum dolar sit amet'
-            ), $atts);
+        ], $atts);
 
         if($mdfb['url']) {
             $mdfb_text = '<a href="' . $mdfb['url'] . '">' . $mdfb['text'] . '</a>';
@@ -52,12 +70,12 @@ ABC;
     }
 
     public function mdfb_styles() {
-        wp_register_style('mdfb-styles', plugins_url('/gik25-microdata/assets/css/mdfb.css'), array(), '', 'all');
+        wp_register_style('mdfb-styles', plugins_url('/gik25-microdata/assets/css/mdfb.css'), [], '', 'all');
         wp_enqueue_style('mdfb-styles');
     }
 
     public function mdfb_admin_scripts() {
-        wp_register_style('mdfb-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), array(), '5.13.1', 'all');
+        wp_register_style('mdfb-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), [], '5.13.1', 'all');
         wp_enqueue_style('mdfb-fa-styles');
     }
 

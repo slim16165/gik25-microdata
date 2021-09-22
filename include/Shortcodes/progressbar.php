@@ -13,8 +13,6 @@ class Progressbar {
     function md_progressbar_scripts_styles() {
         wp_register_style('md_progressbar-styles', plugins_url('/gik25-microdata/assets/css/md_progressbar.css'), array(), '', 'all');
         wp_enqueue_style('md_progressbar-styles');
-        // wp_register_style('revious-microdata', plugins_url('/gik25-microdata/assets/css/revious-micrrodata.css'), array(), '', 'all');
-        // wp_enqueue_style('revious-microdata');
         wp_register_script('md_progressbar-script', plugins_url('/gik25-microdata/assets/js/progressbar.js'), array('jquery'));
         wp_enqueue_script('md_progressbar-script');
     }

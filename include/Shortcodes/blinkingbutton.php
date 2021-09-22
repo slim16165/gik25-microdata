@@ -9,18 +9,9 @@ class BlinkingButton
 
     public function __construct()
     {
-
-        if (is_front_page() && is_single())
-        {
-            $res = OptimizationHelper::ExecuteAfterTemplateRedirect('md_blinkingbutton', array(OptimizationHelper, 'IncludeCssOnPosts'));
-
-            if (!$res)
-                return;
-
-            add_shortcode('md_blinkingbutton', array($this, 'ShortcodeHandler'));
-            add_action('wp_enqueue_scripts', array($this, 'mdbb_styles'));
-            add_action('wp_enqueue_scripts', array($this, 'mdbb_scripts'));
-        }
+        //$res = OptimizationHelper::ExecuteAfterTemplateRedirect('md_blinkingbutton', array(OptimizationHelper, 'IncludeCssOnPosts'));
+        //Frontend only
+        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
 
         if (is_admin())
         {
@@ -28,6 +19,19 @@ class BlinkingButton
             add_action('admin_enqueue_scripts', array($this, 'mdbb_admin_scripts'));
             add_filter('mce_external_plugins', array($this, 'mdbb_register_plugin'));
             add_filter('mce_buttons', array($this, 'mdbb_register_button'));
+        }
+    }
+
+    public function pluginOptimizedLoad() : void
+    {
+        //In alternativa potrei usare !is_admin
+        $isFe = is_page() || is_singular() || is_front_page() || is_single();
+
+        if ($isFe && $this->PostContainsShortCode('md_blinkingbutton'))
+        {
+            add_shortcode('md_blinkingbutton', array($this, 'ShortcodeHandler'));
+            add_action('wp_enqueue_scripts', array($this, 'mdbb_styles'));
+            add_action('wp_enqueue_scripts', array($this, 'mdbb_scripts'));
         }
     }
 

@@ -5,12 +5,28 @@ if(!defined('ABSPATH')) {
 class Slidingbox {
 
     public function __construct() {
-        add_shortcode(PLUGIN_NAME_PREFIX . 'slidingbox', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts',    array($this, 'mdsb_styles'));
+        add_shortcode('md_slidingbox', array($this, 'shortcode'));
 
-        add_action('admin_enqueue_scripts', array($this, 'mdsb_admin_scripts'));
-        add_filter('mce_external_plugins',  array($this, 'mdsb_register_plugin'));
-        add_filter('mce_buttons',           array($this, 'mdsb_register_button'));
+        //Frontend only
+        add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+
+        if (is_admin())
+        {
+            add_action('admin_enqueue_scripts', array($this, 'mdsb_admin_scripts'));
+            add_filter('mce_external_plugins', array($this, 'mdsb_register_plugin'));
+            add_filter('mce_buttons', array($this, 'mdsb_register_button'));
+        }
+    }
+
+    public function pluginOptimizedLoad() : void
+    {
+        //In alternativa potrei usare !is_admin
+        $isFe = is_page() || is_singular() || is_front_page() || is_single();
+
+        if ($isFe && $this->PostContainsShortCode('md_slidingbox'))
+        {
+            add_action('wp_enqueue_scripts',    array($this, 'mdsb_styles'));
+        }
     }
 
     public function shortcode($atts, $content = null) {

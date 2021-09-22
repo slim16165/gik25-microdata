@@ -8,10 +8,17 @@ class Boxinfo {
     {
         //Frontend only
         add_action( 'template_redirect', array($this, 'pluginOptimizedLoad') );
+        add_shortcode('md_boxinfo', array('Boxinfo', 'shortcode'));
+        add_shortcode('boxinfo', array('Boxinfo', 'shortcode'));
+        add_shortcode('boxinformativo', array('Boxinfo', 'shortcode'));
 
-        //Backend only
-        add_filter('mce_external_plugins', array($this, 'boxinformativo_add_buttons'));
-        add_filter('mce_buttons', array($this, 'boxinformativo_register_buttons'));
+
+        if (is_admin())
+        {
+            //Backend only
+            add_filter('mce_external_plugins', array($this, 'boxinformativo_add_buttons'));
+            add_filter('mce_buttons', array($this, 'boxinformativo_register_buttons'));
+        }
     }
 
     public function pluginOptimizedLoad() : void
@@ -21,9 +28,6 @@ class Boxinfo {
 
         if ($isFe && $this->PostContainsShortCode('boxinfo'))
         {
-            add_shortcode(PLUGIN_NAME_PREFIX . 'boxinfo', array('Boxinfo', 'shortcode'));
-            add_shortcode('boxinfo', array('Boxinfo', 'shortcode'));
-            add_shortcode('boxinformativo', array('Boxinfo', 'shortcode'));
             add_action('wp_enqueue_scripts', array($this, 'boxinformativo_styles'));
         }
     }
