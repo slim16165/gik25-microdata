@@ -8,42 +8,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 	class TagHelper
 	{
 		public function __construct()
-		{
-		}
+        {
+        }
 
-		public static function add_filter_DisableTagWith1Post()
-		{
-			add_filter('tag_link', array(__CLASS__, 'removeLinkFromOnePostTag'), 10, 2);
-			add_action('template_redirect', array(__CLASS__, 'tagWithOnePostRedirect'), 5);
-			add_filter('wpseo_exclude_from_sitemap_by_term_ids', array(__CLASS__, 'wpseo_exclude_from_sitemap_1postTags'), 10000);
-		}
+        public static function add_filter_DisableTagWith1Post()
+        {
+            add_filter('tag_link', array(__CLASS__, 'removeLinkFromTags'), 10, 2);
+            //add_action('template_redirect', array(__CLASS__, 'tagWithOnePostRedirect'), 5);
+            //add_filter('wpseo_exclude_from_sitemap_by_term_ids', array(__CLASS__, 'wpseo_exclude_from_sitemap_1postTags'), 10000);
+        }
 
-		public static function wpseo_exclude_from_sitemap_1postTags($alreadyExcluded)
-		{
-			$excludeTagId = array_merge($alreadyExcluded, TagHelper::find_tags_with_only_one_post());
-			return $excludeTagId;
-		}
+        public static function wpseo_exclude_from_sitemap_1postTags($alreadyExcluded): array
+        {
+            $excludeTagId = array_merge($alreadyExcluded, TagHelper::find_tags_with_only_one_post());
+            return $excludeTagId;
+        }
 
-		/** @noinspection PhpUnused */
-		public static function removeLinkFromOnePostTag($tag_link, $tag_id)
-		{
-			$tag = get_tag($tag_id);
+        /** @noinspection PhpUnused */
+        public static function removeLinkFromOnePostTag($tag_link, $tag_id)
+        {
+            $tag = get_tag($tag_id);
 
-			if ($tag->count == 1)
-			{
-				return '';
-			} else return $tag_link;
-		}
+            if ($tag->count == 1)
+            {
+                return '';
+            } else return $tag_link;
+        }
 
-		/**
-		 * Redirects visitors to the homepage for Tags with
-		 * less than 10 posts associated to them.
-		 */
-		/** @noinspection PhpUnused */
-		public static function tagWithOnePostRedirect()
-		{
-			// We're viewing a Tag archive page
-			if (is_tag())
+        /** @noinspection PhpUnused */
+        public static function removeLinkFromTags(): string
+        {
+            return '';
+        }
+
+        /**
+         * Redirects visitors to the homepage for Tags with
+         * less than 10 posts associated to them.
+         */
+        /** @noinspection PhpUnused */
+        public static function tagWithOnePostRedirect()
+        {
+            // We're viewing a Tag archive page
+            if (is_tag())
 			{
 				// Get Tag object
 				$tag = get_tag(get_queried_object_id());
@@ -54,21 +60,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 				// This tag has less than 10 posts, redirect visitor
 				if ($post_count == 1)
 				{
-					$post_id = TagHelper::find_post_id_from_taxonomy($tag->term_id, 'post_tag');
-					wp_redirect(
-						get_permalink($post_id),
-						'301' // The HTTP status, 301 = Moved
-					);
-				}
-			}
-		}
+                    $post_id = TagHelper::find_post_id_from_taxonomy($tag->term_id, 'post_tag');
+                    wp_redirect(
+                        get_permalink($post_id),
+                        '301' // The HTTP status, 301 = Moved
+                    );
+                }
+            }
+        }
 
 
-		public static function find_tags_with_only_one_post()
-		{
-			global $wpdb;
+        public static function find_tags_with_only_one_post(): array
+        {
+            global $wpdb;
 
-			$sql = <<<TAG
+            $sql = <<<TAG
 SELECT wp_terms.term_id, count(DISTINCT wp_posts.ID)
 FROM wp_posts
 INNER JOIN wp_term_relationships
@@ -88,27 +94,34 @@ TAG;
 			$result = $wpdb->get_results($sql);
 
 
-			$getTermId = function ($value)
-			{
-				return intval($value->term_id);
-			};
-			$ids = array_map($getTermId, $result);
+            $getTermId = function ($value) {
+                return intval($value->term_id);
+            };
+            $ids = array_map($getTermId, $result);
 
-			return $ids;
-		}
+            return $ids;
+        }
 
 
-		public static function find_post_id_from_taxonomy($term_name, $taxonomy_type)
-		{
-			#region Check errors
+        /**
+         * @param $term_name
+         * The taxonomy value
+         * @param $taxonomy_type
+         * tag or category
+         * @return array|void
+         * Returns all the id of posts from a given tag or category
+         */
+        public static function find_post_id_from_taxonomy($term_name, $taxonomy_type): array
+        {
+            #region Check errors
 
-			if ($taxonomy_type != 'post_tag' && $taxonomy_type = 'post_category')
-			{
-				echo "error: era atteso un tag o categoria";
-				exit;
-			}
+            if ($taxonomy_type != 'post_tag' && $taxonomy_type != 'post_category')
+            {
+                echo "error: era atteso un tag o categoria";
+                exit;
+            }
 
-			global $wpdb;
+            global $wpdb;
 
 			#endregion
 
