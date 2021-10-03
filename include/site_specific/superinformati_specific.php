@@ -42,14 +42,25 @@ TAG;
 //<script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/5f030d1da0a3bb93e6e48db6.js"></script>
 //<!-- End cookieyes banner -->
 //TAG;
+
+    //Disabilito adsense su una pagina
+    if (!defined('ADVADS_ADS_DISABLED'))
+    {
+        global $post;
+
+        if ($post->ID == 7557)
+            define('ADVADS_ADS_DISABLED', true);
+    };
+
 }
 
-add_filter('the_author','its_my_company');
+add_filter('the_author', 'its_my_company');
 
 function its_my_company(): string
 {
     return 'Redazione';
 }
+
 
 /**
  * @param $atts
@@ -654,6 +665,18 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tartaruga-maori.htm",
             'nome' => "Tatuaggio tartaruga maori"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-amicizia-idee-uomo-donna.htm",
+            'nome' => "Tatuaggi amicizia"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-carpa-koi.htm",
+            'nome' => "Tatuaggio Carpa Koi"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-infinito.htm",
+            'nome' => "Tatuaggio Infinito"
         ]
     ];
 
