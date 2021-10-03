@@ -44,12 +44,18 @@ TAG;
 //TAG;
 }
 
-add_filter('the_author','its_my_company');
+add_filter('the_author', 'its_my_company');
 
 function its_my_company(): string
 {
     return 'Redazione';
 }
+
+
+if (!defined('ADVADS_ADS_DISABLED'))
+{
+    define('ADVADS_ADS_DISABLED', true);
+};
 
 /**
  * @param $atts
