@@ -8,21 +8,31 @@ A Wordpress plugin to add beautifully styled left-aligned, right-aligned, or ful
 Download the plugin and install it 
 <pre>Plugins > Add New > Upload Plugin</pre>
 
-
 ## SHORTCODE
-The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode_API) that allows you to add a quote within your content. 
 
+The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode_API) that allows you to add a quote
+within your content.
 
-
-## OPTIONS
-
-## FAQ
-
-## EXAMPLES
+Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.3.1 _(2021-10-2)_
+
+* TODO: removing all tags should be configurable
+* Tags: removed the links to tags from every post
+* Tags: put in 410 from htaccess (in sitemaps they seem absent)
+* Added file RankMathOptimizer.php to noindex specific pages
+
+##### 1.3.0 _(2021-09-22)_
+
+* Implemented conditional loading in all shortcodes (for BE and FE)
+* in OptimizationHelper.php changed the method to accept delegates from other classes too
+* disabled a couple of unused shortcodes
+* replaced PLUGIN_NAME_PREFIX with md_
+
 ##### 1.2.5 _(2021-09-15)_
+
 * Completed the implementation of conditional css loading through OptimizationHelper.php
 * Fixed huge bug which prevented the loading of CSS revious-microdata.css
 * Avoided direct call to OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainEnabledShortcodes() from GenericShortcode.php (now done through the class constructor)

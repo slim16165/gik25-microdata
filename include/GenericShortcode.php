@@ -1,20 +1,22 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH'))
+{
     exit; // Exit if accessed directly.
 }
 
 require_once("functions.php");
 
-require_once("Shortcodes/blinkingbutton.php");
-require_once("Shortcodes/boxinfo.php");//migrated from gik25-quotes.php, converted to PHP class
+//require_once("Shortcodes/blinkingbutton.php");
+require_once("Shortcodes/ShortcodeBase.php");
+require_once("Shortcodes/boxinfo.php");
 require_once("Shortcodes/flexlist.php");
-require_once("Shortcodes/flipbox.php");
-require_once("Shortcodes/perfectpullquote.php");//migrated from gik25-quotes.php, converted to PHP class
+//require_once("Shortcodes/flipbox.php");
+require_once("Shortcodes/perfectpullquote.php");
 require_once("Shortcodes/prezzo.php");
 require_once("Shortcodes/progressbar.php");
 require_once("Shortcodes/quote.php");
-require_once("Shortcodes/slidingbox.php");
+//require_once("Shortcodes/slidingbox.php");
 require_once("Shortcodes/telefono.php");
 require_once("Shortcodes/youtube.php");
 

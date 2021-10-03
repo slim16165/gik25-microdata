@@ -4,7 +4,7 @@ class OptimizationHelper
 {
     public function __construct()
     {
-        self::ExecuteAfterTemplateRedirect("IncludeCssOnPosts");
+        self::ExecuteAfterTemplateRedirect(array("OptimizationHelper", "IncludeCssOnPosts"));
     }
 
     public static function ExecuteAfterTemplateRedirect($delegate) : void
@@ -13,7 +13,7 @@ class OptimizationHelper
         // This action hook executes just before WordPress determines which template page to load.
         // Source: https://stackoverflow.com/questions/22070223/how-can-i-use-is-page-inside-a-plugin
         //TODO: testare
-        add_action( 'template_redirect', array("OptimizationHelper", $delegate));
+        add_action( 'template_redirect', $delegate);
     }
 
     //It's not excuted on /wp-admin pages

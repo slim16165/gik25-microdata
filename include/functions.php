@@ -20,6 +20,7 @@ spl_autoload_register(function ($className)
     require_once "class/ColorWidget.php";
     require_once "class/Utility/OptimizationHelper.php";
     require_once "class/Utility/YoastOptimizer.php";
+    require_once "class/Utility/RankMathOptimizer.php";
 });
 require_once "class/ExcludePostFrom.php";
 
