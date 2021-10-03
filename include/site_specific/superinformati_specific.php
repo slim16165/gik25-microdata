@@ -654,6 +654,10 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tartaruga-maori.htm",
             'nome' => "Tatuaggio tartaruga maori"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-amicizia-idee-uomo-donna.htm",
+            'nome' => "Tatuaggi amicizia"
         ]
     ];
 
