@@ -42,6 +42,16 @@ TAG;
 //<script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/5f030d1da0a3bb93e6e48db6.js"></script>
 //<!-- End cookieyes banner -->
 //TAG;
+
+    //Disabilito adsense su una pagina
+    if (!defined('ADVADS_ADS_DISABLED'))
+    {
+        global $post;
+
+        if ($post->ID == 7557)
+            define('ADVADS_ADS_DISABLED', true);
+    };
+
 }
 
 add_filter('the_author', 'its_my_company');
@@ -51,11 +61,6 @@ function its_my_company(): string
     return 'Redazione';
 }
 
-
-if (!defined('ADVADS_ADS_DISABLED'))
-{
-    define('ADVADS_ADS_DISABLED', true);
-};
 
 /**
  * @param $atts
