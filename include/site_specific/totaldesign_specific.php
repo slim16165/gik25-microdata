@@ -39,6 +39,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/color-tortora-colore-neutro-tendenza/", "Color Tortora");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-rosso/", "Colore Rosso");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-bordeaux/", "Colore Rosso Bordeaux");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/rosso-tiziano/", "Colore Rosso Bordeaux");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde/", "Colore Verde");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde-acqua/", "Colore Verde Acqua");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde-salvia/", "Colore Verde Salvia");
