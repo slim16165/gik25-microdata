@@ -673,6 +673,10 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-carpa-koi.htm",
             'nome' => "Tatuaggio Carpa Koi"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-infinito.htm",
+            'nome' => "Tatuaggio Infinito"
         ]
     ];
 
