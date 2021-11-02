@@ -51,14 +51,6 @@ function wnd_default_image_settings()
     update_option('image_default_size', 'full-size');
 }
 
-function add_HeaderScript()
-{
-    if ( defined( 'DOING_AJAX' ))
-    {
-        return;
-    }
-}
-
 #region Script & CSS loading
 
 add_action('admin_head', 'add_LogRocket');
@@ -91,10 +83,12 @@ TAG;
 
 //define('DISALLOW_FILE_EDIT',true);
 
-function wpse_297026_update_user_activity() {
-    update_user_meta( get_current_user_id(), '<last_activity>', time() );
+function update_user_activity()
+{
+    update_user_meta(get_current_user_id(), '<last_activity>', time());
 }
-add_action( 'init', 'wpse_297026_update_user_activity' );
+
+add_action('init', 'update_user_activity');
 
 
 

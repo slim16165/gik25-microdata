@@ -1,27 +1,41 @@
 <?php
 declare(strict_types=1);
-/** @noinspection PhpUnusedParameterInspection */
 
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.
 }
 
-add_shortcode('link_analisi_sangue',    'link_analisi_sangue_handler_2');
-add_shortcode('sedi_inps',              'sedi_inps_handler');
-add_shortcode('link_vitamine',          'link_vitamine_handler');
-add_shortcode('link_diete',             'link_diete_handler');
-add_shortcode('link_dimagrimento',      'link_dimagrimento_handler');
-add_shortcode('link_tatuaggi',      'link_tatuaggi_handler');
+add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler_2');
+add_shortcode('sedi_inps', 'sedi_inps_handler');
+add_shortcode('link_vitamine', 'link_vitamine_handler');
+add_shortcode('link_diete', 'link_diete_handler');
+add_shortcode('link_dimagrimento', 'link_dimagrimento_handler');
+add_shortcode('link_tatuaggi', 'link_tatuaggi_handler');
 
-add_action('wp_head', 'add_SuperinformatiHeaderScript');
+add_action('wp_head', 'add_HeaderScript');
+add_action('wp_footer', 'add_FooterScript');
 
-function add_SuperinformatiHeaderScript()
+add_filter('the_author', 'its_my_company');
+
+function add_HeaderScript()
 {
-    if ( defined( 'DOING_AJAX' ))
+    if (defined('DOING_AJAX'))
     {
         return;
     }
+
+    //Vertis Media
+    echo <<<TAG
+<script type="application/javascript" src="https://ced.sascdn.com/tag/3295/smart.js" async></script>
+<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+<script>window.googletag = window.googletag || {cmd: []};</script>
+<script defer src="https://cdn.unblockia.com/h.js"></script>
+<script async src="https://cdn.vertismedia.co.uk/tags/superinformati_com/h.js"></script>
+<script async src="https://cdn.vertismedia.co.uk/tags/superinformati_com/pbh.js"></script>
+
+TAG;
+
 
     //Google Analytics
     echo <<<TAG
@@ -50,11 +64,22 @@ TAG;
 
         if ($post->ID == 7557)
             define('ADVADS_ADS_DISABLED', true);
-    };
+    }
+}
+
+function add_FooterScript()
+{
+    if (defined('DOING_AJAX'))
+    {
+        return;
+    }
+
+    echo <<<EOF
+<script async src="https://cdn.vertismedia.co.uk/tags/superinformati_com/f.js"></script>
+EOF;
 
 }
 
-add_filter('the_author', 'its_my_company');
 
 function its_my_company(): string
 {
@@ -440,7 +465,6 @@ function link_dimagrimento_handler($atts, $content = null): string
     return $result;
 }
 
-
 function link_vitamine_handler($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
@@ -690,7 +714,6 @@ function link_tatuaggi_handler($atts, $content = null): string
     $result .= "</ul></div>";
     return $result;
 }
-
 
 function link_diete_handler($atts, $content = null): string
 {
@@ -973,7 +996,6 @@ function link_diete_handler($atts, $content = null): string
     $result .= "</ul></div>";
     return $result;
 }
-
 
 function sedi_inps_handler($atts, $content = null): string
 {
