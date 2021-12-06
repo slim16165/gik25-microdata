@@ -18,24 +18,13 @@ add_action('wp_footer', 'add_FooterScript');
 
 add_filter('the_author', 'its_my_company');
 
+add_filter('elementor/frontend/print_google_fonts', '__return_false');
+
 function add_HeaderScript()
 {
-    if (defined('DOING_AJAX'))
-    {
+    if (defined('DOING_AJAX')) {
         return;
     }
-
-    //Vertis Media
-    echo <<<TAG
-<script type="application/javascript" src="https://ced.sascdn.com/tag/3295/smart.js" async></script>
-<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
-<script>window.googletag = window.googletag || {cmd: []};</script>
-<script defer src="https://cdn.unblockia.com/h.js"></script>
-<script async src="https://cdn.vertismedia.co.uk/tags/superinformati_com/h.js"></script>
-<script async src="https://cdn.vertismedia.co.uk/tags/superinformati_com/pbh.js"></script>
-
-TAG;
-
 
     //Google Analytics
     echo <<<TAG
@@ -58,9 +47,22 @@ TAG;
 //TAG;
 
     //Disabilito adsense su una pagina
-    if (!defined('ADVADS_ADS_DISABLED'))
-    {
+    if (!defined('ADVADS_ADS_DISABLED')) {
         global $post;
+
+        //Google Adsense
+        echo <<<TAG
+        <script>
+window.pgjs=window.pgjs||{};
+pgjs.gdpr=pgjs.gdpr||{};
+pgjs.publisherCookieWrapper = function () {
+ // Put your Adsense/DFP/Analytics code Here. 
+  pgjs.loadJS('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4057480177165624')
+};
+</script>
+<script src="https://cdn.pubguru.com/pg.js" />
+TAG;
+
 
         if ($post->ID == 7557)
             define('ADVADS_ADS_DISABLED', true);
@@ -552,7 +554,7 @@ function link_tatuaggi_handler($atts, $content = null): string
     $links_data = [
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-femminili.htm",
-            'nome' => "Tatuaggi Femmin  ili"
+            'nome' => "Tatuaggi Femminili"
         ],
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggi-belli.htm",
@@ -701,6 +703,26 @@ function link_tatuaggi_handler($atts, $content = null): string
         [
             'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-infinito.htm",
             'nome' => "Tatuaggio Infinito"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-braccio.htm",
+            'nome' => "Tatuaggio braccio"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-croce.htm",
+            'nome' => "Tatuaggio croce"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-gufo.htm",
+            'nome' => "Tatuaggio gufo"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-fenice.htm",
+            'nome' => "Tatuaggio Fenice"
+        ],
+        [
+            'target_url' => "https://www.superinformati.com/tatuaggi/tatuaggio-diamante.htm",
+            'nome' => "Tatuaggio diamante"
         ]
     ];
 

@@ -85,8 +85,9 @@ class ListOfPostsHelper
             return $ShouldReturnNow;
 
         //In caso contrario il post è pubblicato
-        if (!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
+        if (!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "(")) {
             $commento = " ($commento)";
+        }
 
         if ($this->withImage)
             $result .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
@@ -96,15 +97,16 @@ class ListOfPostsHelper
         return $result;
     }
 
-    public function GetLinksWithImages(array $links_data) {
-        
+    public function GetLinksWithImages(array $links_data)
+    {
+
         $links_html = '';
 
-        foreach($links_data as $k => $v) {
-            if(isset($v['commento']))
+        foreach ($links_data as $k => $v) {
+            if (isset($v['commento']))
                 $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome'], $v['commento']);
             else
-            $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome']);
+                $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome']);
         }
 
         return $links_html;
@@ -146,7 +148,7 @@ class ListOfPostsHelper
 <div class="li-img">
     $featured_img_html
 </div>
-<div class="li-text">$anchorText ($comment)</div>
+<div class="li-text">$anchorText $comment</div>
 </li>\n
 EOF;
         } else {

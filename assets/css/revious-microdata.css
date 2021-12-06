@@ -20,33 +20,28 @@ ol.thumbnail-list,
 ul.thumbnail-list {
   /*margin: 1.2em 0 1.2em 1em;*/
   margin: 0px;
+  padding-left: 0px;
   list-style: none;
 }
 
 ol.thumbnail-list li,
 ul.thumbnail-list li {
-  /*position: relative;*/
-  /*padding: .4em .4em .4em 2em;*/
-  /*line-height: 0;*/
   background: #efefef;
-  text-decoration: none;
   border-radius: 0.3em;
-  font-size: 0.94em;
   margin-bottom: 1px;
-  /*width: 100%;*/
-  /*!*border-bottom: 1px solid #ccc;*!*/
-  /*!*display: table;*!*/
   border-collapse: collapse;
+  display: flex; /* establish flex container */
+  flex-direction: row; /* make main axis horizontal (default value) */
+  justify-content: flex-start;
+  align-items: center;
 }
 
 ol.thumbnail-list li a,
 ul.thumbnail-list li a {
   display: flex; /* establish flex container */
   flex-direction: row; /* make main axis horizontal (default value) */
-  justify-content: left; /* center items horizontally, in this case */
+  justify-content: flex-start;
   align-items: center; /* center items vertically, in this case */
-  height: 50px;
-  /*background-color: #eee;*/
 }
 
 ol.thumbnail-list li + div,
@@ -72,21 +67,34 @@ div.container li.container {
   display: inline-block;
   vertical-align: middle;
   line-height: normal;
+  padding-left: 8px;
+  text-decoration: none;
+  font-size: 0.94em;
+  box-sizing: content-box;
 }
 
+div.li-img img,
 img.li-img {
   display: inline-block;
-  max-width: 50px;
   height: 50px;
   width: 50px;
   margin-bottom: 0px !important;
+  box-sizing: content-box;
 }
 
 @media screen and (max-width: 600px) {
+
+  .li-text {
+    line-height: normal;
+    font-size: 0.54em;
+  }
+
   img.li-img img {
     max-width: 50px;
+    max-heigth: 50px;
     height: 50px;
     width: 50px;
+    margin-bottom: 0px !important;
   }
 }
 
