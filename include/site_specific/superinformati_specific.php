@@ -26,32 +26,21 @@ function add_HeaderScript()
         return;
     }
 
-//    //Google Analytics
-//    echo <<<TAG
-//<!-- Global site tag (gtag.js) - Google Analytics -->
-//<script async src="https://www.googletagmanager.com/gtag/js?id=UA-939922-3"></script>
-//<script>
-//  window.dataLayer = window.dataLayer || [];
-//  function gtag(){dataLayer.push(arguments);}
-//  gtag('js', new Date());
-//
-//  gtag('config', 'UA-939922-3');
-//</script>
-//
-//TAG;
-
-//    echo <<<TAG
-//<!-- Start cookieyes banner -->
-//<script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/5f030d1da0a3bb93e6e48db6.js"></script>
-//<!-- End cookieyes banner -->
-//TAG;
-
     //Disabilito adsense su una pagina
     if (!defined('ADVADS_ADS_DISABLED')) {
         global $post;
+        //pubGuru();
 
-        //Google Adsense
-        echo <<<TAG
+        if ($post->ID == 7557)
+            define('ADVADS_ADS_DISABLED', true);
+    }
+}
+
+
+function pubGuru(): void
+{
+//Google Adsense
+    echo <<<TAG
         <script>
 window.pgjs=window.pgjs||{};
 pgjs.gdpr=pgjs.gdpr||{};
@@ -62,17 +51,11 @@ pgjs.publisherCookieWrapper = function () {
 </script>
 <script src="https://cdn.pubguru.com/pg.js" />
 TAG;
-
-
-        if ($post->ID == 7557)
-            define('ADVADS_ADS_DISABLED', true);
-    }
 }
 
 function add_FooterScript()
 {
-    if (defined('DOING_AJAX'))
-    {
+    if (defined('DOING_AJAX')) {
         return;
     }
 }
