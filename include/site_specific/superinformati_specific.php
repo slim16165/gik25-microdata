@@ -26,19 +26,19 @@ function add_HeaderScript()
         return;
     }
 
-    //Google Analytics
-    echo <<<TAG
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-939922-3"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-939922-3');
-</script>
-
-TAG;
+//    //Google Analytics
+//    echo <<<TAG
+//<!-- Global site tag (gtag.js) - Google Analytics -->
+//<script async src="https://www.googletagmanager.com/gtag/js?id=UA-939922-3"></script>
+//<script>
+//  window.dataLayer = window.dataLayer || [];
+//  function gtag(){dataLayer.push(arguments);}
+//  gtag('js', new Date());
+//
+//  gtag('config', 'UA-939922-3');
+//</script>
+//
+//TAG;
 
 //    echo <<<TAG
 //<!-- Start cookieyes banner -->
@@ -75,11 +75,6 @@ function add_FooterScript()
     {
         return;
     }
-
-    echo <<<EOF
-<script async src="https://cdn.vertismedia.co.uk/tags/superinformati_com/f.js"></script>
-EOF;
-
 }
 
 
