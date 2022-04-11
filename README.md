@@ -17,6 +17,9 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.3.2 _(2021-10-2)_
+* Added function_exists('is_plugin_active') check, maybe unnecessary because it is related to another error
+
 ##### 1.3.1 _(2021-10-2)_
 
 * TODO: removing all tags should be configurable

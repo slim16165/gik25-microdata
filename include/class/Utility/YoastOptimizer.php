@@ -25,6 +25,10 @@ class YoastOptimizer
 
     public function __construct()
     {
+        if (!function_exists('is_plugin_active')) {
+            include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+        }
+
         if ( is_plugin_active( 'wordpress-seo/wp-seo.php' ) || is_plugin_active( 'wordpress-seo-premium/wp-seo-premium.php' ) )
         {
             add_filter( 'wpseo_breadcrumb_links', array($this, 'yoast_seo_breadcrumb_append_link' ));
