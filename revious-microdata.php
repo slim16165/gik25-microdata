@@ -3,7 +3,7 @@
 Plugin Name: Revious Microdata
 Plugin URI:
 Description:
-Version:     1.3.1
+Version:     1.3.2
 Author:      Gianluigi Salvi
  */
 
@@ -29,7 +29,7 @@ define('MY_PLUGIN_PATH', plugins_url(__FILE__));
 
 require_once("include/revious-microdata-settings.php");
 require_once("include/GenericShortcode.php");
-require_once("include/site_specific/superinformati_specific.php");
+require_once("include/site_specific/nonsolodiete_specific.php");
 
 function mmx_remove_xmlrpc_methods($methods)
 {
