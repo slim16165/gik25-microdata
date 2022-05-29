@@ -52,7 +52,6 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
         } else {
             return false;
         }
-
     }
 
     public function GetLinksWithImages(array $links_data)
@@ -62,44 +61,98 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
         $n_links_per_column = ceil($links_number / self::$nColumns);
         $links_div_open = '<div class="list-of-posts-layout-' . self::$nColumns . '">';
         $links_div_close = '</div>';
-        $links_ul_open = '<ul>';
-        $links_ul_close = '</ul>';
-
         if (self::$nColumns == 1) {
             //use one column layout
             $links_html = '';
 
             foreach ($links_data as $k => $v) {
-                if (isset($v['commento']))
-                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome'], $v['commento']);
-                else
-                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome']);
+                $links_html .= $this->muk($v, $links_html);
             }
 
-            $links_html = $links_div_open . $links_ul_open . $links_html . $links_ul_close . $links_div_close;
+            $links_html = $links_div_open . '<ul>' . $links_html . '</ul>' . $links_div_close;
+
             return $links_html;
         } elseif (self::$nColumns == 2) {
             //use two column layout
             $links_html = '';
             $links_html_col_1 = '';
-            $links_html_col_2 = '';
 
             foreach ($links_data as $k => $v) {
-                if (isset($v['commento']))
-                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome'], $v['commento']);
-                else
-                    $links_html .= $this->GetLinkWithImage($v['target_url'], $v['nome']);
+                $links_html .= $this->muk($v);
 
                 $i++;
 
                 if ($n_links_per_column == $i) {
                     //first col complete
-                    $links_html_col_1 = $links_ul_open . $links_html . $links_ul_close;
+                    $links_html_col_1 = '<ul>' . $links_html . '</ul>';
                     $links_html = '';
                 }
             }
 
-            $links_html_col_2 = $links_ul_open . $links_html . $links_ul_close;
+            $links_html_col_2 = '<ul>' . $links_html . '</ul>';
+            $links_html = $links_html_col_1 . $links_html_col_2;
+
+            $links_html = $links_div_open . $links_html . $links_div_close;
+
+            return $links_html;
+        }
+    }
+
+    public function GetLinksWithImagesByTag($tag)
+    {
+        $i = 0;
+        $links_html = '';
+        $links_div_open = '<div class="list-of-posts-layout-' . self::$nColumns . '">';
+        $links_div_close = '</div>';
+
+        $target_posts = self::GetPostsDataByTag($noLink, $ShouldReturnNow, $tag);
+
+        $n_links_per_column = ceil(count($target_posts) / self::$nColumns);
+
+        if ($ShouldReturnNow)
+            return $ShouldReturnNow;
+
+        //var_dump($this->withImage);exit;
+
+        if (self::$nColumns == 1) {
+            //use one column layout
+
+            foreach ($target_posts as $target_post) {
+                $target_url = get_the_permalink($target_post->ID);
+                $nome = $target_post->post_title;
+                $commento = '';
+                if ($this->withImage)
+                    $links_html .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+                else
+                    $links_html .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+            }
+
+            $links_html = $links_div_open . '<ul>' . $links_html . '</ul>' . $links_div_close;
+
+            return $links_html;
+        } elseif (self::$nColumns == 2) {
+            //use two column layout
+            $links_html_col_1 = '';
+
+            foreach ($target_posts as $target_post) {
+                $target_url = get_the_permalink($target_post->ID);
+                $nome = $target_post->post_title;
+                $commento = '';
+                if ($this->withImage)
+                    $links_html .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+                else
+                    $links_html .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+
+                $i++;
+
+                if ($n_links_per_column == $i) {
+                    //first col complete
+                    $links_html_col_1 = '<ul>' . $links_html . '</ul>';
+                    $links_html = '';
+                }
+            }
+
+            $links_html_col_2 = '<ul>' . $links_html . '</ul>';
             $links_html = $links_html_col_1 . $links_html_col_2;
 
             $links_html = $links_div_open . $links_html . $links_div_close;
@@ -139,7 +192,7 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
                 '<img style="width=50px; height: 50px;" src="' . plugins_url() . '/gik25-microdata/assets/images/placeholder-200x200.png" alt="' . $anchorText . '" />';
         } else {
             $featured_img_html = /** @lang HTML */
-                '<img style="width=50px; height: 50px;" src="' . $featured_img_url . '" alt="' . $anchorText . '" />';
+                "<img style=\"width=50px; height: 50px;\" src=\"{$featured_img_url}\" alt=\"{$anchorText}\" />";
         }
 
         if ($noLink) {
@@ -165,76 +218,13 @@ EOF;
         }
     }
 
-    public function GetLinksWithImagesByTag($tag)
+    public function muk($v): string
     {
-        $i = 0;
-        $links_html = '';
-        //$column_links_number = ceil( count($links_data) / self::$listOfPostsStyle );
-        $links_div_open = '<div class="list-of-posts-layout-' . self::$nColumns . '">';
-        $links_div_close = '</div>';
-        $links_ul_open = '<ul>';
-        $links_ul_close = '</ul>';
+        if (isset($v['commento']))
+            $links_html = $this->GetLinkWithImage($v['target_url'], $v['nome'], $v['commento']);
+        else
+            $links_html = $this->GetLinkWithImage($v['target_url'], $v['nome']);
 
-        //$result = "";
-
-        $target_posts = self::GetPostsDataByTag($noLink, $ShouldReturnNow, $tag);
-
-        $column_links_number = ceil(count($target_posts) / self::$nColumns);
-
-        if ($ShouldReturnNow)
-            return $ShouldReturnNow;
-
-        //var_dump($this->withImage);exit;
-
-        if (self::$nColumns == 1) {
-            //use one column layout
-
-            foreach ($target_posts as $target_post) {
-                $target_url = get_the_permalink($target_post->ID);
-                $nome = $target_post->post_title;
-                $commento = '';
-                if ($this->withImage)
-                    // $result .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
-                    $links_html .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
-                else
-                    // $result .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
-                    $links_html .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
-            }
-
-            $links_html = $links_div_open . $links_ul_open . $links_html . $links_ul_close . $links_div_close;
-
-            return $links_html;
-        } elseif (self::$nColumns == 2) {
-            //use two column layout
-            $links_html_col_1 = '';
-            $links_html_col_2 = '';
-
-            foreach ($target_posts as $target_post) {
-                $target_url = get_the_permalink($target_post->ID);
-                $nome = $target_post->post_title;
-                $commento = '';
-                if ($this->withImage)
-                    // $result .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
-                    $links_html .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
-                else
-                    // $result .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
-                    $links_html .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
-
-                $i++;
-
-                if ($column_links_number == $i) {
-                    //first col complete
-                    $links_html_col_1 = $links_ul_open . $links_html . $links_ul_close;
-                    $links_html = '';
-                }
-            }
-
-            $links_html_col_2 = $links_ul_open . $links_html . $links_ul_close;
-            $links_html = $links_html_col_1 . $links_html_col_2;
-
-            $links_html = $links_div_open . $links_html . $links_div_close;
-
-            return $links_html;
-        }
+        return $links_html;
     }
 }
