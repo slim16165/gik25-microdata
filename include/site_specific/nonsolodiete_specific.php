@@ -76,9 +76,7 @@ function link_vitamine_handler($atts, $content = null)
 
 function link_diete_handler($atts, $content = null)
 {
-    $list_layout = 1;// one column
-    $list_layout = 2;// two columns
-    $l = new ListOfPostsHelperChild(false, true, false, $list_layout);
+    $l = new ListOfPostsHelperChild(false, true, false, 2 /*2 columns*/);
 
     $result = "<h3>Lista principali Diete</h3>";
     //	<div class='thumbnail-list'>";
