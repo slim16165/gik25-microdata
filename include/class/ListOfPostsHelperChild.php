@@ -1,5 +1,6 @@
 <?php
-if (!defined('ABSPATH')) {
+if (!defined('ABSPATH'))
+{
     exit; // Exit if accessed directly.
 }
 
@@ -21,27 +22,32 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
 
         //Check if the current post is the same of the target_url
 
-        if ($isSameFile && $this->removeIfSelf) {
+        if ($isSameFile && $this->removeIfSelf)
+        {
             if ($MY_DEBUG)
                 $ShouldReturnNow = "sameFile && removeIfSelf";
             else
                 $ShouldReturnNow = "";
         }
         //var_dump($tags);exit;
-        if (!empty($tag)) {
+        if (!empty($tag))
+        {
 
             $target_postids = TagHelper::find_post_id_from_taxonomy($tag, 'post_tag');
 
-            if (empty($target_postids)) {
+            if (empty($target_postids))
+            {
                 if ($MY_DEBUG)
                     $ShouldReturnNow = '<h5 style="color: red;">There are no posts tagged with \'' . $tag . '\'</h5>';
                 else
                     $ShouldReturnNow = "";
             }
 
-            foreach ($target_postids as $target_postid) {
+            foreach ($target_postids as $target_postid)
+            {
                 $target_post = get_post($target_postid);
-                if ($target_post->post_status !== "publish") {
+                if ($target_post->post_status !== "publish")
+                {
                     $ShouldReturnNow .= "NON PUBBLICATO: " . get_permalink($target_post->ID);
                 }
                 $target_posts[] = $target_post;
@@ -49,7 +55,8 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
             //var_dump($target_post);exit;
             return $target_posts;
 
-        } else {
+        } else
+        {
             return false;
         }
     }
@@ -61,41 +68,46 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
         $n_links_per_column = ceil($links_number / self::$nColumns);
         $links_div_open = '<div class="list-of-posts-layout-' . self::$nColumns . '">';
         $links_div_close = '</div>';
-        if (self::$nColumns == 1) {
-            //use one column layout
-            $links_html = '';
+        $links_html = '';
+        $links_html_col_1 = '';
 
-            foreach ($links_data as $k => $v) {
+
+        foreach ($links_data as $k => $v)
+        {
+            if (self::$nColumns == 1)
+            {
+                //one column layout
                 $links_html .= $this->muk($v, $links_html);
-            }
+            } elseif (self::$nColumns == 2)
+            {
+                //two column layout
 
-            $links_html = $links_div_open . '<ul>' . $links_html . '</ul>' . $links_div_close;
-
-            return $links_html;
-        } elseif (self::$nColumns == 2) {
-            //use two column layout
-            $links_html = '';
-            $links_html_col_1 = '';
-
-            foreach ($links_data as $k => $v) {
                 $links_html .= $this->muk($v);
 
                 $i++;
 
-                if ($n_links_per_column == $i) {
+                if ($n_links_per_column == $i)
+                {
                     //first col complete
                     $links_html_col_1 = '<ul>' . $links_html . '</ul>';
                     $links_html = '';
                 }
             }
+        }
+        if (self::$nColumns == 1)
+        {
+            $links_html = $links_div_open . '<ul>' . $links_html . '</ul>' . $links_div_close;
 
+        } elseif (self::$nColumns == 2)
+        {
             $links_html_col_2 = '<ul>' . $links_html . '</ul>';
             $links_html = $links_html_col_1 . $links_html_col_2;
 
             $links_html = $links_div_open . $links_html . $links_div_close;
 
-            return $links_html;
+
         }
+        return $links_html;
     }
 
     public function GetLinksWithImagesByTag($tag)
@@ -106,18 +118,16 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
         $links_div_close = '</div>';
 
         $target_posts = self::GetPostsDataByTag($noLink, $ShouldReturnNow, $tag);
+        if ($ShouldReturnNow) return $ShouldReturnNow;
 
         $n_links_per_column = ceil(count($target_posts) / self::$nColumns);
 
-        if ($ShouldReturnNow)
-            return $ShouldReturnNow;
-
         //var_dump($this->withImage);exit;
-
-        if (self::$nColumns == 1) {
-            //use one column layout
-
-            foreach ($target_posts as $target_post) {
+        foreach ($target_posts as $target_post)
+        {
+            if (self::$nColumns == 1)
+            {
+                //use one column layout
                 $target_url = get_the_permalink($target_post->ID);
                 $nome = $target_post->post_title;
                 $commento = '';
@@ -125,16 +135,11 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
                     $links_html .= self::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
                 else
                     $links_html .= self::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
-            }
+            } elseif (self::$nColumns == 2)
+            {
+                //use two column layout
+                $links_html_col_1 = '';
 
-            $links_html = $links_div_open . '<ul>' . $links_html . '</ul>' . $links_div_close;
-
-            return $links_html;
-        } elseif (self::$nColumns == 2) {
-            //use two column layout
-            $links_html_col_1 = '';
-
-            foreach ($target_posts as $target_post) {
                 $target_url = get_the_permalink($target_post->ID);
                 $nome = $target_post->post_title;
                 $commento = '';
@@ -145,18 +150,24 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
 
                 $i++;
 
-                if ($n_links_per_column == $i) {
+                if ($n_links_per_column == $i)
+                {
                     //first col complete
                     $links_html_col_1 = '<ul>' . $links_html . '</ul>';
                     $links_html = '';
                 }
             }
 
-            $links_html_col_2 = '<ul>' . $links_html . '</ul>';
-            $links_html = $links_html_col_1 . $links_html_col_2;
+            if (self::$nColumns == 1)
+            {
+                $links_html = $links_div_open . '<ul>' . $links_html . '</ul>' . $links_div_close;
+            } else
+            {
+                $links_html_col_2 = '<ul>' . $links_html . '</ul>';
+                $links_html = $links_html_col_1 . $links_html_col_2;
 
-            $links_html = $links_div_open . $links_html . $links_div_close;
-
+                $links_html = $links_div_open . $links_html . $links_div_close;
+            }
             return $links_html;
         }
     }
@@ -171,7 +182,8 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
             return $ShouldReturnNow;
 
         //In caso contrario il post è pubblicato
-        if (!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "(")) {
+        if (!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
+        {
             $commento = " ($commento)";
         }
         if ($this->withImage)
@@ -187,15 +199,18 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
 
         $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
 
-        if (!$featured_img_url) {
+        if (!$featured_img_url)
+        {
             $featured_img_html = /** @lang HTML */
                 '<img style="width=50px; height: 50px;" src="' . plugins_url() . '/gik25-microdata/assets/images/placeholder-200x200.png" alt="' . $anchorText . '" />';
-        } else {
+        } else
+        {
             $featured_img_html = /** @lang HTML */
                 "<img style=\"width=50px; height: 50px;\" src=\"{$featured_img_url}\" alt=\"{$anchorText}\" />";
         }
 
-        if ($noLink) {
+        if ($noLink)
+        {
             return <<<EOF
 <li>
 <div class="li-img">
@@ -204,7 +219,8 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
 <div class="li-text">$anchorText ($comment)</div>
 </li>\n
 EOF;
-        } else {
+        } else
+        {
             return <<<EOF
 <li>
 <a href="$target_url">			
