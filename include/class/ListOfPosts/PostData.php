@@ -1,6 +1,5 @@
 <?php
 
-
 class PostData
 {
     public static function GetPostsDataByTag(&$isSameFile, &$ShouldReturnNow, $tag = '', ListOfPostsHelperChild $instance)
