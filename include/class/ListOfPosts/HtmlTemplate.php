@@ -4,10 +4,10 @@ if (!defined('ABSPATH')) {
 }
 
 require_once '../../../vendor/autoload.php';
-use Yiisoft\Html\Html;
-use Yiisoft\Html\Tag\Meta;
 
-class ListOfLinksTemplate
+use Yiisoft\Html\Html;
+
+class HtmlTemplate
 {
     public static function GetTemplateNoThumbnail(string $target_url, string $nome, string $commento, $noLink): string
     {
@@ -51,7 +51,6 @@ EOF;
                 Html::closeTag("li");
         }
         return $tpl;
-
     }
 
     public static function GetFeaturedImage($featured_img_url, string $anchorText): string

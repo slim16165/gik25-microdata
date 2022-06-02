@@ -85,7 +85,7 @@ class PostData
         $target_url = ReplaceTargetUrlIfStaging($target_url);
 
         //Check if the current post is the same of the target_url
-        $isSameFile = ListOfPostsHelper::IsSameFile($target_url);
+        $isSameFile = ListOfPostsHelper::IsTargetUrlSamePost($target_url);
 
         if ($isSameFile && $removeIfSelf)
         {
