@@ -13,14 +13,14 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
 
     public function GetLinksWithImagesByTag($tag)
     {
-        $target_posts = PostData::GetPostsDataByTag($noLink, $ShouldReturnNow, $tag, $this);
-        if ($ShouldReturnNow) return $ShouldReturnNow;
+        $target_posts = PostData::GetPostsDataByTag($debugMsg, $tag);
+        if ($debugMsg) return $debugMsg;
 
         /*$target_url = get_the_permalink($target_post->ID);
         $nome = $target_post->post_title;
         $commento = '';*/
 
-        return base::GetLinksWithImages($target_posts);
+        return parent::GetLinksWithImages($target_posts);
     }
 
     //Multicolumns

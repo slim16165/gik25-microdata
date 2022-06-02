@@ -2,88 +2,95 @@
 
 class PostData
 {
-    public static function GetPostsDataByTag(&$isSameFile, &$ShouldReturnNow, $tag = '', ListOfPostsHelperChild $instance)
+    public static function GetPostsDataByTag(&$debugMsg, $tag = '')
     {
         global $MY_DEBUG;
-        $ShouldReturnNow = "";
+        $debugMsg = "";        
+
+        if (empty($tag)) return false;
+
+        $target_postids = TagHelper::find_post_id_from_taxonomy($tag, 'post_tag');
+        
+        #region Debug
+        if (empty($target_postids))
+        {
+            $debugMsg = $MY_DEBUG ? '<h5 style="color: red;">There are no posts tagged with \'' . $tag . '\'</h5>' : "";
+        }
+
+        #endregion
+
         $target_posts = array();
-
-        //Check if the current post is the same of the target_url
-
-        if ($isSameFile && $instance->removeIfSelf)
+        
+        foreach ($target_postids as $targetpostId)
         {
-            if ($MY_DEBUG)
-                $ShouldReturnNow = "sameFile && removeIfSelf";
-            else
-                $ShouldReturnNow = "";
+            list($target_post, $debugMsg) = self::GetPostIfPublished($targetpostId);
+
+            $target_posts[] = $target_post;
         }
-        //var_dump($tags);exit;
-        if (!empty($tag))
-        {
-
-            $target_postids = TagHelper::find_post_id_from_taxonomy($tag, 'post_tag');
-
-            if (empty($target_postids))
-            {
-                if ($MY_DEBUG)
-                    $ShouldReturnNow = '<h5 style="color: red;">There are no posts tagged with \'' . $tag . '\'</h5>';
-                else
-                    $ShouldReturnNow = "";
-            }
-
-            foreach ($target_postids as $target_postid)
-            {
-                $target_post = get_post($target_postid);
-                if ($instance->post_status !== "publish")
-                {
-                    $ShouldReturnNow .= "NON PUBBLICATO: " . get_permalink($instance->ID);
-                }
-                $target_posts[] = $target_post;
-            }
-            //var_dump($target_post);exit;
-            return $target_posts;
-
-        } else
-        {
-            return false;
-        }
+        
+        return $target_posts;
     }
 
-    public static function GetPostData(string &$target_url, &$isSameFile, &$ShouldReturnNow, ListOfPostsHelper $instance)
+    /**
+     * Retrieves post data given a post ID or post object.
+     *
+     * @global WP_Post $post Global post object.
+     *
+     * @return WP_Post|array|null Type corresponding to $output on success or null on failure.
+     *                            When $output is OBJECT, a `WP_Post` instance is returned.
+     */
+    public static function GetPostData(string &$target_url, &$isSameFile, &$debugMsg, bool $removeIfSelf)
     {
-        $target_url = ReplaceTargetUrlIfStaging($target_url);
+        //se siamo su staging modifica il target_url
+        list($target_url, $debugMsg, $isSameFile) = self::HandleExtraInfo($target_url, $removeIfSelf);
 
+        list($debugMsg, $target_post) = self::GetPostDataFromUrl($target_url);
+
+        return $target_post;
+    }
+
+    public static function GetPostIfPublished($target_postid): array
+    {
+        $debugMsg = "";
+        $target_post = get_post($target_postid);
+
+        if ($target_post->post_status !== "publish")
+            $debugMsg .= "NON PUBBLICATO: " . get_permalink($target_post->ID);
+
+        return array($target_post, $debugMsg);
+    }
+
+    public static function GetPostDataFromUrl($target_url): array
+    {
         global $MY_DEBUG;
-        $ShouldReturnNow = "";
 
-        //Check if the current post is the same of the target_url
-        $isSameFile = ListOfPostsHelper::IsSameFile($target_url);
-
-        if ($isSameFile && $instance->removeIfSelf)
-        {
-            if ($MY_DEBUG)
-                $ShouldReturnNow = "sameFile && removeIfSelf";
-            else
-                $ShouldReturnNow = "";
-        }
-
+        //Find the post id from the url
         $target_postid = url_to_postid($target_url);
 
         if ($target_postid == 0)
         {
-            if ($MY_DEBUG)
-                $ShouldReturnNow = '<h5 style="color: red;">This post does not exist, or it is on other domain, or URL is wrong (target_postid == 0)</h5>';
-            else
-                $ShouldReturnNow = "";
+            $debugMsg = $MY_DEBUG ? '<h5 style="color: red;">This post does not exist, or it is on other domain, or URL is wrong (target_postid == 0)</h5>' : "";
         }
 
-        $target_post = get_post($target_postid);
+        list($target_post, $debugMsg) = self::GetPostIfPublished($target_postid);
 
-        if ($instance->post_status !== "publish")
+        return array($debugMsg, $target_post);
+    }
+
+    public static function HandleExtraInfo(string $target_url, bool $removeIfSelf): array
+    {
+        global $MY_DEBUG;
+        $debugMsg = "";
+
+        $target_url = ReplaceTargetUrlIfStaging($target_url);
+
+        //Check if the current post is the same of the target_url
+        $isSameFile = ListOfPostsHelper::IsSameFile($target_url);
+
+        if ($isSameFile && $removeIfSelf)
         {
-            $ShouldReturnNow .= "NON PUBBLICATO: $target_url";
+            $debugMsg = $MY_DEBUG ? "sameFile && removeIfSelf" : "";
         }
-
-        return $target_post;
+        return array($target_url, $debugMsg, $isSameFile);
     }
 }

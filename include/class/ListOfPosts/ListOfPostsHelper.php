@@ -4,6 +4,10 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+require_once '../../../vendor/autoload.php';
+use Yiisoft\Html\Html;
+use Yiisoft\Html\Tag\Meta;
+
 class ListOfPostsHelper
 {
     public $removeIfSelf;
@@ -62,22 +66,34 @@ class ListOfPostsHelper
     {
         $result = "";
 
-        $target_post = PostData::GetPostData($target_url, $noLink, $ShouldReturnNow, $this);
+        $target_post = PostData::GetPostData($target_url, $noLink, $debugMsg, $this->removeIfSelf);
 
-        if ($ShouldReturnNow)
-            return $ShouldReturnNow;
+        if ($debugMsg)
+            return $debugMsg;
 
         //In caso contrario il post è pubblicato
+        $commento = $this->ParseComment($commento);
+
+        $result = $this->GetTemplate($target_url, $nome, $commento, $target_post, $noLink, $result);
+
+        return $result;
+    }
+
+    public function ParseComment(string $commento): string
+    {
         if (!IsNullOrEmptyString($commento) && !MyString::Contains("$commento", "("))
         {
             $commento = " ($commento)";
         }
+        return $commento;
+    }
 
-        if ($this->withImage) //GetTemplateWithThumbnail2 per la classe child
+    public function GetTemplate(string $target_url, string $nome, string $commento, $target_post, $noLink, string $result): string
+    {
+        if ($this->withImage) //GetTemplateWithThumbnail per la classe child
             $result .= ListOfLinksTemplate::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
         else
             $result .= ListOfLinksTemplate::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
-
         return $result;
     }
 }

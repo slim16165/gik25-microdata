@@ -1,233 +1,478 @@
 {
-  "_readme": [
-    "This file locks the dependencies of your project to a known state",
-    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-    "This file is @generated automatically"
-  ],
-  "content-hash": "e8da98cb312fbc0fbd2993933c658310",
-  "packages": [
-    {
-      "name": "athari/yalinqo",
-      "version": "dev-master",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/Athari/YaLinqo.git",
-        "reference": "939469772b36d4d454836681e0be2f220cf1e5cb"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/Athari/YaLinqo/zipball/939469772b36d4d454836681e0be2f220cf1e5cb",
-        "reference": "939469772b36d4d454836681e0be2f220cf1e5cb",
-        "shasum": ""
-      },
-      "require": {
-        "php": ">=7.0"
-      },
-      "require-dev": {
-        "phpdocumentor/phpdocumentor": "^2.8",
-        "phpunit/phpunit": "^6.5",
-        "satooshi/php-coveralls": "^2.0"
-      },
-      "default-branch": true,
-      "type": "library",
-      "extra": {
-        "branch-alias": {
-          "dev-master": "2.x-dev"
-        }
-      },
-      "autoload": {
-        "files": [
-          "YaLinqo/Linq.php"
-        ],
-        "psr-4": {
-          "YaLinqo\\": "YaLinqo/"
-        }
-      },
-      "notification-url": "https://packagist.org/downloads/",
-      "license": [
-        "BSD-2-Clause"
-      ],
-      "authors": [
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "4c3d5383a949a6f3ee8ff1bde56108f2",
+    "packages": [
         {
-          "name": "Alexander Prokhorov",
-          "homepage": "https://github.com/Athari/"
+            "name": "athari/yalinqo",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Athari/YaLinqo.git",
+                "reference": "939469772b36d4d454836681e0be2f220cf1e5cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Athari/YaLinqo/zipball/939469772b36d4d454836681e0be2f220cf1e5cb",
+                "reference": "939469772b36d4d454836681e0be2f220cf1e5cb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpdocumentor/phpdocumentor": "^2.8",
+                "phpunit/phpunit": "^6.5",
+                "satooshi/php-coveralls": "^2.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "YaLinqo/Linq.php"
+                ],
+                "psr-4": {
+                    "YaLinqo\\": "YaLinqo/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Prokhorov",
+                    "homepage": "https://github.com/Athari/"
+                }
+            ],
+            "description": "YaLinqo, a LINQ-to-objects library for PHP",
+            "homepage": "http://athari.github.io/YaLinqo",
+            "keywords": [
+                "linq",
+                "linqo",
+                "query",
+                "statistic"
+            ],
+            "support": {
+                "docs": "http://athari.github.io/YaLinqo",
+                "issues": "https://github.com/Athari/YaLinqo/issues",
+                "source": "https://github.com/Athari/YaLinqo"
+            },
+            "time": "2018-05-11T22:30:22+00:00"
+        },
+        {
+            "name": "johnpbloch/wordpress",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/johnpbloch/wordpress.git",
+                "reference": "791215d9f8fb9b8c9949f3993d01c25ebf2a84e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress/zipball/791215d9f8fb9b8c9949f3993d01c25ebf2a84e1",
+                "reference": "791215d9f8fb9b8c9949f3993d01c25ebf2a84e1",
+                "shasum": ""
+            },
+            "require": {
+                "johnpbloch/wordpress-core": "dev-master",
+                "johnpbloch/wordpress-core-installer": "^1.0 || ^2.0",
+                "php": ">=5.6.20"
+            },
+            "default-branch": true,
+            "type": "package",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "WordPress Community",
+                    "homepage": "https://wordpress.org/about/"
+                }
+            ],
+            "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
+            "homepage": "https://wordpress.org/",
+            "keywords": [
+                "blog",
+                "cms",
+                "wordpress"
+            ],
+            "support": {
+                "docs": "https://developer.wordpress.org/",
+                "forum": "https://wordpress.org/support/",
+                "irc": "irc://irc.freenode.net/wordpress",
+                "issues": "https://core.trac.wordpress.org/",
+                "source": "https://core.trac.wordpress.org/browser"
+            },
+            "time": "2022-03-01T15:13:50+00:00"
+        },
+        {
+            "name": "johnpbloch/wordpress-core",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/johnpbloch/wordpress-core.git",
+                "reference": "2f0c96d21cccef9328660e6f774cdb62e78ce315"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress-core/zipball/2f0c96d21cccef9328660e6f774cdb62e78ce315",
+                "reference": "2f0c96d21cccef9328660e6f774cdb62e78ce315",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=5.6.20"
+            },
+            "provide": {
+                "wordpress/core-implementation": "dev-master"
+            },
+            "default-branch": true,
+            "type": "wordpress-core",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "WordPress Community",
+                    "homepage": "https://wordpress.org/about/"
+                }
+            ],
+            "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
+            "homepage": "https://wordpress.org/",
+            "keywords": [
+                "blog",
+                "cms",
+                "wordpress"
+            ],
+            "support": {
+                "forum": "https://wordpress.org/support/",
+                "irc": "irc://irc.freenode.net/wordpress",
+                "issues": "https://core.trac.wordpress.org/",
+                "source": "https://core.trac.wordpress.org/browser",
+                "wiki": "https://codex.wordpress.org/"
+            },
+            "time": "2022-04-12T19:49:06+00:00"
+        },
+        {
+            "name": "johnpbloch/wordpress-core-installer",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/johnpbloch/wordpress-core-installer.git",
+                "reference": "237faae9a60a4a2e1d45dce1a5836ffa616de63e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress-core-installer/zipball/237faae9a60a4a2e1d45dce1a5836ffa616de63e",
+                "reference": "237faae9a60a4a2e1d45dce1a5836ffa616de63e",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": ">=5.6.0"
+            },
+            "conflict": {
+                "composer/installers": "<1.0.6"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0 || ^2.0",
+                "phpunit/phpunit": ">=5.7.27"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "johnpbloch\\Composer\\WordPressCorePlugin"
+            },
+            "autoload": {
+                "psr-0": {
+                    "johnpbloch\\Composer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "John P. Bloch",
+                    "email": "me@johnpbloch.com"
+                }
+            ],
+            "description": "A custom installer to handle deploying WordPress with composer",
+            "keywords": [
+                "wordpress"
+            ],
+            "support": {
+                "issues": "https://github.com/johnpbloch/wordpress-core-installer/issues",
+                "source": "https://github.com/johnpbloch/wordpress-core-installer/tree/master"
+            },
+            "time": "2020-04-16T21:44:57+00:00"
+        },
+        {
+            "name": "yiisoft/arrays",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/arrays.git",
+                "reference": "eeeabbbfb1cf0f93902ca254eaa56248d3e890dd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/arrays/zipball/eeeabbbfb1cf0f93902ca254eaa56248d3e890dd",
+                "reference": "eeeabbbfb1cf0f93902ca254eaa56248d3e890dd",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0",
+                "yiisoft/strings": "^2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "roave/infection-static-analysis-plugin": "^1.9",
+                "spatie/phpunit-watcher": "^1.23",
+                "vimeo/psalm": "^4.9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yiisoft\\Arrays\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Yii Array Helper",
+            "homepage": "http://www.yiiframework.com/",
+            "keywords": [
+                "array",
+                "helper",
+                "yii"
+            ],
+            "support": {
+                "chat": "https://t.me/yii3en",
+                "forum": "https://forum.yiiframework.com/",
+                "irc": "irc://irc.freenode.net/yii",
+                "issues": "https://github.com/yiisoft/arrays/issues",
+                "source": "https://github.com/yiisoft/arrays",
+                "wiki": "https://www.yiiframework.com/wiki/"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/yiisoft",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "opencollective"
+                }
+            ],
+            "time": "2021-10-23T20:52:49+00:00"
+        },
+        {
+            "name": "yiisoft/html",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/html.git",
+                "reference": "869f49cc69b09ea43d20d2d88f27a1b56404de7b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/html/zipball/869f49cc69b09ea43d20d2d88f27a1b56404de7b",
+                "reference": "869f49cc69b09ea43d20d2d88f27a1b56404de7b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0",
+                "yiisoft/arrays": "^1.0|^2.0",
+                "yiisoft/json": "^1.0"
+            },
+            "require-dev": {
+                "maglnet/composer-require-checker": "^3.3",
+                "phpunit/phpunit": "^9.5",
+                "roave/infection-static-analysis-plugin": "^1.16",
+                "spatie/phpunit-watcher": "^1.23",
+                "vimeo/psalm": "^4.18"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yiisoft\\Html\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Handy library to generate HTML",
+            "homepage": "https://www.yiiframework.com/",
+            "keywords": [
+                "html"
+            ],
+            "support": {
+                "chat": "https://t.me/yii3en",
+                "forum": "https://forum.yiiframework.com/",
+                "irc": "irc://irc.freenode.net/yii",
+                "issues": "https://github.com/yiisoft/html/issues?state=open",
+                "source": "https://github.com/yiisoft/html",
+                "wiki": "https://www.yiiframework.com/wiki/"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/yiisoft",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "opencollective"
+                }
+            ],
+            "time": "2022-05-31T14:15:53+00:00"
+        },
+        {
+            "name": "yiisoft/json",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/json.git",
+                "reference": "51b483aef1cd5d06ea02db3c40707bb6b41ed088"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/json/zipball/51b483aef1cd5d06ea02db3c40707bb6b41ed088",
+                "reference": "51b483aef1cd5d06ea02db3c40707bb6b41ed088",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "infection/infection": "^0.16.3",
+                "phan/phan": "^3.0",
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Yiisoft\\Json\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "json",
+            "homepage": "http://www.yiiframework.com/",
+            "keywords": [
+                "json"
+            ],
+            "support": {
+                "forum": "http://www.yiiframework.com/forum/",
+                "irc": "irc://irc.freenode.net/yii",
+                "issues": "https://github.com/yiisoft/json/issues?state=open",
+                "source": "https://github.com/yiisoft/json",
+                "wiki": "http://www.yiiframework.com/wiki/"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/yiisoft",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2020-08-26T12:21:14+00:00"
+        },
+        {
+            "name": "yiisoft/strings",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/strings.git",
+                "reference": "935d6ce668d5d5db58eef18174859a61fbf4b2c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/strings/zipball/935d6ce668d5d5db58eef18174859a61fbf4b2c2",
+                "reference": "935d6ce668d5d5db58eef18174859a61fbf4b2c2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "roave/infection-static-analysis-plugin": "^1.7",
+                "spatie/phpunit-watcher": "^1.23",
+                "vimeo/psalm": "^4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yiisoft\\Strings\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Yii - String Helper",
+            "homepage": "https://www.yiiframework.com/",
+            "keywords": [
+                "helper",
+                "string",
+                "yii"
+            ],
+            "support": {
+                "forum": "https://www.yiiframework.com/forum/",
+                "irc": "irc://irc.freenode.net/yii",
+                "issues": "https://github.com/yiisoft/strings/issues",
+                "source": "https://github.com/yiisoft/strings",
+                "wiki": "https://www.yiiframework.com/wiki/"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/yiisoft",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2021-02-10T20:59:30+00:00"
         }
-      ],
-      "description": "YaLinqo, a LINQ-to-objects library for PHP",
-      "homepage": "http://athari.github.io/YaLinqo",
-      "keywords": [
-        "linq",
-        "linqo",
-        "query",
-        "statistic"
-      ],
-      "support": {
-        "docs": "http://athari.github.io/YaLinqo",
-        "issues": "https://github.com/Athari/YaLinqo/issues",
-        "source": "https://github.com/Athari/YaLinqo"
-      },
-      "time": "2018-05-11T22:30:22+00:00"
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "johnpbloch/wordpress": 20,
+        "yiisoft/html": 20
     },
-    {
-      "name": "johnpbloch/wordpress",
-      "version": "dev-master",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/johnpbloch/wordpress.git",
-        "reference": "791215d9f8fb9b8c9949f3993d01c25ebf2a84e1"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/johnpbloch/wordpress/zipball/791215d9f8fb9b8c9949f3993d01c25ebf2a84e1",
-        "reference": "791215d9f8fb9b8c9949f3993d01c25ebf2a84e1",
-        "shasum": ""
-      },
-      "require": {
-        "johnpbloch/wordpress-core": "dev-master",
-        "johnpbloch/wordpress-core-installer": "^1.0 || ^2.0",
-        "php": ">=5.6.20"
-      },
-      "default-branch": true,
-      "type": "package",
-      "notification-url": "https://packagist.org/downloads/",
-      "license": [
-        "GPL-2.0+"
-      ],
-      "authors": [
-        {
-          "name": "WordPress Community",
-          "homepage": "https://wordpress.org/about/"
-        }
-      ],
-      "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
-      "homepage": "https://wordpress.org/",
-      "keywords": [
-        "blog",
-        "cms",
-        "wordpress"
-      ],
-      "support": {
-        "docs": "https://developer.wordpress.org/",
-        "forum": "https://wordpress.org/support/",
-        "irc": "irc://irc.freenode.net/wordpress",
-        "issues": "https://core.trac.wordpress.org/",
-        "source": "https://core.trac.wordpress.org/browser"
-      },
-      "time": "2022-03-01T15:13:50+00:00"
-    },
-    {
-      "name": "johnpbloch/wordpress-core",
-      "version": "dev-master",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/johnpbloch/wordpress-core.git",
-        "reference": "2f0c96d21cccef9328660e6f774cdb62e78ce315"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/johnpbloch/wordpress-core/zipball/2f0c96d21cccef9328660e6f774cdb62e78ce315",
-        "reference": "2f0c96d21cccef9328660e6f774cdb62e78ce315",
-        "shasum": ""
-      },
-      "require": {
-        "ext-json": "*",
-        "php": ">=5.6.20"
-      },
-      "provide": {
-        "wordpress/core-implementation": "dev-master"
-      },
-      "default-branch": true,
-      "type": "wordpress-core",
-      "notification-url": "https://packagist.org/downloads/",
-      "license": [
-        "GPL-2.0-or-later"
-      ],
-      "authors": [
-        {
-          "name": "WordPress Community",
-          "homepage": "https://wordpress.org/about/"
-        }
-      ],
-      "description": "WordPress is open source software you can use to create a beautiful website, blog, or app.",
-      "homepage": "https://wordpress.org/",
-      "keywords": [
-        "blog",
-        "cms",
-        "wordpress"
-      ],
-      "support": {
-        "forum": "https://wordpress.org/support/",
-        "irc": "irc://irc.freenode.net/wordpress",
-        "issues": "https://core.trac.wordpress.org/",
-        "source": "https://core.trac.wordpress.org/browser",
-        "wiki": "https://codex.wordpress.org/"
-      },
-      "time": "2022-04-12T19:49:06+00:00"
-    },
-    {
-      "name": "johnpbloch/wordpress-core-installer",
-      "version": "2.0.0",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/johnpbloch/wordpress-core-installer.git",
-        "reference": "237faae9a60a4a2e1d45dce1a5836ffa616de63e"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/johnpbloch/wordpress-core-installer/zipball/237faae9a60a4a2e1d45dce1a5836ffa616de63e",
-        "reference": "237faae9a60a4a2e1d45dce1a5836ffa616de63e",
-        "shasum": ""
-      },
-      "require": {
-        "composer-plugin-api": "^1.0 || ^2.0",
-        "php": ">=5.6.0"
-      },
-      "conflict": {
-        "composer/installers": "<1.0.6"
-      },
-      "require-dev": {
-        "composer/composer": "^1.0 || ^2.0",
-        "phpunit/phpunit": ">=5.7.27"
-      },
-      "type": "composer-plugin",
-      "extra": {
-        "class": "johnpbloch\\Composer\\WordPressCorePlugin"
-      },
-      "autoload": {
-        "psr-0": {
-          "johnpbloch\\Composer\\": "src/"
-        }
-      },
-      "notification-url": "https://packagist.org/downloads/",
-      "license": [
-        "GPL-2.0-or-later"
-      ],
-      "authors": [
-        {
-          "name": "John P. Bloch",
-          "email": "me@johnpbloch.com"
-        }
-      ],
-      "description": "A custom installer to handle deploying WordPress with composer",
-      "keywords": [
-        "wordpress"
-      ],
-      "support": {
-        "issues": "https://github.com/johnpbloch/wordpress-core-installer/issues",
-        "source": "https://github.com/johnpbloch/wordpress-core-installer/tree/master"
-      },
-      "time": "2020-04-16T21:44:57+00:00"
-    }
-  ],
-  "packages-dev": [],
-  "aliases": [],
-  "minimum-stability": "dev",
-  "stability-flags": {
-    "johnpbloch/wordpress": 20
-  },
-  "prefer-stable": false,
-  "prefer-lowest": false,
-  "platform": [],
-  "platform-dev": [],
-  "plugin-api-version": "2.3.0"
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }
