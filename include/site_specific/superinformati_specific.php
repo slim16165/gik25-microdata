@@ -40,6 +40,7 @@ function add_HeaderScript()
 function pubGuru(): void
 {
 //Google Adsense
+    /** @noinspection JSUnresolvedLibraryURL */
     echo <<<TAG
         <script>
 window.pgjs=window.pgjs||{};
@@ -67,11 +68,6 @@ function its_my_company(): string
 }
 
 
-/**
- * @param $atts
- * @param null $content
- * @return string
- */
 function link_analisi_sangue_handler_2($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
@@ -83,75 +79,63 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
 //		In pratica il 90% dell'emocromo riguarda i globuli rossi.";
 
     $result .= "<ul class=\"nicelist\">";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/indici-corpuscolari-quali-emocromo.htm", "Indici Corpuscolari", "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/mcv-volume-corpuscolare-medio.htm", "MCV",
-        "(volume corpuscolare medio)");
+    $links_data = [[ 'target_url' => "https://www.superinformati.com/medicina-e-salute/indici-corpuscolari-quali-emocromo.htm", 'nome' => "Indici Corpuscolari", 'commento' => "" ],
+        [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/mcv-volume-corpuscolare-medio.htm", 'nome' => "MCV", 'commento' => "(volume corpuscolare medio)" ]        ];
 
     $result .= "<h4>Globuli bianchi</h4>";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/leucociti.htm", "Leucociti", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/neutrofili.htm", "Neutrofili", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/globuli-bianchi-bassi.htm", "Leucopenia", "(Globuli bianchi bassi)");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/monociti-macrofagi.htm", "Monocidi Macrofagi", "");
+    $links_data = [[ 'target_url' => "https://www.superinformati.com/medicina-e-salute/leucociti.htm", 'nome' => "Leucociti", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/neutrofili.htm", 'nome' => "Neutrofili", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/globuli-bianchi-bassi.htm", 'nome' => "Leucopenia", 'commento' => "(Globuli bianchi bassi)" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/monociti-macrofagi.htm", 'nome' => "Monocidi Macrofagi", 'commento' => "" ]];
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     #region Globuli Rossi
 
     $result .= "<h4>Globuli Rossi</h4>";
 
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/globuli-rossi.htm", "Globuli rossi", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/reticolociti.htm", "Reticolociti", "(Globuli rossi non del tutto formati)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/mch.htm", "MCH",
-        "(contenuto corpuscolare medio di emoglobina)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/mchc.htm", "MCHC",
-        "(concentrazione corpuscolare media di emoglobina)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/rdw-cv.htm", "RDW-CV e RDW-SD",
-        "(variabilità della dimensione o del volume delle cellule dei globuli rossi; SD = deviazione standard; CV = coefficiente di variazione)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/ves-esami-valori.htm", "VES", "(velocità di elettrosedimentazione)");
-
+    $links_data = [[ 'target_url' => "https://www.superinformati.com/medicina-e-salute/globuli-rossi.htm", 'nome' => "Globuli rossi", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/reticolociti.htm", 'nome' => "Reticolociti", 'commento' => "(Globuli rossi non del tutto formati)" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/mch.htm", 'nome' => "MCH", 'commento' => "(contenuto corpuscolare medio di emoglobina)" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/mchc.htm", 'nome' => "MCHC", 'commento' => "(concentrazione corpuscolare media di emoglobina)" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/rdw-cv.htm", 'nome' => "RDW-CV e RDW-SD", 'commento' => "(variabilità della dimensione o del volume delle cellule dei globuli rossi; SD = deviazione standard; CV = coefficiente di variazione)" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/ves-esami-valori.htm", 'nome' => "VES", 'commento' => "(velocità di elettrosedimentazione)" ]];
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     #endregion
 
     #region Piastrine
 
     $result .= "<h4>Piastrine</h4>";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/piastrine.htm", "Piastrine", "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/mpv-volume-piastrinico-medio.htm", "MPV",
-        "(Volume piastrinico medio)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/pdw.htm", "PDW",
-        "(ampiezza di distribuzione piastrinica)");
+    $links_data = [[ 'target_url' => "https://www.superinformati.com/medicina-e-salute/piastrine.htm", 'nome' => "Piastrine", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/mpv-volume-piastrinico-medio.htm", 'nome' => "MPV", 'commento' => "(Volume piastrinico medio)" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/pdw.htm", 'nome' => "PDW", 'commento' => "(ampiezza di distribuzione piastrinica)" ]];
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     #endregion
 
     $result .= "<h4>Altro</h4>";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/emazie-nelle-urine.htm", "Emazie nelle urine",
-        "(emazie è un sinonimo di globuli rossi)");
+    $links_data = [[ 'target_url' => "https://www.superinformati.com/medicina-e-salute/emazie-nelle-urine.htm", 'nome' => "Emazie nelle urine", 'commento' => "(emazie è un sinonimo di globuli rossi)" ],
 
-    $result .= $l->GetLinkWithImage(" https://www.superinformati.com/medicina-e-salute/thc.htm", "THC nelle urine",
-        "");
+    [ 'target_url' => " https://www.superinformati.com/medicina-e-salute/thc.htm", 'nome' => "THC nelle urine", 'commento' => "" ],
 
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/nuovi-parametri-per-il-livello-del-colesterolo.htm", "Colesterolo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/trigliceridi.htm", "Trigliceridi", "");
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/nuovi-parametri-per-il-livello-del-colesterolo.htm", 'nome' => "Colesterolo", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/trigliceridi.htm", 'nome' => "Trigliceridi", 'commento' => "" ],
 
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/creatinina.htm", "Creatinina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/ferritina.htm", "Ferritina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/sideremia.htm", "Sideremia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/omocisteina.htm", "Omocisteina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/transferrina.htm", "Transferrina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/maternita/analisi-del-sangue-in-gravidanza.htm", "Analisi del sangue in gravidanza", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/transaminasi.htm", "Transaminasi", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/carenza-di-ferro.htm", "Carenza di ferro", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/gamma-gt-alte-e-basse.htm", "Gamma GT alte e basse", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/iperglicemia.htm", "Iperglicemia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/glicemia.htm", "Glicemia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/anemia-falciforme.htm", "Anemia Falciforme", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/medicina-e-salute/iperomocisteinemia.htm", "Iperomocisteinemia", "");
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/creatinina.htm", 'nome' => "Creatinina", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/ferritina.htm", 'nome' => "Ferritina", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/sideremia.htm", 'nome' => "Sideremia", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/omocisteina.htm", 'nome' => "Omocisteina", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/transferrina.htm", 'nome' => "Transferrina", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/maternita/analisi-del-sangue-in-gravidanza.htm", 'nome' => "Analisi del sangue in gravidanza", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/transaminasi.htm", 'nome' => "Transaminasi", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/carenza-di-ferro.htm", 'nome' => "Carenza di ferro", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/gamma-gt-alte-e-basse.htm", 'nome' => "Gamma GT alte e basse", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/iperglicemia.htm", 'nome' => "Iperglicemia", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/glicemia.htm", 'nome' => "Glicemia", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/anemia-falciforme.htm", 'nome' => "Anemia Falciforme", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/medicina-e-salute/iperomocisteinemia.htm", 'nome' => "Iperomocisteinemia", 'commento' => "" ]];
 
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
     $result .= "</ul>";
     return $result;
 }
@@ -439,7 +423,7 @@ function link_dimagrimento_handler($atts, $content = null): string
 
     $result .= "<ul class='thumbnail-list'>";
 
-    $result .= $l->GetLinksWithImages($links_data);
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     $result .= "</ul></div>";
     return $result;
@@ -520,7 +504,7 @@ function link_vitamine_handler($atts, $content = null): string
 
     $result .= "<ul class='thumbnail-list'>";
 
-    $result .= $l->GetLinksWithImages($links_data);
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     $result .= "</ul></div>";
     return $result;
@@ -709,7 +693,7 @@ function link_tatuaggi_handler($atts, $content = null): string
 
     $result .= "<ul class='thumbnail-list'>";
 
-    $result .= $l->GetLinksWithImages($links_data);
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     $result .= "</ul></div>";
     return $result;
@@ -991,7 +975,7 @@ function link_diete_handler($atts, $content = null): string
 
     $result .= "<ul class='thumbnail-list'>";
 
-    $result .= $l->GetLinksWithImages($links_data);
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     $result .= "</ul></div>";
     return $result;
@@ -1004,40 +988,38 @@ function sedi_inps_handler($atts, $content = null): string
     $result = "<h3>Sedi INPS in tutta italia</h3>";
 
     $result .= "<ul class=\"nicelist\">";
+    $links_data = [[ 'target_url' => "https://www.superinformati.com/consumatori/inps-bologna.htm", 'nome' => "Sedi Inps Bologna", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-firenze.htm", 'nome' => "Sedi Inps Firenze", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-brescia.htm", 'nome' => "Sedi Inps Brescia", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-piacenza.htm", 'nome' => "Sedi Inps Piacenza", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-napoli.htm", 'nome' => "Sedi Inps Napoli", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-lecco.htm", 'nome' => "Sedi Inps Lecco", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-potenza.htm", 'nome' => "Sedi Inps Potenza", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-catania.htm", 'nome' => "Sedi Inps Catania", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-padova.htm", 'nome' => "Sedi Inps Padova", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-palermo.htm", 'nome' => "Sedi Inps Palermo", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-taranto.htm", 'nome' => "Sedi Inps Taranto", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-chieti.htm", 'nome' => "Sedi Inps Chieti", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-trieste.htm", 'nome' => "Sedi Inps Trieste", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-udine.htm", 'nome' => "Sedi Inps Udine", 'commento' => "" ],
 
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-bologna.htm", "Sedi Inps Bologna", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-firenze.htm", "Sedi Inps Firenze", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-brescia.htm", "Sedi Inps Brescia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-piacenza.htm", "Sedi Inps Piacenza", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-napoli.htm", "Sedi Inps Napoli", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-lecco.htm", "Sedi Inps Lecco", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-potenza.htm", "Sedi Inps Potenza", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-catania.htm", "Sedi Inps Catania", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-padova.htm", "Sedi Inps Padova", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-palermo.htm", "Sedi Inps Palermo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-taranto.htm", "Sedi Inps Taranto", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-chieti.htm", "Sedi Inps Chieti", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-trieste.htm", "Sedi Inps Trieste", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-udine.htm", "Sedi Inps Udine", "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-teramo.htm", "Sedi Inps Teramo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-siena.htm", "Sedi Inps Siena", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-prato.htm", "Sedi Inps Prato", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-pistoia.htm", "Sedi Inps Pistoia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-brindisi.htm", "Sedi Inps Brindisi", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-agrigento.htm", "Sedi Inps Agrigento", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-caserta.htm", "Sedi Inps Caserta", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-viterbo.htm", "Inps Viterbo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-vercelli.htm", "Inps Vercelli", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-oristano.htm", "Inps Oristano", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-terni.htm", "Inps Terni", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-ragusa.htm", "Inps Ragusa", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-biella.htm", "Inps Biella", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-catanzaro.htm", "Inps Catanzaro", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-enna.htm", "Inps Enna", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/consumatori/inps-lodi.htm", "Inps Lodi", "");
-
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-teramo.htm", 'nome' => "Sedi Inps Teramo", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-siena.htm", 'nome' => "Sedi Inps Siena", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-prato.htm", 'nome' => "Sedi Inps Prato", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-pistoia.htm", 'nome' => "Sedi Inps Pistoia", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-brindisi.htm", 'nome' => "Sedi Inps Brindisi", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-agrigento.htm", 'nome' => "Sedi Inps Agrigento", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-caserta.htm", 'nome' => "Sedi Inps Caserta", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-viterbo.htm", 'nome' => "Inps Viterbo", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-vercelli.htm", 'nome' => "Inps Vercelli", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-oristano.htm", 'nome' => "Inps Oristano", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-terni.htm", 'nome' => "Inps Terni", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-ragusa.htm", 'nome' => "Inps Ragusa", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-biella.htm", 'nome' => "Inps Biella", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-catanzaro.htm", 'nome' => "Inps Catanzaro", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-enna.htm", 'nome' => "Inps Enna", 'commento' => "" ],
+    [ 'target_url' => "https://www.superinformati.com/consumatori/inps-lodi.htm", 'nome' => "Inps Lodi", 'commento' => "" ]];
+    $result .= $l->GetLinksWithImagesPaginated($links_data);
 
     $result .= "</ul>";
     return $result;
