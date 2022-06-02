@@ -1,5 +1,6 @@
 <?php
-if (!defined('ABSPATH')) {
+if (!defined('ABSPATH'))
+{
     exit; // Exit if accessed directly.
 }
 
@@ -195,16 +196,15 @@ function tale_e_quale_show_2019_handler($atts, $content = null)
     return $result;
 }
 
-function linkIfNotSelf2($url, $nome)
+function linkIfNotSelf2($url, $nome): string
 {
     global $current_post;
     $permalink = get_permalink($current_post->ID);
 
-    if ($permalink != $url) {
+    if ($permalink != $url)
         return "<a href=\"$url\">$nome</a>";
-    } else {
+    else
         return "$nome";
-    }
 }
 
 function linkIfNotSelf($target_url, $nome, $removeIfSelf = true)
@@ -213,16 +213,24 @@ function linkIfNotSelf($target_url, $nome, $removeIfSelf = true)
     $current_permalink = get_permalink($current_post->ID);
     $target_url = ReplaceTargetUrlIfStaging($target_url);
 
-    if ($current_permalink != $target_url) {
-        $target_postid = url_to_postid($target_url);
+    if ($current_permalink != $target_url)
+        return extracted1($target_url, $nome);
+    else if (!$removeIfSelf)
+        return extracted2($target_url, $nome);
+}
 
-        if ($target_postid == 0)
-            return "";
+function extracted2($target_url, $nome)
+{
+    $target_postid = url_to_postid($target_url);
 
-        $target_post = get_post($target_postid);
-        if ($target_post->post_status === "publish") {
-            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-            return <<<TAG
+    if ($target_postid == 0)
+        return "";
+
+    $target_post = get_post($target_postid);
+    if ($target_post->post_status === "publish")
+    {
+        $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
+        return <<<TAG
 <li>
 <a href="$target_url">			
 <div class="li-img">
@@ -231,17 +239,21 @@ function linkIfNotSelf($target_url, $nome, $removeIfSelf = true)
 <div class="li-text">$nome</div>
 </a></li>\n
 TAG;
-        }
-    } else if (!$removeIfSelf) {
-        $target_postid = url_to_postid($target_url);
+    }
+}
 
-        if ($target_postid == 0)
-            return "";
+function extracted1($target_url, $nome)
+{
+    $target_postid = url_to_postid($target_url);
 
-        $target_post = get_post($target_postid);
-        if ($target_post->post_status === "publish") {
-            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-            return <<<TAG
+    if ($target_postid == 0)
+        return "";
+
+    $target_post = get_post($target_postid);
+    if ($target_post->post_status === "publish")
+    {
+        $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
+        return <<<TAG
 <li>
 <div class="li-img">
 	<img src="$featured_img_url" alt="$nome" />		
@@ -249,18 +261,21 @@ TAG;
 <div class="li-text">$nome</div>
 </li>\n
 TAG;
-        }
     }
 }
 
 
 //TODO: spostare nella classe base
-add_filter('get_the_archive_title', function ($title) {
-    if (is_category()) {
+add_filter('get_the_archive_title', function ($title)
+{
+    if (is_category())
+    {
         $title = single_cat_title('', false);
-    } elseif (is_tag()) {
+    } elseif (is_tag())
+    {
         $title = single_tag_title('', false);
-    } elseif (is_author()) {
+    } elseif (is_author())
+    {
         $title = '<span class="vcard">' . get_the_author() . '</span>';
     }
 
@@ -286,7 +301,8 @@ function modify_content_chiecosa($content)
           Seguici sul nuovo profilo instagram!
         </a>";
 
-    if (is_singular('post') && in_the_loop() && is_main_query() && (stripos($content, "Seguici sul nostro profilo") === false)) {
+    if (is_singular('post') && in_the_loop() && is_main_query() && (stripos($content, "Seguici sul nostro profilo") === false))
+    {
 
         $primaOccorrenza = strpos($content, "</ul>", 0);
 
@@ -304,14 +320,14 @@ function modify_content_chiecosa($content)
 }
 
 
-
 //TODO: spostare nella classe base
 add_filter('the_excerpt_rss', 'rss_post_thumbnail');
 add_filter('the_content_feed', 'rss_post_thumbnail');
 function rss_post_thumbnail($content)
 {
     global $post;
-    if (has_post_thumbnail($post->ID)) {
+    if (has_post_thumbnail($post->ID))
+    {
         $content = '<media:content>' . get_the_post_thumbnail($post->ID) .
             '</media:content>';
     }

@@ -11,6 +11,12 @@
   ],
   "require": {
     "athari/yalinqo": "^2.0",
-    "johnpbloch/wordpress": "dev-master"
+    "johnpbloch/wordpress": "dev-master",
+    "yiisoft/html": "dev-master"
+  },
+  "config": {
+    "allow-plugins": {
+      "johnpbloch/wordpress-core-installer": true
+    }
   }
 }
