@@ -20,11 +20,11 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
         $nome = $target_post->post_title;
         $commento = '';*/
 
-        return GetLinksWithImages($target_posts);
+        return base::GetLinksWithImages($target_posts);
     }
 
     //Multicolumns
-    public function GetLinksWithImages(array $links_data)
+    public function GetLinksWithImages(array $links_data) : string
     {
         $i = 0;
         $links_number = count($links_data);
@@ -44,7 +44,6 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
             } elseif (self::$nColumns == 2)
             {
                 //two column layout
-
                 $links_html .= $this->GetLinkWithImage1($v);
 
                 $i++;
@@ -52,23 +51,21 @@ class ListOfPostsHelperChild extends ListOfPostsHelper
                 if ($n_links_per_column == $i)
                 {
                     //first col complete
-                    $links_html_col_1 = '<ul>' . $links_html . '</ul>';
+                    $links_html_col_1 = "<ul>{$links_html}</ul>";
                     $links_html = '';
                 }
             }
         }
         if (self::$nColumns == 1)
         {
-            $links_html = $links_div_open . '<ul>' . $links_html . '</ul>' . $links_div_close;
+            $links_html = "{$links_div_open}<ul>{$links_html}</ul>{$links_div_close}";
 
         } elseif (self::$nColumns == 2)
         {
-            $links_html_col_2 = '<ul>' . $links_html . '</ul>';
+            $links_html_col_2 = "<ul>{$links_html}</ul>";
             $links_html = $links_html_col_1 . $links_html_col_2;
 
             $links_html = $links_div_open . $links_html . $links_div_close;
-
-
         }
         return $links_html;
     }

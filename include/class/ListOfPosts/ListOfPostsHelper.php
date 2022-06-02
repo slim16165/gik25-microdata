@@ -35,7 +35,7 @@ class ListOfPostsHelper
         return $sameFile;
     }
 
-    public function GetLinksWithImages(array $links_data)
+    public function GetLinksWithImages(array $links_data): string
     {
         $links_html = '';
 
