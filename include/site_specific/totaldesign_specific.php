@@ -49,7 +49,6 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/grigio-chiaro/", "Colore Grigio Chiaro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-bianco/", "Colore Bianco");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/arredare-in-bianco-e-nero/", "Colore Tortora");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-rosa-cipria/", "Colore Rosa Cipria");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-rosa-antico/", "Colore Rosa Antico");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-giallo/", "Colore Giallo");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/giallo-ocra/", "Colore Giallo Ocra");
@@ -81,9 +80,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-bronzo/", "Colore Bronzo");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-zaffiro/", "Colore Zaffiro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-viola/", "Colore Viola");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/color-lavanda/", "Colore Lavanda");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu/", "Colore Blu");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu-navy/", "Colore Blu Navy");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-fucsia/", "Colore Fucsia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ecru/", "Colore Ecru");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-magenta/", "Colore Magenta");
@@ -117,7 +114,6 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pareti-soggiorno/", "Colori pareti soggiorno");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pastello-per-arredare-la-casa/", "Colori Pastello");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/pareti-colorate/", "Pareti colorate");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-arcobaleno/", "Colori arcobaleno");
 
 
     $result .= "</div></div></div>";

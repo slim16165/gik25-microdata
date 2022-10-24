@@ -11,9 +11,9 @@ class Boxinfo extends ShortcodeBase
     {
         //Frontend only
         add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
-        add_shortcode('md_boxinfo', array('Boxinfo', 'shortcode'));
-        add_shortcode('boxinfo', array('Boxinfo', 'shortcode'));
-        add_shortcode('boxinformativo', array('Boxinfo', 'shortcode'));
+        add_shortcode('md_boxinfo',     array(__CLASS__, 'shortcode'));
+        add_shortcode('boxinfo',        array(__CLASS__, 'shortcode'));
+        add_shortcode('boxinformativo', array(__CLASS__, 'shortcode'));
 
 
         if (is_admin())
@@ -35,7 +35,7 @@ class Boxinfo extends ShortcodeBase
         }
     }
 
-    public function shortcode($atts, $content = null)
+    public static function shortcode($atts, $content = null)
     {
         $options = shortcode_atts(array(
             'title' => 'Curiosità', // (Optional)
