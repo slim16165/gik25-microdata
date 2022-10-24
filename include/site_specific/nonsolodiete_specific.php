@@ -29,14 +29,38 @@ function link_vitamine_handler($atts, $content = null)
 {
     $l = new ListOfPostsHelper(false, true, false);
     $links_data = array(
-        ['target_url' => "https://www.nonsolodiete.it/vitamine-del-gruppo-b/", 'nome' => "Vitamine del gruppo B",],
-        ['target_url' => "https://www.nonsolodiete.it/vitamina-b1/", 'nome' => "Vitamina B1",],
-        ['target_url' => "https://www.nonsolodiete.it/vitamina-b5/", 'nome' => "Vitamina B5",],
-        ['target_url' => "https://www.nonsolodiete.it/piridossina-vitamina-b6/", 'nome' => "Vitamina B6",],
-        ['target_url' => "https://www.nonsolodiete.it/vitamina-b8/", 'nome' => "Vitamina B8",],
-        ['target_url' => "https://www.nonsolodiete.it/vitamina-b12/", 'nome' => "Vitamina B12",],
-        ['target_url' => "https://www.nonsolodiete.it/acido-folico-tutto-quello-che-dovete-sapere/", 'nome' => "Acido Folico",],
-        ['target_url' => "https://www.nonsolodiete.it/vitamina-d/", 'nome' => "Vitamina D",]
+        array(
+            'target_url' => "https://www.nonsolodiete.it/vitamine-del-gruppo-b/",
+            'nome' => "Vitamine del gruppo B",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/vitamina-b1/",
+            'nome' => "Vitamina B1",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/vitamina-b5/",
+            'nome' => "Vitamina B5",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/piridossina-vitamina-b6/",
+            'nome' => "Vitamina B6",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/vitamina-b8/",
+            'nome' => "Vitamina B8",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/vitamina-b12/",
+            'nome' => "Vitamina B12",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/acido-folico-tutto-quello-che-dovete-sapere/",
+            'nome' => "Acido Folico",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/vitamina-d/",
+            'nome' => "Vitamina D",
+        )
     );
 
     $result = "<h3>Lista delle principali vitamine</h3>
@@ -44,7 +68,7 @@ function link_vitamine_handler($atts, $content = null)
 
     $result .= "<ul class='thumbnail-list'>";
 
-    $result .= $l->GetLinksWithImagesPaginated($links_data);
+    $result .= $l->GetLinksWithImages($links_data);
 
     $result .= "</ul></div>";
     return $result;
@@ -52,42 +76,90 @@ function link_vitamine_handler($atts, $content = null)
 
 function link_diete_handler($atts, $content = null)
 {
-    $l = new ListOfPostsHelper(false, true, false, 2 /*2 columns*/);
+    $list_layout = 1;// one column
+    $list_layout = 2;// two columns
+    $l = new ListOfPostsHelperChild(false, true, false, $list_layout);
 
     $result = "<h3>Lista principali Diete</h3>";
     //	<div class='thumbnail-list'>";
 //		find_post_id_from_taxonomy("dieta");
 
     $links_data = array(
-        ['target_url' => "https://www.nonsolodiete.it/le-differenti-diete/", 'nome' => "Diete differenti"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-10-kg/", 'nome' => "Dieta per perdere 10kg"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-chetogenica/", 'nome' => "Dieta chetogenica"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-del-supermetabolismo/", 'nome' => "Dieta supermetabolismo"],
+        array(
+            'target_url' => "https://www.nonsolodiete.it/le-differenti-diete/",
+            'nome' => "Diete differenti"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-10-kg/",
+            'nome' => "Dieta per perdere 10kg"//2
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-chetogenica/",
+            'nome' => "Dieta chetogenica"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-del-supermetabolismo/",
+            'nome' => "Dieta supermetabolismo"
+        ),
         array(
             'target_url' => "https://www.nonsolodiete.it/dieta-plank/", //5
             'nome' => "Dieta Plank"
         ),
-        ['target_url' => "https://www.nonsolodiete.it/dieta-senza-carboidrati/", 'nome' => "Dieta senza carboidrati"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-mima-digiuno/", 'nome' => "Dieta mima digiuno"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-del-riso-scotti-dietidea/", 'nome' => "Dieta del riso scotti"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-lemme/", 'nome' => "Dieta Lemme"],
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-senza-carboidrati/",
+            'nome' => "Dieta senza carboidrati"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-mima-digiuno/",
+            'nome' => "Dieta mima digiuno"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-del-riso-scotti-dietidea/",
+            'nome' => "Dieta del riso scotti"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-lemme/",
+            'nome' => "Dieta Lemme"
+        ),
         array(
             'target_url' => "https://www.nonsolodiete.it/dieta-vegana/", //10
             'nome' => "Dieta Vegana"
         ),
-        ['target_url' => "https://www.nonsolodiete.it/dieta-mediterranea/", 'nome' => "Dieta Mediterranea"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-sirt/", 'nome' => "Dieta Sirt"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-delle-uova/", 'nome' => "Dieta delle uova"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-panzironi/", 'nome' => "Dieta Panzironi"],
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-mediterranea/",
+            'nome' => "Dieta Mediterranea"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-sirt/",
+            'nome' => "Dieta Sirt"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-delle-uova/",
+            'nome' => "Dieta delle uova"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-panzironi/",
+            'nome' => "Dieta Panzironi"
+        ),
         array(
             'target_url' => "https://www.nonsolodiete.it/dieta-scarsdale/", //15
             'nome' => "Dieta Scarsdale"
         ),
-        ['target_url' => "https://www.nonsolodiete.it/dieta-prima-e-dopo-le-feste/", 'nome' => "Dieta Lampo di Natale"],
-        ['target_url' => "https://www.nonsolodiete.it/dieta-tina-cipollari/", 'nome' => "Dieta di Tina Cipollari"]
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-prima-e-dopo-le-feste/",
+            'nome' => "Dieta Lampo di Natale"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/dieta-tina-cipollari/",
+            'nome' => "Dieta di Tina Cipollari"
+        )
     );
 
-    $result .= $l->GetLinksWithImagesPaginated($links_data);
+    //$result .= "<ul class='thumbnail-list'>";
+
+    $result .= $l->GetLinksWithImages($links_data);
+
+    //$result .= "</ul></div>";
     return $result;
 }
 
@@ -111,64 +183,159 @@ function link_analisi_sangue_handler($atts, $content = null)
     // );
 
     $links_data_1 = array(
-        ['target_url' => "https://www.nonsolodiete.it/esame-emocromocitometrico/", 'nome' => "Emocromo",],
-        ['target_url' => "https://www.nonsolodiete.it/costo-analisi-del-sangue/", 'nome' => "Lista esami del sangue",],
-        ['target_url' => "https://www.nonsolodiete.it/mcv-alto-o-basso/", 'nome' => "MCV",],
-        ['target_url' => "https://www.?nonsolodiete.it/autoanalisi-sangue/", 'nome' => "Autoanalisi sangue",]
+        array(
+            'target_url' => "https://www.nonsolodiete.it/esame-emocromocitometrico/",
+            'nome' => "Emocromo",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/costo-analisi-del-sangue/",
+            'nome' => "Lista esami del sangue",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/mcv-alto-o-basso/",
+            'nome' => "MCV",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/autoanalisi-sangue/",
+            'nome' => "Autoanalisi sangue",
+        )
     );
     $links_data_2 = array(
-        ['target_url' => "https://www.nonsolodiete.it/monociti-macrofagi/", 'nome' => "Monociti",],
-        ['target_url' => "https://www.nonsolodiete.it/leucociti-alti-wbc/", 'nome' => "Leucociti Alti (Leucocitosi)",],
-        ['target_url' => "https://www.nonsolodiete.it/globuli-bianchi/", 'nome' => "Globuli bianchi (WBC)",],
-        ['target_url' => "https://www.nonsolodiete.it/leucopenia/", 'nome' => "Leucociti Bassi(Leucopenia)",],
-        ['target_url' => "https://www.nonsolodiete.it/granulociti-neutrofili/", 'nome' => "Granulociti neutrofili",],
-        ['target_url' => "https://www.nonsolodiete.it/linfociti/", 'nome' => "Linfociti (alti, bassi)",]
+        array(
+            'target_url' => "https://www.nonsolodiete.it/monociti-macrofagi/",
+            'nome' => "Monociti",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/leucociti-alti-wbc/",
+            'nome' => "Leucociti Alti (Leucocitosi)",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/globuli-bianchi/",
+            'nome' => "Globuli bianchi (WBC)",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/leucopenia/",
+            'nome' => "Leucociti Bassi(Leucopenia)",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/granulociti-neutrofili/",
+            'nome' => "Granulociti neutrofili",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/linfociti/",
+            'nome' => "Linfociti (alti, bassi)",
+        )
     );
     $links_data_3 = array(
-        ['target_url' => "https://www.nonsolodiete.it/anemia-aplastica/", 'nome' => "Anemia Aplastica",],
-        ['target_url' => "https://www.nonsolodiete.it/globuli-rossi/", 'nome' => "Globuli Rossi",],
-        ['target_url' => "https://www.nonsolodiete.it/reticolociti/", 'nome' => "Globuli Rossi",],
-        ['target_url' => "https://www.nonsolodiete.it/ematocrito/", 'nome' => "Ematocrito",],
-        ['target_url' => "https://www.nonsolodiete.it/rbc/", 'nome' => "RBC",],
+        array(
+            'target_url' => "https://www.nonsolodiete.it/anemia-aplastica/",
+            'nome' => "Anemia Aplastica",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/globuli-rossi/",
+            'nome' => "Globuli Rossi",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/reticolociti/",
+            'nome' => "Globuli Rossi",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/ematocrito/",
+            'nome' => "Ematocrito",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/rbc/",
+            'nome' => "RBC",
+        ),
         array(//6
             'target_url' => "https://www.nonsolodiete.it/hb/",
             'nome' => "Emoglobina (HGB o Hb)",
         ),
-        ['target_url' => "https://www.nonsolodiete.it/mch/", 'nome' => "MCH", 'commento' => '(contenuto corpuscolare medio di emoglobina)'],
-        ['target_url' => "https://www.nonsolodiete.it/mchc/", 'nome' => "MCHC", 'commento' => '(concentrazione corpuscolare media di emoglobina)'],
-        ['target_url' => "https://www.nonsolodiete.it/rdw/", 'nome' => "RDW-CV e RDW-SD", 'commento' => '(variabilità della dimensione o del volume delle cellule dei globuli rossi; SD = deviazione standard; CV = coefficiente di variazione)']
+        array(
+            'target_url' => "https://www.nonsolodiete.it/mch/",
+            'nome' => "MCH",
+            'commento' => '(contenuto corpuscolare medio di emoglobina)'
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/mchc/",
+            'nome' => "MCHC",
+            'commento' => '(concentrazione corpuscolare media di emoglobina)'
+        ),
+        array(//9
+            'target_url' => "https://www.nonsolodiete.it/rdw/",
+            'nome' => "RDW-CV e RDW-SD",
+            'commento' => '(variabilità della dimensione o del volume delle cellule dei globuli rossi; SD = deviazione standard; CV = coefficiente di variazione)'
+        )
     );
     $links_data_4 = array(
-        ['target_url' => "https://www.nonsolodiete.it/piastrine/", 'nome' => "Piastrine"],
-        ['target_url' => "https://www.nonsolodiete.it/mpv-alto-basso/", 'nome' => "MPV", 'commento' => '(Volume piastrinico medio)'],
-        ['target_url' => "https://www.nonsolodiete.it/pdw-analisi-del-sangue/", 'nome' => "PDW", 'commento' => '(ampiezza di distribuzione piastrinica)']
+        array(
+            'target_url' => "https://www.nonsolodiete.it/piastrine/",
+            'nome' => "Piastrine"
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/mpv-alto-basso/",
+            'nome' => "MPV",
+            'commento' => '(Volume piastrinico medio)'
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/pdw-analisi-del-sangue/",
+            'nome' => "PDW",
+            'commento' => '(ampiezza di distribuzione piastrinica)'
+        )
     );
     $links_data_5 = array(
-        ['target_url' => "https://www.nonsolodiete.it/creatinina-alta-e-bassa/", 'nome' => "Creatinina",],
-        ['target_url' => "https://www.nonsolodiete.it/albumina-alta-o-bassa/", 'nome' => "Albumina",],
-        ['target_url' => "https://www.nonsolodiete.it/enzimi-epatici/", 'nome' => "Enzimi epatici",],
-        ['target_url' => "https://www.nonsolodiete.it/colesterolo-sintomi-cause/", 'nome' => "Colesterolo",],
-        ['target_url' => "https://www.nonsolodiete.it/esami-del-sangue-in-gravidanza/", 'nome' => "Analisi del sangue in gravidanza",],
-        ['target_url' => "https://www.nonsolodiete.it/thc/", 'nome' => "THC",],
-        ['target_url' => "https://www.nonsolodiete.it/ferritinemia/", 'nome' => "Ferritina",],
-        ['target_url' => "https://www.nonsolodiete.it/carenza-di-ferro/", 'nome' => "Carenza di ferro",],
-        ['target_url' => "https://www.nonsolodiete.it/transaminasi/", 'nome' => "Transaminasi",]
+        array(
+            'target_url' => "https://www.nonsolodiete.it/creatinina-alta-e-bassa/",
+            'nome' => "Creatinina",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/albumina-alta-o-bassa/",
+            'nome' => "Albumina",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/enzimi-epatici/",
+            'nome' => "Enzimi epatici",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/colesterolo-sintomi-cause/",
+            'nome' => "Colesterolo",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/esami-del-sangue-in-gravidanza/",
+            'nome' => "Analisi del sangue in gravidanza",
+        ),
+        array(//6
+            'target_url' => "https://www.nonsolodiete.it/thc/",
+            'nome' => "THC",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/ferritinemia/",
+            'nome' => "Ferritina",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/carenza-di-ferro/",
+            'nome' => "Carenza di ferro",
+        ),
+        array(
+            'target_url' => "https://www.nonsolodiete.it/transaminasi/",
+            'nome' => "Transaminasi",
+        )
     );
 
     $result .= "<ul class=\"thumbnail-list\">";
-    $result .= $l->GetLinksWithImagesPaginated($links_data_1);
+    $result .= $l->GetLinksWithImages($links_data_1);
 
     $result .= "<h4>Globuli bianchi</h4>";
-    $result .= $l->GetLinksWithImagesPaginated($links_data_2);
+    $result .= $l->GetLinksWithImages($links_data_2);
 
     $result .= "<h4>Globuli Rossi</h4>";
-    $result .= $l->GetLinksWithImagesPaginated($links_data_3);
+    $result .= $l->GetLinksWithImages($links_data_3);
 
     $result .= "<h4>Piastrine</h4>";
-    $result .= $l->GetLinksWithImagesPaginated($links_data_4);
+    $result .= $l->GetLinksWithImages($links_data_4);
 
     $result .= "<h4>Altro</h4>";
-    $result .= $l->GetLinksWithImagesPaginated($links_data_5);
+    $result .= $l->GetLinksWithImages($links_data_5);
 
     $result .= "</ul>";
     return $result;
@@ -181,7 +348,7 @@ function link_diete_handler2($atts, $content = null)
 
     if (isset($atts['list_layout'])) $list_layout = (int)$atts['list_layout'];
 
-    $l = new ListOfPostsHelper(false, true, false, $list_layout);
+    $l = new ListOfPostsHelperChild(false, true, false, $list_layout);
 
     $tag = 'analisi del sangue';// $tag = 'Horror';
 
@@ -189,11 +356,7 @@ function link_diete_handler2($atts, $content = null)
 
     $result = '<h3>Posts by tag: <i style="color: maroon;">' . $tag . '</i></h3>';
 
-    $target_posts = PostData::GetPostsDataByTag($debugMsg, $tag);
-
-    if ($debugMsg) return $debugMsg;
-
-    $result .= $l->GetLinksWithImagesPaginated($target_posts);
+    $result .= $l->GetLinksWithImagesByTag($tag);
 
     return $result;
 }
