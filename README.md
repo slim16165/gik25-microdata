@@ -17,6 +17,9 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.3.3 _(2022-10-9)_
+* Forced caching of 404 pages
+
 ##### 1.3.2 _(2021-10-2)_
 * Added function_exists('is_plugin_active') check, maybe unnecessary because it is related to another error
 
