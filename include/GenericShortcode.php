@@ -24,23 +24,20 @@ require_once("Shortcodes/youtube.php");
 require_once("class/Schema/QuestionSchema.class.php");
 require_once("class/ListOfPostsHelper.php");
 require_once("class/Utility/OttimizzazioneNewspaper.php");
+require_once("class/Utility/Pages404Helper.php");
 
 
 //EnableErrorLogging();
 
 //Avoid link and pages for tags of just one link
-TagHelper::add_filter_DisableTagWith1Post();
+//TagHelper::add_filter_DisableTagWith1Post();
 QuestionSchema::AddShortcode();
 //OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode();
 
 
-
 add_action('admin_head', 'add_LogRocket');
-//add_action('wp_head', 'add_HeaderScript');
-
 
 // add_action('after_setup_theme', 'wnd_default_image_settings');
-//add_filter( 'xmlrpc_enabled', '__return_false' );
 
 //Change the default image settings in the Backend
 function wnd_default_image_settings()
@@ -53,7 +50,7 @@ function wnd_default_image_settings()
 
 #region Script & CSS loading
 
-add_action('admin_head', 'add_LogRocket');
+
 
 function add_LogRocket()
 {
@@ -125,5 +122,5 @@ add_action('init', 'update_user_activity');
 if(!function_exists("exclude_posts_from_everywhere"))
     exit("la funzione non è definita");
 
-add_action('pre_get_posts', 'exclude_posts_from_everywhere');
-add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', 'exclude_posts_from_sitemap_by_post_ids', 10000);
+//add_action('pre_get_posts', 'exclude_posts_from_everywhere');
+//add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', 'exclude_posts_from_sitemap_by_post_ids', 10000);
