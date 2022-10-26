@@ -7,25 +7,10 @@ if (!defined('ABSPATH'))
 
 const PLUGIN_NAME_PREFIX = 'md_';
 
-spl_autoload_register(function ($className)
-{
-//		include_once $_SERVER['DOCUMENT_ROOT'] . "/class/$className.class.php";
-    require_once "class/Utility/HtmlHelper.class.php";
-//		require_once "class/LowLevelShortcode.class.php";
-    require_once "class/Utility/MyString.class.php";
-//		require_once("packets/highlight/Highlight/Highlighter.php");
-    require_once "class/Utility/ServerHelper.class.php";
-    require_once "class/Schema/QuestionSchema.class.php";
-    require_once "class/TagHelper.php";
-    require_once "class/ColorWidget.php";
-    require_once "class/Utility/OptimizationHelper.php";
-    require_once "class/Utility/YoastOptimizer.php";
-    require_once "class/Utility/RankMathOptimizer.php";
-    require_once "class/Utility/Pages404Helper.php";
-});
 require_once "class/ExcludePostFrom.php";
 
-function IsNullOrEmptyString($str)
+
+function IsNullOrEmptyString($str): bool
 {
     return (!isset($str) || trim($str) === '');
 }
@@ -91,27 +76,6 @@ function CheckJsonError(string $json): string
     return $errormessage;
 }
 
-function EnableErrorLogging()
-{
-    global $EnableErrorLogging_Called, $MY_DEBUG;
-
-    if ($EnableErrorLogging_Called == true)
-    {
-        return;
-    }
-
-    static $EnableErrorLogging_Called = true;
-
-    error_reporting(E_ALL);
-    ini_set('display_errors', 'On');
-    ini_set('error_reporting', E_ALL);
-    //define('MY_DEBUG', true);
-    //define('WP_DEBUG_DISPLAY', true);
-
-    $MY_DEBUG = true;
-
-}
-
 function timer()
 {
     $starttime = microtime(true);
@@ -123,21 +87,7 @@ function timer()
     var_dump($timediff); //in seconds
 }
 
-/**
- * The provided url should be an article of this wordpress installation. This method is used to test on staging environments
- */
-function ReplaceTargetUrlIfStaging($target_url)
-{
-    if (MyString::Contains(ServerHelper::getDomain(), "cloudwaysapps.com") && MyString::Contains($target_url, "cloudwaysapps.com"))
-    {
-        //don't replace, cause it's already staging url
-    }
-    elseif (MyString::Contains(ServerHelper::getDomain(), "cloudwaysapps.com"))
-    {
-        $target_url = HtmlHelper::ReplaceDomain($target_url, ServerHelper::getDomain());
-    }
-    return $target_url;
-}
+
 
 //Limit the visibility of some post for specific users
 //add_filter('parse_query', 'md_hide_others_roles_posts');
@@ -200,6 +150,7 @@ function md_scripts_styles()
 add_action('admin_init', 'md_scripts_styles');
 
 add_action('save_post', 'add_permalink_to_posts_table', 100, 2);
+
 function add_permalink_to_posts_table($id, $post)
 {
     global $wpdb;

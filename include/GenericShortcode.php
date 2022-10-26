@@ -22,7 +22,8 @@ require_once("Shortcodes/youtube.php");
 
 // require_once("Shortcodes/tinymce.php");
 require_once("class/Schema/QuestionSchema.class.php");
-require_once("class/ListOfPostsHelper.php");
+require_once("class/ListOfPosts/ListOfPostsHelper.php");
+require_once "class/Utility/OptimizationHelper.php";
 require_once("class/Utility/OttimizzazioneNewspaper.php");
 require_once("class/Utility/Pages404Helper.php");
 
@@ -46,6 +47,13 @@ function wnd_default_image_settings()
     update_option('image_default_align', 'right');
     update_option('image_default_link_type', 'none');
     update_option('image_default_size', 'full-size');
+}
+
+function theme_gallery_defaults( $settings ) {
+    $settings['galleryDefaults']['columns'] = 1;
+    $settings['galleryDefaults']['link'] = 'none';
+    $settings['galleryDefaults']['size'] = 'full-size';
+    return $settings;
 }
 
 #region Script & CSS loading
