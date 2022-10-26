@@ -22,6 +22,10 @@ if (!defined('ABSPATH'))
     exit; // Exit if accessed directly.
 }
 
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+    require __DIR__ . '/vendor/autoload.php';
+}
+
 if (defined('DOING_AJAX') && DOING_AJAX)
     return;
 
