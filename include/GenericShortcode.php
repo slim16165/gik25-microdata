@@ -23,11 +23,7 @@ require_once("Shortcodes/youtube.php");
 // require_once("Shortcodes/tinymce.php");
 require_once("class/Schema/QuestionSchema.class.php");
 require_once("class/ListOfPosts/ListOfPostsHelper.php");
-<<<<<<< HEAD
-
-=======
 require_once "class/Utility/OptimizationHelper.php";
->>>>>>> 1bbc4b5 (OOP, Composer of lists of posts)
 require_once("class/Utility/OttimizzazioneNewspaper.php");
 require_once("class/Utility/Pages404Helper.php");
 
