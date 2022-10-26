@@ -1,22 +1,32 @@
 {
-  "name": "gik25/giv25-microdata",
-  "description": "description",
+  "name": "gik25/gik25-microdata",
+  "description": "",
+  "type"       : "wordpress-plugin",
   "minimum-stability": "dev",
   "license": "proprietary",
   "authors": [
     {
-      "name": "gik25",
-      "email": "email@example.com"
+      "name": "Gianluigi Salvi",
+      "email": "gianluigi.salvi@gmail.com"
     }
   ],
+  "autoload"   : {
+    "classmap": ["include/"]
+  },
   "require": {
     "athari/yalinqo": "^2.0",
-    "johnpbloch/wordpress": "dev-master",
-    "yiisoft/html": "dev-master"
+    "composer/installers": "~1.0",
+    "symfony/stopwatch"  : "~2.8",
+    "yiisoft/html": "dev-master",
+    "illuminate/collections": "*",
+    "doctrine/collections": "1.8.*"
   },
   "config": {
-    "allow-plugins": {
-      "johnpbloch/wordpress-core-installer": true
-    }
+    "allow-plugins": false
+  },
+  "require-dev": {
+    "phpstan/phpstan": "*",
+    "phpstan/extension-installer": "^1.2.0",
+    "szepeviktor/phpstan-wordpress": "dev-master"
   }
 }
