@@ -17,6 +17,11 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.4.0 _(2022-10-27)_
+* Major changes: using OOP and Composer
+* Fixed and tested Lists of Posts in Superinformati
+* Implemented PHPStan
+
 ##### 1.3.3 _(2022-10-9)_
 * Forced caching of 404 pages
 
