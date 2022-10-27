@@ -24,6 +24,7 @@
   "require-dev": {
     "phpstan/phpstan": "*",
     "phpstan/extension-installer": "^1.2.0",
-    "szepeviktor/phpstan-wordpress": "dev-master"
+    "szepeviktor/phpstan-wordpress": "dev-master",
+    "vimeo/psalm": "*"
   }
 }
