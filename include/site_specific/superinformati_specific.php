@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+use include\class\ListOfPosts\Types\LinkBase;
+use Illuminate\Support\Collection;
+use Yiisoft\Html\Html;
+use Yiisoft\Html\Tag\Ul;
+
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.
@@ -20,7 +25,10 @@ add_filter('the_author', 'its_my_company');
 
 add_filter('elementor/frontend/print_google_fonts', '__return_false');
 
-function add_HeaderScript()
+/**
+ * @return void
+ */
+function add_HeaderScript():void
 {
     if (defined('DOING_AJAX')) {
         return;
@@ -47,7 +55,7 @@ function Adsense(): void
 TAG;
 }
 
-function add_FooterScript()
+function add_FooterScript():void
 {
     if (defined('DOING_AJAX')) {
         return;
@@ -70,83 +78,73 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
 {
     $l = new ListOfPostsHelper(false, true, false);
 
-    $result = "<h3>Analisi del Sangue: gli altri valori da tenere sotto controllo</h3>";
-//		$result="RBC, RDW, Ht,  HB, Ematocrito, MCV, MCH, MCHC si riferiscono ai globuli rossi,
-//		WBC solo ai globuli bianchi,
-//		poi ci sono reticolociti e piastrine.
-//		In pratica il 90% dell'emocromo riguarda i globuli rossi.";
-
-    $result .= "<ul class=\"nicelist\">";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/indici-corpuscolari-quali-emocromo/11328/", "Indici Corpuscolari", "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/mcv-volume-corpuscolare-medio/4733/", "MCV",
-        "(volume corpuscolare medio)");
+    $result = Html::ul()->class("nicelist")->open();
+    $collection = new Collection();
+    $collection->add(new LinkBase("https://www.superinformati.com/indici-corpuscolari-quali-emocromo/11328/", "Indici Corpuscolari", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/mcv-volume-corpuscolare-medio/4733/", "MCV", "(volume corpuscolare medio)"));
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
 
     $result .= "<h4>Globuli bianchi</h4>";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/leucociti/11969/", "Leucociti", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/neutrofili/13060/", "Neutrofili", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/globuli-bianchi-bassi/12798/", "Leucopenia", "(Globuli bianchi bassi)");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/monociti-macrofagi/13038/", "Monocidi Macrofagi", "");
+    $result .= Html::ul()->class("nicelist")->open();
+    $collection = new Collection();
+    $collection->add(new LinkBase("https://www.superinformati.com/leucociti/11969/", "Leucociti", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/neutrofili/13060/", "Neutrofili", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/globuli-bianchi-bassi/12798/", "Leucopenia", "(Globuli bianchi bassi)"));
+    $collection->add(new LinkBase("https://www.superinformati.com/monociti-macrofagi/13038/", "Monocidi Macrofagi", ""));
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
 
     #region Globuli Rossi
 
     $result .= "<h4>Globuli Rossi</h4>";
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/globuli-rossi/12049/", "Globuli rossi", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/reticolociti/20155/", "Reticolociti", "(Globuli rossi non del tutto formati)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/mch/11247/", "MCH",
-        "(contenuto corpuscolare medio di emoglobina)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/mchc/11315/", "MCHC",
-        "(concentrazione corpuscolare media di emoglobina)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/rdw-cv/4709/", "RDW-CV e RDW-SD",
-        "(variabilità della dimensione o del volume delle cellule dei globuli rossi; SD = deviazione standard; CV = coefficiente di variazione)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/ves-esami-valori/24528/", "VES", "(velocità di elettrosedimentazione)");
-
-
+    $result .= Html::ul()->class("nicelist")->open();
+    $collection = new Collection();
+    $collection->add(new LinkBase("https://www.superinformati.com/globuli-rossi/12049/", "Globuli rossi", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/reticolociti/20155/", "Reticolociti", "(Globuli rossi non del tutto formati)"));
+    $collection->add(new LinkBase("https://www.superinformati.com/mch/11247/", "MCH", "(contenuto corpuscolare medio di emoglobina)"));
+    $collection->add(new LinkBase("https://www.superinformati.com/mchc/11315/", "MCHC", "(concentrazione corpuscolare media di emoglobina)"));
+    $collection->add(new LinkBase("https://www.superinformati.com/rdw-cv/4709/", "RDW-CV e RDW-SD", "(variabilità della dimensione o del volume delle cellule dei globuli rossi; SD = deviazione standard; CV = coefficiente di variazione)"));
+    $collection->add(new LinkBase("https://www.superinformati.com/ves-esami-valori/24528/", "VES", "(velocità di elettrosedimentazione)"));
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
     #endregion
 
     #region Piastrine
 
     $result .= "<h4>Piastrine</h4>";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/piastrine/12139/", "Piastrine", "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/mpv-volume-piastrinico-medio/11119/", "MPV",
-        "(Volume piastrinico medio)");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/pdw/11324/", "PDW",
-        "(ampiezza di distribuzione piastrinica)");
-
+    $result .= Html::ul()->class("nicelist")->open();
+    $collection = new Collection();
+    $collection->add(new LinkBase("https://www.superinformati.com/piastrine/12139/", "Piastrine", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/mpv-volume-piastrinico-medio/11119/", "MPV", "(Volume piastrinico medio)"));
+    $collection->add(new LinkBase("https://www.superinformati.com/pdw/11324/", "PDW", "(ampiezza di distribuzione piastrinica)"));
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
     #endregion
 
     $result .= "<h4>Altro</h4>";
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/emazie-nelle-urine/8115/", "Emazie nelle urine",
-        "(emazie è un sinonimo di globuli rossi)");
+    $result .= Html::ul()->class("nicelist")->open();
+    $collection = new Collection();
+    $collection->add(new LinkBase("https://www.superinformati.com/emazie-nelle-urine/8115/", "Emazie nelle urine", "(emazie è un sinonimo di globuli rossi)"));
+    $collection->add(new LinkBase("https://www.superinformati.com/thc/12796/", "THC nelle urine", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/nuovi-parametri-per-il-livello-del-colesterolo/6110/", "Colesterolo", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/trigliceridi/12422/", "Trigliceridi", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/creatinina/12088/", "Creatinina", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/ferritina/12231/", "Ferritina", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/sideremia/12233/", "Sideremia", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/omocisteina/12249/", "Omocisteina", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/transferrina/12235/", "Transferrina", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/analisi-del-sangue-in-gravidanza/12503/", "Analisi del sangue in gravidanza", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/transaminasi/12525/", "Transaminasi", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/carenza-di-ferro/12541/", "Carenza di ferro", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/gamma-gt-alte-e-basse/25530/", "Gamma GT alte e basse", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/iperglicemia/24650/", "Iperglicemia", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/glicemia/27786/", "Glicemia", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/anemia-falciforme/27231/", "Anemia Falciforme", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/iperomocisteinemia/4969/", "Iperomocisteinemia", ""));
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
 
-    $result .= $l->GetLinkWithImage(" https://www.superinformati.com/thc/12796/", "THC nelle urine",
-        "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/nuovi-parametri-per-il-livello-del-colesterolo/6110/", "Colesterolo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/trigliceridi/12422/", "Trigliceridi", "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/creatinina/12088/", "Creatinina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/ferritina/12231/", "Ferritina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/sideremia/12233/", "Sideremia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/omocisteina/12249/", "Omocisteina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/transferrina/12235/", "Transferrina", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/analisi-del-sangue-in-gravidanza/12503/", "Analisi del sangue in gravidanza", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/transaminasi/12525/", "Transaminasi", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/carenza-di-ferro/12541/", "Carenza di ferro", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/gamma-gt-alte-e-basse/25530/", "Gamma GT alte e basse", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/iperglicemia/24650/", "Iperglicemia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/glicemia/27786/", "Glicemia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/anemia-falciforme/27231/", "Anemia Falciforme", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/iperomocisteinemia/4969/", "Iperomocisteinemia", "");
-
-    $result .= "</ul>";
     return $result;
 }
 
@@ -424,14 +422,8 @@ function link_dimagrimento_handler($atts, $content = null): string
         ]
     ];
 
-    $result = "<h3>Lista dei principali metodi per dimagrire e tonificare</h3>
-		<div class='thumbnail-list'>";
+    $result = printList($l, $links_data, "Lista dei principali metodi per dimagrire e tonificare", "thumbnail-list");
 
-    $result .= "<ul class='thumbnail-list'>";
-
-    $result .= $l->GetLinksWithImages($links_data);
-
-    $result .= "</ul></div>";
     return $result;
 }
 
@@ -505,14 +497,34 @@ function link_vitamine_handler($atts, $content = null): string
         ]
     ];
 
-    $result = "<h3>Lista delle principali vitamine</h3>
-		<div class='thumbnail-list'>";
+    $result = printList($l, $links_data, "Lista delle principali vitamine", "thumbnail-list");
+    return $result;
+}
 
-    $result .= "<ul class='thumbnail-list'>";
-
+/**
+ * @param ListOfPostsHelper $l
+ * @param array $links_data
+ * @param $title
+ * @param $ulClass
+ * @return string
+ */
+function printList(ListOfPostsHelper $l, array $links_data, $title, $ulClass): string
+{
+    $result = Html::h3($title);
+    $result .= Html::div()->class($ulClass)->open();
+    $result .= Html::ul()->class($ulClass)->open();
     $result .= $l->GetLinksWithImages($links_data);
+    $result .= Html::ul()->close();
+    $result .= Html::div()->close();
 
-    $result .= "</ul></div>";
+
+    //$result = H3::tag()->content($title)->render();
+//    $result .= Html::div("", ["class" => $ulClass])->open();
+//    $result .= Div::tag()->Class('thumbnail-list')->open();
+//    $result .= Ul::tag()->close();
+//    $result .= Div::tag()->close();
+//    $result .= Html::closeTag("ul");
+
     return $result;
 }
 
@@ -694,14 +706,7 @@ function link_tatuaggi_handler($atts, $content = null): string
         ]
     ];
 
-    $result = "<h3>Articoli sui tatuaggi</h3>
-		<div class='thumbnail-list'>";
-
-    $result .= "<ul class='thumbnail-list'>";
-
-    $result .= $l->GetLinksWithImages($links_data);
-
-    $result .= "</ul></div>";
+    $result = printList($l, $links_data, "Articoli sui tatuaggi", "thumbnail-list");
     return $result;
 }
 
@@ -972,14 +977,7 @@ function link_diete_handler($atts, $content = null): string
         ]
     ];
 
-    $result = "<h3>Lista delle principali diete</h3>
-		<div class='thumbnail-list'>";
-
-    $result .= "<ul class='thumbnail-list'>";
-
-    $result .= $l->GetLinksWithImages($links_data);
-
-    $result .= "</ul></div>";
+    $result = printList($l, $links_data, "Lista delle principali diete", "thumbnail-list");
     return $result;
 }
 
@@ -989,41 +987,41 @@ function sedi_inps_handler($atts, $content = null): string
 
     $result = "<h3>Sedi INPS in tutta italia</h3>";
 
-    $result .= "<ul class=\"nicelist\">";
+    $result .= Html::ul()->class("nicelist")->open();
+    $collection = new Collection();
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-bologna/13095/", "Sedi Inps Bologna", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-firenze/13130/", "Sedi Inps Firenze", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-brescia/13157/", "Sedi Inps Brescia", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-piacenza/13178/", "Sedi Inps Piacenza", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-napoli/13191/", "Sedi Inps Napoli", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-lecco/13174/", "Sedi Inps Lecco", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-potenza/13176/", "Sedi Inps Potenza", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-catania/13323/", "Sedi Inps Catania", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-padova/13332/", "Sedi Inps Padova", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-palermo/13091/", "Sedi Inps Palermo", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-taranto/14045/", "Sedi Inps Taranto", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-chieti/14043/", "Sedi Inps Chieti", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-trieste/14047/", "Sedi Inps Trieste", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-udine/14049/", "Sedi Inps Udine", ""));
 
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-bologna/13095/", "Sedi Inps Bologna", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-firenze/13130/", "Sedi Inps Firenze", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-brescia/13157/", "Sedi Inps Brescia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-piacenza/13178/", "Sedi Inps Piacenza", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-napoli/13191/", "Sedi Inps Napoli", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-lecco/13174/", "Sedi Inps Lecco", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-potenza/13176/", "Sedi Inps Potenza", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-catania/13323/", "Sedi Inps Catania", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-padova/13332/", "Sedi Inps Padova", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-palermo/13091/", "Sedi Inps Palermo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-taranto/14045/", "Sedi Inps Taranto", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-chieti/14043/", "Sedi Inps Chieti", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-trieste/14047/", "Sedi Inps Trieste", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-udine/14049/", "Sedi Inps Udine", "");
-
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-teramo/14613/", "Sedi Inps Teramo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-siena/14611/", "Sedi Inps Siena", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-prato/14609/", "Sedi Inps Prato", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-pistoia/14607/", "Sedi Inps Pistoia", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-brindisi/14602/", "Sedi Inps Brindisi", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-agrigento/14599/", "Sedi Inps Agrigento", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-caserta/14051/", "Sedi Inps Caserta", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-viterbo/14917/", "Inps Viterbo", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-vercelli/14916/", "Inps Vercelli", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-oristano/14913/", "Inps Oristano", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-terni/14915/", "Inps Terni", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-ragusa/14914/", "Inps Ragusa", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-biella/14909/", "Inps Biella", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-catanzaro/14910/", "Inps Catanzaro", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-enna/14911/", "Inps Enna", "");
-    $result .= $l->GetLinkWithImage("https://www.superinformati.com/inps-lodi/13419/", "Inps Lodi", "");
-
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-teramo/14613/", "Sedi Inps Teramo", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-siena/14611/", "Sedi Inps Siena", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-prato/14609/", "Sedi Inps Prato", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-pistoia/14607/", "Sedi Inps Pistoia", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-brindisi/14602/", "Sedi Inps Brindisi", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-agrigento/14599/", "Sedi Inps Agrigento", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-caserta/14051/", "Sedi Inps Caserta", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-viterbo/14917/", "Inps Viterbo", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-vercelli/14916/", "Inps Vercelli", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-oristano/14913/", "Inps Oristano", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-terni/14915/", "Inps Terni", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-ragusa/14914/", "Inps Ragusa", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-biella/14909/", "Inps Biella", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-catanzaro/14910/", "Inps Catanzaro", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-enna/14911/", "Inps Enna", ""));
+    $collection->add(new LinkBase("https://www.superinformati.com/inps-lodi/13419/", "Inps Lodi", ""));
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
 
     $result .= "</ul>";
     return $result;

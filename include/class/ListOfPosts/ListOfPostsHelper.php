@@ -6,17 +6,22 @@ if (!defined('ABSPATH')) {
 
 use Illuminate\Support\Collection;
 use include\class\ListOfPosts\Types\LinkBase;
+use JetBrains\PhpStorm\Pure;
 use ListOfPosts\LinkConfig;
-use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Div;
-use function PHPUnit\Framework\throwException;
 
 
 class ListOfPostsHelper
 {
     private LinkConfig $linkConfig;
 
-    function __construct($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle = '')
+    /**
+     * @param bool $removeIfSelf
+     * @param bool $withImage
+     * @param bool $linkSelf
+     * @param string $listOfPostsStyle
+     */
+    #[Pure] function __construct($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle = '')
     {
         $this->linkConfig = new LinkConfig($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle);
     }
@@ -32,6 +37,10 @@ class ListOfPostsHelper
         return $commento;
     }
 
+    /**
+     * @param array<array> $links_data
+     * @return string
+     */
     public function GetLinksWithImages(array $links_data): string
     {
         $collection = Util::ConvertArrayToCollectionOfLinks($links_data);
