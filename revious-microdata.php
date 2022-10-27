@@ -3,19 +3,9 @@
 Plugin Name: Revious Microdata
 Plugin URI:
 Description:
-Version:     1.3.3
+Version:     1.4.0
 Author:      Gianluigi Salvi
  */
-
-//	error_reporting(E_ALL);
-//	define('WP_DEBUG', true);
-//	define('WP_DEBUG_DISPLAY', true);
-//	ini_set('display_errors','On');
-//	ini_set('error_reporting', E_ALL );
-//
-//	ini_set('display_startup_errors', 1);
-//	ini_set('display_errors', 1);
-//	error_reporting(-1);
 
 if (!defined('ABSPATH'))
 {
@@ -37,7 +27,11 @@ require_once("include/GenericShortcode.php");
 //TODO: Automatically detect the current website
 require_once("include/site_specific/nonsolodiete_specific.php");
 
-function mmx_remove_xmlrpc_methods($methods)
+/**
+ * @param $methods
+ * @return mixed
+ */
+function mmx_remove_xmlrpc_methods($methods): mixed
 {
     unset($methods['system.multicall']);
     return $methods;
