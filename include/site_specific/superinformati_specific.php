@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace include\site_specific;
 
 use include\class\ListOfPosts\Types\LinkBase;
 use Illuminate\Support\Collection;

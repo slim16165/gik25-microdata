@@ -1,11 +1,12 @@
 <?php
+namespace include\class\ListOfPosts;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+
 use Yiisoft\Html\Html;
-use Yiisoft\Html\NoEncode;
-use Yiisoft\Html\Tag\A;
 use Yiisoft\Html\Tag\Div;
 use Yiisoft\Html\Tag\Img;
 

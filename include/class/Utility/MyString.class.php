@@ -1,4 +1,5 @@
 <?php
+namespace include\class\Utility;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.

@@ -1,4 +1,5 @@
 <?php
+namespace include\class\ListOfPosts;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.

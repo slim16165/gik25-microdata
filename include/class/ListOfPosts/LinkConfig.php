@@ -1,6 +1,6 @@
 <?php
 
-namespace ListOfPosts;
+namespace include\class\ListOfPosts;
 
 class LinkConfig
 {
