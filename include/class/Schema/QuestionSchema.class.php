@@ -10,6 +10,7 @@ class QuestionSchema
     public function __construct() {
         add_filter('mce_external_plugins', array($this, 'revious_microdata_add_tinymce_plugins_quest'));
         add_filter('mce_buttons', array($this, 'revious_microdata_register_buttons'));
+        QuestionSchema::AddShortcode();
     }
 
     public function revious_microdata_add_tinymce_plugins_quest($plugin_array) {
@@ -55,7 +56,7 @@ $jsonUnparsed
 TAG;
 
         $jsonDecoded = json_decode($jsonIniziale, true);
-        $result .= CheckJsonError($jsonIniziale/*, $jsonUnparsed*/);
+        $result .= Helper::CheckJsonError($jsonIniziale/*, $jsonUnparsed*/);
 
         //Parse Json e HTML
         $question_array_json = array();
