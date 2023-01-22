@@ -8,11 +8,11 @@
      * @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
      * @param {string} url Absolute URL to where the plugin is located.
      */
-    init: function (ed, url) {
+    init: function (ed :tinymce.Editor, url) {
       ed.addCommand("md_slidingbox", function () {
-        var selected_text = ed.selection.getContent();
-        var return_text = "";
-        return_text =
+          const selected_text = ed.selection.getContent();
+          let return_text;
+          return_text =
           '[md_slidingbox fa_icon="fa fa-search" url="" bg_img ="/wp-content/plugins/gik25-microdata/assets/images/car1.jpg"]' +
           selected_text.replace(/<\/?p[^>]*>/g, " ") +
           "[/md_slidingbox]<br/><br/>";
