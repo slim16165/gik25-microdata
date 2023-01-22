@@ -58,8 +58,6 @@ function theme_gallery_defaults( $settings ) {
 
 #region Script & CSS loading
 
-
-
 function add_LogRocket()
 {
     if ( defined( 'DOING_AJAX' ))
@@ -94,7 +92,6 @@ function update_user_activity()
 }
 
 add_action('init', 'update_user_activity');
-
 
 
 //	add_action('wp_head', 'add_Teads');
