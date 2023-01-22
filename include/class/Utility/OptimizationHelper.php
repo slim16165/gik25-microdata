@@ -1,5 +1,5 @@
 <?php
-
+namespace include\class\Utility;
 class OptimizationHelper
 {
     public function __construct()

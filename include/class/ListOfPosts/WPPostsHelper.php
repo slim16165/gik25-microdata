@@ -1,5 +1,5 @@
 <?php
-
+namespace include\class\ListOfPosts;
 class WPPostsHelper
 {
     const MY_DEBUG = true;

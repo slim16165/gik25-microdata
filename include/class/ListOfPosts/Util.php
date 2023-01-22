@@ -1,5 +1,5 @@
 <?php
-
+namespace include\class\ListOfPosts;
 use Illuminate\Support\Collection;
 use include\class\ListOfPosts\Types\LinkBase;
 

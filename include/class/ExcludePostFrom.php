@@ -1,4 +1,5 @@
 <?php
+namespace include\class;
 
 //TODO: classe da completare.. ci sono cablature e casini vari
 

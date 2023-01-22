@@ -1,8 +1,5 @@
 <?php
-if (!defined('ABSPATH'))
-{
-    exit; // Exit if accessed directly.
-}
+namespace include\class\Utility;
 
 class HtmlHelper
 {

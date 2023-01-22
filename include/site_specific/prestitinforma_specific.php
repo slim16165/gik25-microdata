@@ -1,5 +1,5 @@
-<?php ////////////////////
-
+<?php
+namespace include\site_specific;
 
 
 

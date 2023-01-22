@@ -1,4 +1,6 @@
 <?php
+namespace include\class\Schema;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
