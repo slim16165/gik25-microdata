@@ -1,11 +1,5 @@
-/* ======================================
- *
- *
- * ======================================
- */
-
 (function () {
-  tinymce.create("tinymce.plugins.md_telefono", {
+  tinymce.create("tinymce.plugins.md_slidingbox", {
     /**
      * Initializes the plugin, this will be executed after the plugin has been created.
      * This call is done before the editor instance has finished it's initialization so use the onInit event
@@ -15,54 +9,30 @@
      * @param {string} url Absolute URL to where the plugin is located.
      */
     init: function (ed, url) {
-      ed.addCommand("md_telefono", function () {
-        var selected_text = ed.selection.getContent();
-        var return_text = "";
-        return_text =
-          '[md_telefono organizationname=""]' +
+      ed.addCommand("md_slidingbox", function () {
+          const selected_text = ed.selection.getContent();
+          let return_text;
+          return_text =
+          '[md_slidingbox fa_icon="fa fa-search" url="" bg_img ="/wp-content/plugins/gik25-microdata/assets/images/car1.jpg"]' +
           selected_text.replace(/<\/?p[^>]*>/g, " ") +
-          "[/md_telefono]";
+          "[/md_slidingbox]<br/><br/>";
         ed.execCommand("mceInsertContent", 0, return_text);
       });
 
-      ed.addButton("md_telefono-menu", {
+      ed.addButton("md_slidingbox-menu", {
         border: "1 1 1 1",
-        text: "Telefono",
-        tooltip: "Aggiunge i microdata di schema utili a Google",
-        icon: true,
-        // image : url + '/quote-left.png',
-        icon: " fa fa-phone",
-        //image: url + "/assets/images/quote-left.png",
+        text: "Sliding Box",
+        tooltip: "Insert Sliding Box shortcode",
+        //icon: true,
+        icon: " fa fa-info-circle",
+        //fa fa-info-circle
+        image: url + "./../images/icon-sliding-box.png",
         size: "small",
         onclick: function () {
-          ed.execCommand("md_telefono");
+          ed.execCommand("md_slidingbox");
+          return;
         },
       });
-
-      //-----------------------------------------
-
-      //   ed.addCommand("md_prezzo", function () {
-      //     var selected_text = ed.selection.getContent();
-      //     var return_text = "";
-      //     return_text =
-      //       "[microdata_prezzo]" +
-      //       selected_text.replace(/<\/?p[^>]*>/g, " ") +
-      //       "[/microdata_prezzo]";
-      //     ed.execCommand("mceInsertContent", 0, return_text);
-      //   });
-
-      //   // Pullquote Menu Button http://www.tinymce.com/wiki.php/api4:class.tinymce.ui.MenuButton
-      //   ed.addButton("md_prezzo_btn", {
-      //     border: "1 1 1 1",
-      //     text: "Prezzo",
-      //     tooltip: "Aggiunge i microdata di schema utili a Google",
-      //     icon: true,
-      //     image: url + "/quote-left.png",
-      //     size: "small",
-      //     onclick: function () {
-      //       ed.execCommand("md_prezzo");
-      //     },
-      //   });
     },
 
     /**
@@ -87,15 +57,15 @@
      */
     getInfo: function () {
       return {
-        longname: "md_telefono",
+        longname: "md_slidingbox",
         author: "Revious",
         authorurl: "",
         infourl: "",
-        version: "1.7.6",
+        version: "1.7.5",
       };
     },
   });
 
   // Register plugin
-  tinymce.PluginManager.add("md_telefono", tinymce.plugins.md_telefono);
+  tinymce.PluginManager.add("md_slidingbox", tinymce.plugins.md_slidingbox);
 })();
