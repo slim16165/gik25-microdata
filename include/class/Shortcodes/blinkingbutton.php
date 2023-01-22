@@ -8,36 +8,13 @@ if (!defined('ABSPATH'))
 
 class BlinkingButton extends ShortcodeBase
 {
-
     public function __construct()
     {
-        //$res = OptimizationHelper::ExecuteAfterTemplateRedirect('md_blinkingbutton', array(OptimizationHelper, 'IncludeCssOnPosts'));
-        //Frontend only
-        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
-
-        if (is_admin())
-        {
-            //TODO: replicate for the other shortcode | yes, but che cazz fa???
-            add_action('admin_enqueue_scripts', array($this, 'mdbb_admin_scripts'));
-            add_filter('mce_external_plugins', array($this, 'mdbb_register_plugin'));
-            add_filter('mce_buttons', array($this, 'mdbb_register_button'));
-        }
+        $this->shortcode = 'md_blinkingbutton';
+        parent::__construct();
     }
 
-    public function pluginOptimizedLoad() : void
-    {
-        //In alternativa potrei usare !is_admin
-        $isFe = is_page() || is_singular() || is_front_page() || is_single();
-
-        if ($isFe && $this->PostContainsShortCode('md_blinkingbutton'))
-        {
-            add_shortcode('md_blinkingbutton', array($this, 'ShortcodeHandler'));
-            add_action('wp_enqueue_scripts', array($this, 'mdbb_styles'));
-            add_action('wp_enqueue_scripts', array($this, 'mdbb_scripts'));
-        }
-    }
-
-    public function ShortcodeHandler($atts, $content = null)
+    public function ShortcodeHandler($atts, $content = null): string
     {
         $mdbb = shortcode_atts(array(
             'fa_icon' => 'fa fa-bars',
@@ -67,31 +44,31 @@ ABC;
         return $mdbb_html;
     }
 
-    public function mdbb_styles()
+    public function styles()
+{
+    wp_register_style('styles', plugins_url("{$this->asset_path}/css/mdbb.css"), array(), '', 'all');
+    wp_enqueue_style('styles');
+}
+
+    public function admin_scripts()
     {
-        wp_register_style('mdbb-styles', plugins_url('/gik25-microdata/assets/css/mdbb.css'), array(), '', 'all');
-        wp_enqueue_style('mdbb-styles');
+        wp_register_style('styles', plugins_url("{$this->asset_path}/css/fontawesome.min.css"), array(), '5.13.1', 'all');
+        wp_enqueue_style('styles');
     }
 
-    public function mdbb_admin_scripts()
+    public function scripts()
     {
-        wp_register_style('mdbb-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), array(), '5.13.1', 'all');
-        wp_enqueue_style('mdbb-fa-styles');
+        script('script', plugins_url("{$this->asset_path}/js/mdbb.js"), array('jquery'));
+        script('script');
     }
 
-    public function mdbb_scripts()
+    public function register_plugin($plugin_array)
     {
-        wp_register_script('mdbb-script', plugins_url('/gik25-microdata/assets/js/mdbb.js'), array('jquery'));
-        wp_enqueue_script('mdbb-script');
-    }
-
-    public function mdbb_register_plugin($plugin_array)
-    {
-        $plugin_array['md_blinkingbutton'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/blinkingbutton.js');
+        $plugin_array['md_blinkingbutton'] = plugins_url("{$this->asset_path}/js/TinyMCE/blinkingbutton.js");
         return $plugin_array;
     }
 
-    public function mdbb_register_button($buttons)
+    public function register_button($buttons)
     {
         array_push($buttons, 'md_blinkingbutton-menu');
         return $buttons;

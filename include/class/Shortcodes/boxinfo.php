@@ -8,21 +8,20 @@ if (!defined('ABSPATH'))
 
 class Boxinfo extends ShortcodeBase
 {
-
     public function __construct()
     {
         //Frontend only
-        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
         add_shortcode('md_boxinfo',     array(__CLASS__, 'shortcode'));
         add_shortcode('boxinfo',        array(__CLASS__, 'shortcode'));
         add_shortcode('boxinformativo', array(__CLASS__, 'shortcode'));
-
+        $this->shortcode = 'md_boxinfo';
+        parent::__construct();
 
         if (is_admin())
         {
             //Backend only
-            add_filter('mce_external_plugins', array($this, 'boxinformativo_add_buttons'));
-            add_filter('mce_buttons', array($this, 'boxinformativo_register_buttons'));
+            add_filter('mce_external_plugins', array($this, 'add_buttons'));
+            add_filter('mce_buttons', array($this, 'register_buttons'));
         }
     }
 
@@ -33,11 +32,11 @@ class Boxinfo extends ShortcodeBase
 
         if ($isFe && $this->PostContainsShortCode('boxinfo'))
         {
-            add_action('wp_enqueue_scripts', array($this, 'boxinformativo_styles'));
+            add_action('wp_enqueue_scripts', array($this, 'styles'));
         }
     }
 
-    public static function shortcode($atts, $content = null)
+    public function ShortcodeHandler($atts, $content = null)
     {
         $options = shortcode_atts(array(
             'title' => 'Curiosità', // (Optional)
@@ -57,26 +56,40 @@ class Boxinfo extends ShortcodeBase
         return $result;
     }
 
-    public function boxinformativo_styles()
+    public function styles()
     {
-        // wp_register_style('boxinformativo-styles', plugins_url('/gik25-microdata/assets/css/gik25-quotes.css'), array(), '1.7.5', 'all');
-        // wp_enqueue_style('boxinformativo-styles');
-        wp_register_style('gik25-quotes-styles', plugins_url('/gik25-microdata/assets/css/gik25-quotes.css'), array(), '1.7.5', 'all');
-        wp_enqueue_style('gik25-quotes-styles');
+        // wp_register_style('styles', plugins_url("{$this->asset_path}/css/gik25-quotes.css"), array(), '1.7.5', 'all');
+        // wp_enqueue_style('styles');
+        wp_register_style('styles', plugins_url("{$this->asset_path}/css/gik25-quotes.css"), array(), '1.7.5', 'all');
+        wp_enqueue_style('styles');
     }
 
-    public function boxinformativo_add_buttons($plugin_array)
+    public function add_buttons($plugin_array)
     {
-        $plugin_array['Revious_boxinfo'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/boxinfo.js');
+        $plugin_array['Revious_boxinfo'] = plugins_url("{$this->asset_path}/js/TinyMCE/boxinfo.js");
         return $plugin_array;
     }
 
-    public function boxinformativo_register_buttons($buttons)
+    public function register_buttons($buttons)
     {
         array_push($buttons, 'boxinfo-menu');
         return $buttons;
     }
 
+    public function admin_scripts()
+    {
+        // TODO: Implement admin_scripts() method.
+    }
+
+    public function register_plugin($plugin_array)
+    {
+        // TODO: Implement register_plugin() method.
+    }
+
+    public function register_button($buttons)
+    {
+        // TODO: Implement register_button() method.
+    }
 }
 
 $boxinformativo = new Boxinfo();

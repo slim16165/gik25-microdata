@@ -5,34 +5,15 @@ if(!defined('ABSPATH')) {
 }
 class Perfectpullquote extends ShortcodeBase
 {
-
     public function __construct()
     {
         add_shortcode('md_perfectpullquote', array($this, 'shortcode'));
         add_shortcode('perfectpullquote', array($this, 'shortcode'));
 
-        //Frontend only
-        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
-
-        if (is_admin())
-        {
-            add_filter('mce_external_plugins', array($this, 'perfectpullquote_add_buttons'));
-            add_filter('mce_buttons', array($this, 'perfectpullquote_register_buttons'));
-        }
+        $this->shortcode = 'md_flipbox';
+        parent::__construct();
     }
-
-    public function pluginOptimizedLoad() : void
-    {
-        //In alternativa potrei usare !is_admin
-        $isFe = is_page() || is_singular() || is_front_page() || is_single();
-
-        if ($isFe && $this->PostContainsShortCode('md_perfectpullquote'))
-        {
-            add_action('wp_enqueue_scripts', array($this, 'perfectpullquote_styles'));
-        }
-    }
-
-    public function shortcode($atts, $content = null) {
+    public function ShortcodeHandler($atts, $content = null) {
         $a = shortcode_atts(array(
             'align' => 'left', // (Required) Align pullquote to the left, right, or full (for width:100%). Default left.
             'bordertop' => 'false', // (Optional) Change border location to the top, then fallback to align location on mobile.
@@ -137,21 +118,30 @@ class Perfectpullquote extends ShortcodeBase
         return '<div class="gik25-quote vcard' . $alignment . $border . $classes . '"' . $styles . '><blockquote' . $citeAttribute . '><p' . $paragraphSize . '>' . do_shortcode($content) . '</p>' . $citeFooter . '</blockquote></div>';
     }
 
-    public function perfectpullquote_styles(){
-        wp_register_style('gik25-quotes-styles', plugins_url('/gik25-microdata/assets/css/gik25-quotes.css'), array(), '1.7.5', 'all');
-        wp_enqueue_style('gik25-quotes-styles');
+    public function styles(){
+        wp_register_style('styles', plugins_url("{$this->asset_path}/css/gik25-quotes.css"), array(), '1.7.5', 'all');
+        wp_enqueue_style('styles');
     }
 
-    public function perfectpullquote_add_buttons($plugin_array) {
-        $plugin_array['gik25_quotes'] = plugins_url( '/gik25-microdata/assets/js/TinyMCE/quotes.js' );
+    public function add_button($plugin_array) {
+        $plugin_array['gik25_quotes'] = plugins_url( "{$this->asset_path}/js/TinyMCE/quotes.js" );
         return $plugin_array;
     }
     
-    public function perfectpullquote_register_buttons($buttons) {
+    public function register_button($buttons) {
         array_push( $buttons, 'pullquote-menu');
         return $buttons;
     }
 
+    public function admin_scripts()
+    {
+        // TODO: Implement admin_scripts() method.
+    }
+
+    public function register_plugin($plugin_array)
+    {
+        // TODO: Implement register_plugin() method.
+    }
 }
 
 $perfectpullquote = new Perfectpullquote();
