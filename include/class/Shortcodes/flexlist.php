@@ -5,17 +5,15 @@ if (!defined('ABSPATH'))
 {
     exit;
 }
-
 class Flexlist extends ShortcodeBase
 {
-
     public function __construct()
     {
-        add_shortcode('md_flexlist', array($this, 'shortcode'));
-        add_shortcode('flexlist', array($this, 'shortcode'));
+        $this->shortcode = 'md_flexlist';
+        parent::__construct();
     }
 
-    public function shortcode($atts, $content = null)
+    public function ShortcodeHandler($atts, $content = null)
     {
         $html = $content;
         $dom = new DOMDocument;
@@ -36,6 +34,25 @@ class Flexlist extends ShortcodeBase
         return $dom->saveHTML();
     }
 
+    public function styles()
+    {
+        // TODO: Implement styles() method.
+    }
+
+    public function admin_scripts()
+    {
+        // TODO: Implement admin_scripts() method.
+    }
+
+    public function register_plugin($plugin_array)
+    {
+        // TODO: Implement register_plugin() method.
+    }
+
+    public function register_button($buttons)
+    {
+        // TODO: Implement register_button() method.
+    }
 }
 
 $flexlist = new Flexlist();

@@ -7,34 +7,13 @@ if(!defined('ABSPATH')) {
 }
 class Flipbox extends ShortcodeBase
 {
-
     public function __construct()
     {
-        add_shortcode('md_flipbox', [$this, 'shortcode']);
-
-        //Frontend only
-        add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
-
-        if (is_admin())
-        {
-            add_action('admin_enqueue_scripts', [$this, 'mdfb_admin_scripts']);
-            add_filter('mce_external_plugins', [$this, 'mdfb_register_plugin']);
-            add_filter('mce_buttons', [$this, 'mdfb_register_button']);
-        }
+        $this->shortcode = 'md_flipbox';
+        parent::__construct();
     }
 
-    public function pluginOptimizedLoad() : void
-    {
-        //In alternativa potrei usare !is_admin
-        $isFe = is_page() || is_singular() || is_front_page() || is_single();
-
-        if ($isFe && $this->PostContainsShortCode('md_flipbox'))
-        {
-            add_action('wp_enqueue_scripts',    [$this, 'mdfb_styles']);
-        }
-    }
-
-    public function shortcode($atts, $content = null): string
+    public function ShortcodeHandler($atts, $content = null): string
     {
         $mdfb = shortcode_atts([
                 'fa_icon' => 'fas fa-shopping-cart',
@@ -72,22 +51,22 @@ ABC;
         return $mdfb_html;
     }
 
-    public function mdfb_styles() {
-        wp_register_style('mdfb-styles', plugins_url('/gik25-microdata/assets/css/mdfb.css'), [], '', 'all');
-        wp_enqueue_style('mdfb-styles');
+    public function styles() {
+        wp_register_style('styles', plugins_url("{$this->asset_path}/css/mdfb.css"), [], '', 'all');
+        wp_enqueue_style('styles');
     }
 
-    public function mdfb_admin_scripts() {
-        wp_register_style('mdfb-fa-styles', plugins_url('/gik25-microdata/assets/css/fontawesome.min.css'), [], '5.13.1', 'all');
-        wp_enqueue_style('mdfb-fa-styles');
+    public function admin_scripts() {
+        wp_register_style('styles', plugins_url("{$this->asset_path}/css/fontawesome.min.css"), [], '5.13.1', 'all');
+        wp_enqueue_style('styles');
     }
 
-    public function mdfb_register_plugin($plugin_array) {
-        $plugin_array['md_flipbox'] = plugins_url('/gik25-microdata/assets/js/TinyMCE/flipbox.js');
+    public function register_plugin($plugin_array) {
+        $plugin_array['md_flipbox'] = plugins_url("{$this->asset_path}/js/TinyMCE/flipbox.js");
         return $plugin_array;
     }
     
-    public function mdfb_register_button($buttons) {
+    public function register_button($buttons) {
         array_push($buttons, 'md_flipbox-menu');
         return $buttons;
     }

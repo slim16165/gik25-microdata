@@ -5,17 +5,12 @@ if(!defined('ABSPATH')) {
 }
 class Telefono extends ShortcodeBase
 {
-
     public function __construct()
     {
         add_shortcode('md_telefono', array($this, 'shortcode'));
         add_shortcode('microdata_telefono', array($this, 'shortcode'));
-
-        if (is_admin())
-        {
-            add_filter('mce_external_plugins', array($this, 'mdt_register_plugin'));
-            add_filter('mce_buttons', array($this, 'mdt_register_button'));
-        }
+        $this->shortcode = 'md_flipbox';
+        parent::__construct();
     }
 
     public function shortcode($atts, $content = null) {
@@ -64,17 +59,31 @@ EOF;
         return $result;
     }
 
-    public function mdt_register_plugin($plugin_array) {
+    public function register_plugin($plugin_array) {
         $plugins_url = plugins_url('gik25-microdata/assets/js/TinyMCE/telefono.js');
         $plugin_array['md_telefono'] = $plugins_url;
         return $plugin_array;
     }
 
-    public function mdt_register_button($buttons) {
+    public function register_button($buttons) {
         array_push($buttons, 'md_telefono-menu');
         return $buttons;
     }
 
+    public function ShortcodeHandler($atts, $content = null)
+    {
+        // TODO: Implement ShortcodeHandler() method.
+    }
+
+    public function styles()
+    {
+        // TODO: Implement styles() method.
+    }
+
+    public function admin_scripts()
+    {
+        // TODO: Implement admin_scripts() method.
+    }
 }
 
 $telefono = new Telefono();
