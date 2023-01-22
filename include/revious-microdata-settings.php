@@ -18,7 +18,7 @@ class ReviousMicrodataSettingsPage
     /**
      * Add options page
      */
-    public function add_plugin_page()
+    public function add_plugin_page(): void
     {
         // This page will be under "Settings"
         add_options_page(

@@ -9,12 +9,6 @@ const PLUGIN_NAME_PREFIX = 'md_';
 
 require_once "class/ExcludePostFrom.php";
 
-
-function IsNullOrEmptyString($str): bool
-{
-    return (!isset($str) || trim($str) === '');
-}
-
 function CheckJsonError(string $json): string
 {
     $json_last_error = json_last_error();
@@ -86,7 +80,6 @@ function timer()
 
     var_dump($timediff); //in seconds
 }
-
 
 
 //Limit the visibility of some post for specific users
