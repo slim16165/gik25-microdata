@@ -24,9 +24,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			}
 		}
 
-
-
-
 		public function profile_callback( $html )
 		{
 			$profile_dom = new DOMDocument;

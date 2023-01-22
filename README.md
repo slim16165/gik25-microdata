@@ -26,6 +26,10 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.5.0 _(2023-01-22)_
+* Refactored ShortcodeBase.php to convert everything to classes and added namespaces to the classes (not tested)
+* Performed code cleaning: Removed unnecessary files: GenericShortcode.php, OttimizzazioneNewspaper.php, LowLevelShortcode.class.php, and shortcode-wpautop-control.php as they contained unused functionality.
+
 ##### 1.4.0 _(2022-10-27)_
 * Major changes: using OOP and Composer
 * Fixed and tested Lists of Posts in Superinformati
