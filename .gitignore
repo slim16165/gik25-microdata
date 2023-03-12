@@ -3,3 +3,6 @@
 /assets/js/package-lock.json
 /composer.phar
 /composer.bat
+/bin/
+/obj/
+/.vs/
