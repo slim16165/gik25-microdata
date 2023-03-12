@@ -1,0 +1,17 @@
+﻿<Project Sdk="Peachpie.NET.Sdk/1.0.9">
+	<PropertyGroup>
+		<OutputType>exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+		<StartupObject>program.php</StartupObject>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="**/*.php" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="vendor\**" />
+		<None Remove="vendor\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Update="Peachpie.App" Version="1.1.5" />
+	</ItemGroup>
+</Project>
