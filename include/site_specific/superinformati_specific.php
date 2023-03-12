@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-namespace include\site_specific;
+namespace gik25microdata\site_specific;
 
-use include\class\ListOfPosts\Types\LinkBase;
+use gik25microdata\ListOfPosts\Types\LinkBase;
 use Illuminate\Support\Collection;
 use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Ul;

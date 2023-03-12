@@ -1,6 +1,6 @@
 <?php
 
-namespace include\class\Schema;
+namespace gik25microdata\Schema;
 
 class Helper
 {

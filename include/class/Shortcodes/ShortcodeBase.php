@@ -1,5 +1,5 @@
 <?php
-namespace include\class\Shortcodes;
+namespace gik25microdata\Shortcodes;
 
 abstract class ShortcodeBase
 {
@@ -30,9 +30,6 @@ abstract class ShortcodeBase
 
         if ($isFe && $this->PostContainsShortCode($this->shortcode))
         {
-//            add_shortcode('md_boxinfo',     array(__CLASS__, 'shortcode'));
-//            add_shortcode('boxinfo',        array(__CLASS__, 'shortcode'));
-//            add_shortcode('boxinformativo', array(__CLASS__, 'shortcode'));
             add_shortcode($this->shortcode,  array($this, 'ShortcodeHandler'));
             add_action('wp_enqueue_scripts', array($this, 'styles'));
             add_action('wp_enqueue_scripts', array($this, 'scripts'));

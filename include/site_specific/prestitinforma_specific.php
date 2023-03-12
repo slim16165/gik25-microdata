@@ -1,5 +1,5 @@
 <?php
-namespace include\site_specific;
+namespace gik25microdata\site_specific;
 
 
 

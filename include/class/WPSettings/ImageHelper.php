@@ -1,6 +1,6 @@
 <?php
 
-namespace include\class\WPSettings;
+namespace gik25microdata\WPSettings;
 
 class ImageHelper{
     public function __construct()

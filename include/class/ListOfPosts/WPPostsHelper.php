@@ -1,5 +1,5 @@
 <?php
-namespace include\class\ListOfPosts;
+namespace gik25microdata\ListOfPosts;
 class WPPostsHelper
 {
     const MY_DEBUG = true;

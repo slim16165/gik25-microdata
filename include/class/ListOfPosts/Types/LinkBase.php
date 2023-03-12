@@ -1,6 +1,6 @@
 <?php
 
-namespace include\class\ListOfPosts\Types;
+namespace gik25microdata\ListOfPosts\Types;
 
 class LinkBase
 {

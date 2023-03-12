@@ -1,12 +1,12 @@
 <?php
-namespace include\class\ListOfPosts;
+namespace gik25microdata\ListOfPosts;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
 use Illuminate\Support\Collection;
-use include\class\ListOfPosts\Types\LinkBase;
+use gik25microdata\ListOfPosts\Types\LinkBase;
 use JetBrains\PhpStorm\Pure;
 use ListOfPosts\LinkConfig;
 use Yiisoft\Html\Tag\Div;

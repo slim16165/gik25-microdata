@@ -1,5 +1,5 @@
 <?php
-namespace include\class\Shortcodes;
+namespace gik25microdata\Shortcodes;
 if(!defined('ABSPATH')) {
     exit;
 }

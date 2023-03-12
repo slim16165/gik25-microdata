@@ -1,7 +1,7 @@
 <?php
-namespace include\class\ListOfPosts;
+namespace gik25microdata\ListOfPosts;
 use Illuminate\Support\Collection;
-use include\class\ListOfPosts\Types\LinkBase;
+use gik25microdata\ListOfPosts\Types\LinkBase;
 
 class Util
 {

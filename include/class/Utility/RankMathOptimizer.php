@@ -1,5 +1,5 @@
 <?php
-namespace include\class\Utility;
+namespace gik25microdata\Utility;
 
 if (!defined('ABSPATH'))
 {

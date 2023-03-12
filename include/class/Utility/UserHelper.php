@@ -1,6 +1,6 @@
 <?php
 
-namespace include\class\Utility;
+namespace gik25microdata\Utility;
 
 class UserHelper
 {

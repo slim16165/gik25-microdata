@@ -1,6 +1,6 @@
 <?php
 
-namespace include\class\ListOfPosts;
+namespace gik25microdata\ListOfPosts;
 
 class LinkConfig
 {

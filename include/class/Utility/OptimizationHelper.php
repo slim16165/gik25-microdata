@@ -1,5 +1,5 @@
 <?php
-namespace include\class\Utility;
+namespace gik25microdata\Utility;
 class OptimizationHelper
 {
     public function __construct()

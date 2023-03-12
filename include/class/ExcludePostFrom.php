@@ -1,5 +1,5 @@
 <?php
-namespace include\class;
+namespace gik25microdata;
 
 //TODO: classe da completare.. ci sono cablature e casini vari
 

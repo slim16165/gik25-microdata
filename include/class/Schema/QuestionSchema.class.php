@@ -1,5 +1,5 @@
 <?php
-namespace include\class\Schema;
+namespace gik25microdata\Schema;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.

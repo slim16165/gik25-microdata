@@ -1,5 +1,5 @@
 <?php
-namespace include\class\ListOfPosts;
+namespace gik25microdata\ListOfPosts;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.

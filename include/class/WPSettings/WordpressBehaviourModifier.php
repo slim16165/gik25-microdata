@@ -1,8 +1,8 @@
 <?php
 
-namespace include\class\WPSettings;
+namespace gik25microdata\WPSettings;
 
-use function include\class\add_action;
+use function gik25microdata\add_action;
 
 if (!defined('ABSPATH'))
 {
