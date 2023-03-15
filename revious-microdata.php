@@ -3,9 +3,31 @@
 Plugin Name: Revious Microdata
 Plugin URI:
 Description:
-Version:     1.6.0
+Version:     1.6.1
 Author:      Gianluigi Salvi
  */
+
+function automaticallyDetectTheCurrentWebsite(): void
+{
+//require_once("include/site_specific/superinformati_specific.php");
+    $domain = $_SERVER['HTTP_HOST'];
+
+    $domain_specific_files = [
+        'www.nonsolodiete.it' => 'nonsolodiete_specific.php',
+        'www.superinformati.com' => 'superinformati_specific.php',
+        // Aggiungi altre corrispondenze qui
+    ];
+
+    $current_domain = $_SERVER['HTTP_HOST'];
+
+    if (array_key_exists($current_domain, $domain_specific_files)) {
+        $specific_file = $domain_specific_files[$current_domain];
+        require_once("include/site_specific/" . $specific_file);
+    } else {
+        // Gestisci il caso in cui il dominio corrente non è mappato a un file specifico
+    }
+
+}
 
 if (!defined('ABSPATH'))
 {
@@ -22,8 +44,10 @@ if (defined('DOING_AJAX') && DOING_AJAX)
 define('MY_PLUGIN_PATH', plugins_url(__FILE__));
 const PLUGIN_NAME_PREFIX = 'md_';
 
-//TODO: Automatically detect the current website
-require_once("include/site_specific/nonsolodiete_specific.php");
+//Automatically detect the current website
+
+
+automaticallyDetectTheCurrentWebsite();
 
 /**
  * @param $methods
@@ -44,8 +68,3 @@ add_filter('xmlrpc_methods', 'mmx_remove_xmlrpc_methods');
 //TagHelper::add_filter_DisableTagWith1Post();
 
 //OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode();
-
-
-
-
-

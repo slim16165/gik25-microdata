@@ -24,7 +24,11 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 
 # Changelog
+
+##### 1.6.1 _(2023-03-15)_
+* Automatically load domain-specific PHP files based on the current domain, removing the need for manual updates
  
+
 ##### 1.6.0 _(2023-03-14)_
 * Resolved the blocking issue where the server's PHP version (8.0) was incompatible with the packages specified in composer.json (8.1 required for the --dev)
 * Update Composer Version to 2.4
