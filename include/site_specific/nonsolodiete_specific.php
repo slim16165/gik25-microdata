@@ -6,7 +6,7 @@ if (!defined('ABSPATH'))
     exit; // Exit if accessed directly.
 }
 
-add_action('wp_head', 'add_SuperinformatiHeaderScript');
+//add_action('wp_head', 'add_HeaderScript');
 
 function add_HeaderScript()
 {
@@ -22,15 +22,15 @@ TAG;
 
 }
 
-add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler');
-add_shortcode('link_vitamine', 'link_vitamine_handler');
-add_shortcode('link_diete', 'link_diete_handler');
-add_shortcode('link_diete2', 'link_diete_handler2');
+add_shortcode('link_analisi_sangue', __NAMESPACE__ . 'link_analisi_sangue_handler');
+add_shortcode('link_vitamine', __NAMESPACE__ . 'link_vitamine_handler');
+add_shortcode('link_diete', __NAMESPACE__ . 'link_diete_handler');
+add_shortcode('link_diete2', __NAMESPACE__ . 'link_diete_handler2');
 
 function link_vitamine_handler($atts, $content = null)
 {
     $l = new ListOfPostsHelper(false, true, false);
-    $links_data = array(
+    $links = array(
         array(
             'target_url' => "https://www.nonsolodiete.it/vitamine-del-gruppo-b/",
             'nome' => "Vitamine del gruppo B",
@@ -65,14 +65,20 @@ function link_vitamine_handler($atts, $content = null)
         )
     );
 
+    $collection = new Collection();
+
+    foreach ($links as $link) {
+        $collection->add(new LinkBase($link['target_url'], $link['nome'], ""));
+    }
+
     $result = "<h3>Lista delle principali vitamine</h3>
 		<div class='thumbnail-list'>";
 
-    $result .= "<ul class='thumbnail-list'>";
+    $result .= Html::ul()->class("thumbnail-list")->open();
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
 
-    $result .= $l->GetLinksWithImages($links_data);
-
-    $result .= "</ul></div>";
+    $result .= "</div>";
     return $result;
 }
 
