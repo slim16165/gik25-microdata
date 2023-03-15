@@ -17,14 +17,18 @@ A Wordpress plugin to add beautifully styled left-aligned, right-aligned, or ful
 Download the plugin and install it 
 <pre>Plugins > Add New > Upload Plugin</pre>
 
-## SHORTCODE
-
-The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode_API) that allows you to add a quote
-within your content.
+php composer.phar update --no-dev --lock
 
 Aggiornare anche la versione del plugin su revious-microdata.php
 
+
+
 # Changelog
+ 
+##### 1.6.0 _(2023-03-14)_
+* Resolved the blocking issue where the server's PHP version (8.0) was incompatible with the packages specified in composer.json (8.1 required for the --dev)
+* Update Composer Version to 2.4
+* Explained in the readme how to install --no-dev
 
 ##### 1.5.0 _(2023-01-22)_
 * Refactored ShortcodeBase.php to convert everything to classes and added namespaces to the classes (not tested)

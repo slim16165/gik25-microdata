@@ -22,9 +22,9 @@
     "allow-plugins": false
   },
   "require-dev": {
-    "phpstan/phpstan": "*",
+    "phpstan/phpstan": "^0.12",
     "phpstan/extension-installer": "^1.2.0",
     "szepeviktor/phpstan-wordpress": "dev-master",
-    "vimeo/psalm": "*"
+    "vimeo/psalm": "^4.0"
   }
 }
