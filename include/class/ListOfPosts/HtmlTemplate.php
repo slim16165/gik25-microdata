@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
 }
 
 
+use gik25microdata\Utility\MyString;
 use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Div;
 use Yiisoft\Html\Tag\Img;

@@ -1,6 +1,8 @@
 <?php
 namespace gik25microdata\Utility;
 
+use DOMDocument;
+
 class HtmlHelper
 {
     public static function CheckHtmlIsValid(string $html): bool

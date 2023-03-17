@@ -1,6 +1,9 @@
 <?php
 namespace gik25microdata\Shortcodes;
 
+use DOMDocument;
+use DOMXPath;
+
 if (!defined('ABSPATH'))
 {
     exit;

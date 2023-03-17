@@ -1,6 +1,8 @@
 <?php
 namespace gik25microdata;
 
+use DOMDocument;
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }

@@ -1,6 +1,9 @@
 <?php
 namespace gik25microdata\site_specific;
 
+use gik25microdata\ColorWidget;
+use gik25microdata\TagHelper;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }

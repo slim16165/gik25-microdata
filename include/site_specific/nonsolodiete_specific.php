@@ -1,6 +1,12 @@
 <?php
 namespace gik25microdata\site_specific;
 
+use gik25microdata\ListOfPosts\ListOfPostsHelper;
+use gik25microdata\ListOfPosts\Types\LinkBase;
+use Illuminate\Support\Collection;
+use Yiisoft\Html\Html;
+use Yiisoft\Html\Tag\Ul;
+
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.
@@ -22,10 +28,10 @@ TAG;
 
 }
 
-add_shortcode('link_analisi_sangue', __NAMESPACE__ . 'link_analisi_sangue_handler');
-add_shortcode('link_vitamine', __NAMESPACE__ . 'link_vitamine_handler');
-add_shortcode('link_diete', __NAMESPACE__ . 'link_diete_handler');
-add_shortcode('link_diete2', __NAMESPACE__ . 'link_diete_handler2');
+add_shortcode('link_analisi_sangue', __NAMESPACE__ . '\\link_analisi_sangue_handler');
+add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
+add_shortcode('link_diete', __NAMESPACE__ . '\\link_diete_handler');
+add_shortcode('link_diete2', __NAMESPACE__ . '\\link_diete_handler2');
 
 function link_vitamine_handler($atts, $content = null)
 {

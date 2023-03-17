@@ -1,5 +1,6 @@
 <?php
 namespace gik25microdata\ListOfPosts;
+use gik25microdata\Utility\MyString;
 use Illuminate\Support\Collection;
 use gik25microdata\ListOfPosts\Types\LinkBase;
 

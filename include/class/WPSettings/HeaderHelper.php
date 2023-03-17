@@ -2,6 +2,8 @@
 
 namespace gik25microdata\WPSettings;
 
+use gik25microdata\Utility\ServerHelper;
+
 class HeaderHelper
 {
     public function __construct()

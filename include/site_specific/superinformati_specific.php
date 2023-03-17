@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace gik25microdata\site_specific;
 
+use gik25microdata\ListOfPosts\ListOfPostsHelper;
 use gik25microdata\ListOfPosts\Types\LinkBase;
 use Illuminate\Support\Collection;
 use Yiisoft\Html\Html;

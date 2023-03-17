@@ -5,10 +5,12 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+use gik25microdata\Utility\MyString;
 use Illuminate\Support\Collection;
 use gik25microdata\ListOfPosts\Types\LinkBase;
 use JetBrains\PhpStorm\Pure;
-use ListOfPosts\LinkConfig;
+use gik25microdata\ListOfPosts\LinkConfig;
+
 use Yiisoft\Html\Tag\Div;
 
 
