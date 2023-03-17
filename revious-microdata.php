@@ -37,6 +37,7 @@ if (!defined('ABSPATH'))
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
     require __DIR__ . '/vendor/autoload.php';
 }
+else exit();
 
 if (defined('DOING_AJAX') && DOING_AJAX)
     return;
