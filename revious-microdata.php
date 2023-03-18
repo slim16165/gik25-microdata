@@ -3,11 +3,13 @@
 Plugin Name: Revious Microdata
 Plugin URI:
 Description:
-Version:     1.6.1
+Version:     1.7.0
 Author:      Gianluigi Salvi
  */
 
-function automaticallyDetectTheCurrentWebsite(): void
+use gik25microdata\Utility\OptimizationHelper;
+
+function AutomaticallyDetectTheCurrentWebsite(): void
 {
 //require_once("include/site_specific/superinformati_specific.php");
     $domain = $_SERVER['HTTP_HOST'];
@@ -48,7 +50,8 @@ const PLUGIN_NAME_PREFIX = 'md_';
 //Automatically detect the current website
 
 
-automaticallyDetectTheCurrentWebsite();
+OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode();
+AutomaticallyDetectTheCurrentWebsite();
 
 /**
  * @param $methods
@@ -68,4 +71,3 @@ add_filter('xmlrpc_methods', 'mmx_remove_xmlrpc_methods');
 //Avoid link and pages for tags of just one link
 //TagHelper::add_filter_DisableTagWith1Post();
 
-//OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode();

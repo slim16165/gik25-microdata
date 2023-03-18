@@ -24,7 +24,7 @@ class ListOfPostsHelper
      * @param bool $linkSelf
      * @param string $listOfPostsStyle
      */
-    #[Pure] function __construct($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle = '')
+    #[Pure] function __construct(bool $removeIfSelf, bool $withImage, bool $linkSelf, string $listOfPostsStyle = '')
     {
         $this->linkConfig = new LinkConfig($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle);
     }
