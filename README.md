@@ -25,12 +25,14 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.7.0 _(2023-03-19)_
+* Fixed shortcode callback issue by properly referencing the namespaced function link_vitamine_handler in add_shortcode: add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
+* Fixed composer autoload.php and versions
+* Fixed missing css load bug (see OptimizazionHelper)
+* Fixing huge bug on lists on nonsolodiete
+
 ##### 1.6.1 _(2023-03-15)_
 * Automatically load domain-specific PHP files based on the current domain, removing the need for manual updates
- 
-
-
-##### 1.6.1 _(2023-03-15)_
 * Refactor vitamine list in nonsolodiete to use Collection and LinkBase classes
 
 ##### 1.6.0 _(2023-03-14)_
