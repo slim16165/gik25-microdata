@@ -90,7 +90,7 @@ function link_vitamine_handler($atts, $content = null)
 
 function link_diete_handler($atts, $content = null)
 {
-    $l = new ListOfPostsHelperChild(false, true, false, 2 /* two columns */);
+    $l = new ListOfPostsHelper(false, true, false, 2 /* two columns */);
 
 //		find_post_id_from_taxonomy("dieta");
 
@@ -367,7 +367,7 @@ function link_diete_handler2($atts, $content = null)
 
     if (isset($atts['list_layout'])) $list_layout = (int)$atts['list_layout'];
 
-    $l = new ListOfPostsHelperChild(false, true, false, $list_layout);
+    $l = new ListOfPostsHelper(false, true, false, $list_layout);
 
     $tag = 'analisi del sangue';// $tag = 'Horror';
 
