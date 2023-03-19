@@ -90,15 +90,11 @@ function link_vitamine_handler($atts, $content = null)
 
 function link_diete_handler($atts, $content = null)
 {
-    $list_layout = 1;// one column
-    $list_layout = 2;// two columns
-    $l = new ListOfPostsHelperChild(false, true, false, $list_layout);
+    $l = new ListOfPostsHelperChild(false, true, false, 2 /* two columns */);
 
-    $result = "<h3>Lista principali Diete</h3>";
-    //	<div class='thumbnail-list'>";
 //		find_post_id_from_taxonomy("dieta");
 
-    $links_data = array(
+    $links = array(
         array(
             'target_url' => "https://www.nonsolodiete.it/le-differenti-diete/",
             'nome' => "Diete differenti"
@@ -169,11 +165,20 @@ function link_diete_handler($atts, $content = null)
         )
     );
 
-    //$result .= "<ul class='thumbnail-list'>";
+    $collection = new Collection();
 
-    $result .= $l->GetLinksWithImages($links_data);
+    foreach ($links as $link) {
+        $collection->add(new LinkBase($link['target_url'], $link['nome'], ""));
+    }
 
-    //$result .= "</ul></div>";
+    $result = "<h3>Lista delle principali Diete</h3>
+		<div class='thumbnail-list'>";
+
+    $result .= Html::ul()->class("thumbnail-list")->open();
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
+
+    $result .= "</div>";
     return $result;
 }
 
