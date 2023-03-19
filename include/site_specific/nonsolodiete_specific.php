@@ -36,40 +36,40 @@ add_shortcode('link_diete2', __NAMESPACE__ . '\\link_diete_handler2');
 function link_vitamine_handler($atts, $content = null)
 {
     $l = new ListOfPostsHelper(false, true, false);
-    $links = array(
-        array(
+    $links = [
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamine-del-gruppo-b/",
             'nome' => "Vitamine del gruppo B",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b1/",
             'nome' => "Vitamina B1",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b5/",
             'nome' => "Vitamina B5",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/piridossina-vitamina-b6/",
             'nome' => "Vitamina B6",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b8/",
             'nome' => "Vitamina B8",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b12/",
             'nome' => "Vitamina B12",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/acido-folico-tutto-quello-che-dovete-sapere/",
             'nome' => "Acido Folico",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-d/",
             'nome' => "Vitamina D",
-        )
-    );
+        ]
+    ];
 
     $collection = new Collection();
 
