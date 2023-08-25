@@ -1,9 +1,9 @@
 <?php ////////////////////
 /*
-Plugin Name: Revious Microdata
+Plugin Name: Revious Microdata (minimal)
 Plugin URI:
 Description:
-Version:     1.7.0
+Version:     1.7.1-minimal
 Author:      Gianluigi Salvi
  */
 
@@ -63,7 +63,7 @@ function mmx_remove_xmlrpc_methods($methods): mixed
     return $methods;
 }
 
-add_filter('xmlrpc_methods', 'mmx_remove_xmlrpc_methods');
+//add_filter('xmlrpc_methods', 'mmx_remove_xmlrpc_methods');
 
 
 //EnableErrorLogging();

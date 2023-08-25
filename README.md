@@ -25,6 +25,19 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.7.1-minimal version _(2023-08-25)_
+Following a detailed review, we adopted a minimalist approach focused on superinformati.com, leading to several key changes:
+
+_Non-Essential Features Removed or Modified:_
+
+Removed: TagHelper, various shortcode files like youtube.php and flexlist.php.
+Modified: Classes like OptimizationHelper, ServerHelper, and Pages404Helper.
+Specific Changes: WPPostsHelper.php, HtmlHelper.class.php, and OptimizationHelper.php were modified, with methods removed or altered.
+Code was cleaned up in Pages404Helper.php.
+Comments and methods were removed in ServerHelper.class.php.
+Functions were removed in superinformati_specific.php.
+Lastly, the plugin information was updated in revious-microdata.php.
+
 ##### 1.7.0 _(2023-03-19)_
 * Fixed shortcode callback issue by properly referencing the namespaced function link_vitamine_handler in add_shortcode: add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
 * Fixed composer autoload.php and versions

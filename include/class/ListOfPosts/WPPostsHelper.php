@@ -1,6 +1,5 @@
 <?php
 namespace gik25microdata\ListOfPosts;
-use gik25microdata\TagHelper;
 use gik25microdata\Utility\HtmlHelper;
 use gik25microdata\Utility\MyString;
 use gik25microdata\Utility\ServerHelper;
@@ -8,45 +7,6 @@ use gik25microdata\Utility\ServerHelper;
 class WPPostsHelper
 {
     const MY_DEBUG = true;
-
-    /**
-     * @param string $debugMsg
-     * @param string $tag
-     * @return array
-     */
-    public static function GetPostsDataByTag(string &$debugMsg, string $tag = ''): array
-    {
-        $debugMsg = "";
-
-        if (empty($tag)) return array();
-
-        $target_postids = TagHelper::find_post_id_from_taxonomy($tag, 'post_tag');
-        
-        #region Debug
-        if (empty($target_postids))
-        {
-            $debugMsg = WPPostsHelper::MY_DEBUG ? '<h5 style="color: red;">There are no posts tagged with \'' . $tag . '\'</h5>' : "";
-        }
-
-        #endregion
-
-        $target_posts = array();
-        
-        foreach ($target_postids as $target_postid)
-        {
-            $target_post = get_post($target_postid);
-
-            if ($target_post->post_status !== "publish" )
-            {
-                $debugMsg = "NON PUBBLICATO: " . get_permalink($target_post->ID);
-                do_action( 'qm/debug', $debugMsg );
-            }
-
-            $target_posts[] = $target_post;
-        }
-        
-        return $target_posts;
-    }
 
     public static function GetPostData(string &$target_url, bool $removeIfSelf): array
     {

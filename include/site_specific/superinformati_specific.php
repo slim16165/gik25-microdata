@@ -48,15 +48,6 @@ function add_HeaderScript():void
 }
 
 
-function Adsense(): void
-{
-//Google Adsense
-    echo <<<TAG
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4057480177165624"
-     crossorigin="anonymous"></script>
-TAG;
-}
-
 function add_FooterScript():void
 {
     if (defined('DOING_AJAX')) {
@@ -65,10 +56,6 @@ function add_FooterScript():void
 }
 
 
-function its_my_company($prova): string
-{
-    return $prova;
-}
 
 
 /**

@@ -63,25 +63,6 @@ class OptimizationHelper
         }
     }
 
-    //Inglobare nell'altra e poi cancellare
-    public static function load_css_or_js_specific_pages()
-    {
-        if (is_single())
-        {
-            $plugin_url = plugin_dir_url(__FILE__);
-            wp_enqueue_style('css_single_pages', plugins_url() . '/gik25-microdata/assets/css/revious-microdata.css');
-            //If the line over is not working check if the bottom works.. I don't remember which is the fix
-	        //wp_enqueue_style('css_single_pages', trailingslashit($plugin_url) . '../../../assets/css/revious-microdata.css', array());
-
-
-            // Register the style like this for a plugin:
-            //wp_register_style('revious-quotes-styles', plugins_url('/revious_microdata.css', __FILE__), array(), '1.7.5', 'all');
-            // For either a plugin or a theme, you can then enqueue the style:
-            //wp_enqueue_style('revious-quotes-styles');
-        }
-        //else if(is_category() || is_tag())
-    }
-
     protected static function IsAnyShortcodeEnabled(): bool
     {
         $enabledShortcodes = self::GetListOfEnabledShortcodesFromOptions();
@@ -129,7 +110,6 @@ class OptimizationHelper
             }
         }
     }
-
 }
 
 new OptimizationHelper();

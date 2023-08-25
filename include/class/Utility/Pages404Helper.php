@@ -55,8 +55,6 @@ class Pages404Helper
 
         return $status;
     }
-
-
 }
 
 new Pages404Helper();

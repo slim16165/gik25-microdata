@@ -5,17 +5,7 @@ use DOMDocument;
 
 class HtmlHelper
 {
-    public static function CheckHtmlIsValid(string $html): bool
-    {
-        $dom = new DOMDocument;
-        $dom->loadHTML($html);
-        if ($dom->validate())
-            return true;
-        else
-            return false;
-    }
-
-    public static function ReplaceDomain(string $textContainingDomain, string $destDomain): string
+        public static function ReplaceDomain(string $textContainingDomain, string $destDomain): string
     {
         if (preg_match('%(https?://)%im', $destDomain))
         {
