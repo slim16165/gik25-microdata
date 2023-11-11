@@ -1,6 +1,15 @@
 # Revious Microdata
 
-[![WordPress rating](https://img.shields.io/wordpress/plugin/r/gik25-quotes.svg?maxAge=3600&label=wordpress%20rating)](https://wordpress.org/support/view/plugin-reviews/gik25-quotes) [![WordPress](https://img.shields.io/wordpress/plugin/dt/gik25-quotes.svg?maxAge=3600)](https://downloads.wordpress.org/plugin/gik25-quotes.latest-stable.zip) [![WordPress](https://img.shields.io/wordpress/v/gik25-quotes.svg?maxAge=3600)](https://wordpress.org/plugins/gik25-quotes/) [![WordPress plugin](https://img.shields.io/wordpress/plugin/v/gik25-quotes.svg?maxAge=3600)](https://wordpress.org/plugins/gik25-quotes/) [![license](https://img.shields.io/github/license/adamdehaven/gik25-quotes.svg?maxAge=3600)](https://raw.githubusercontent.com/adamdehaven/gik25-quotes/master/LICENSE)
+[![Build Status](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/badges/build.png?b=master)](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/?branch=master)
+[![static analysis](https://github.com/yiisoft/html/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/html/actions?query=workflow%3A%22static+analysis%22)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
+
+[![WordPress rating](https://img.shields.io/wordpress/plugin/r/gik25-quotes.svg?maxAge=3600&label=wordpress%20rating)](https://wordpress.org/support/view/plugin-reviews/gik25-quotes)
+[![WordPress](https://img.shields.io/wordpress/plugin/dt/gik25-quotes.svg?maxAge=3600)](https://downloads.wordpress.org/plugin/gik25-quotes.latest-stable.zip)
+[![WordPress](https://img.shields.io/wordpress/v/gik25-quotes.svg?maxAge=3600)](https://wordpress.org/plugins/gik25-quotes/)
+[![WordPress plugin](https://img.shields.io/wordpress/plugin/v/gik25-quotes.svg?maxAge=3600)](https://wordpress.org/plugins/gik25-quotes/)
+[![license](https://img.shields.io/github/license/adamdehaven/gik25-quotes.svg?maxAge=3600)](https://raw.githubusercontent.com/adamdehaven/gik25-quotes/master/LICENSE)
 
 A Wordpress plugin to add beautifully styled left-aligned, right-aligned, or full-width pullquotes. 
 
@@ -8,14 +17,43 @@ A Wordpress plugin to add beautifully styled left-aligned, right-aligned, or ful
 Download the plugin and install it 
 <pre>Plugins > Add New > Upload Plugin</pre>
 
-## SHORTCODE
-
-The plugin enables a [Wordpress shortcode](https://codex.wordpress.org/Shortcode_API) that allows you to add a quote
-within your content.
+php composer.phar update --no-dev --lock
 
 Aggiornare anche la versione del plugin su revious-microdata.php
 
+
+
 # Changelog
+
+##### 1.7.0 _(2023-03-19)_
+* Fixed shortcode callback issue by properly referencing the namespaced function link_vitamine_handler in add_shortcode: add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
+* Fixed composer autoload.php and versions
+* Fixed missing css load bug (see OptimizazionHelper)
+* Fixing huge bug on lists on nonsolodiete
+
+##### 1.6.1 _(2023-03-15)_
+* Automatically load domain-specific PHP files based on the current domain, removing the need for manual updates
+* Refactor vitamine list in nonsolodiete to use Collection and LinkBase classes
+
+##### 1.6.0 _(2023-03-14)_
+* Resolved the blocking issue where the server's PHP version (8.0) was incompatible with the packages specified in composer.json (8.1 required for the --dev)
+* Update Composer Version to 2.4
+* Explained in the readme how to install --no-dev
+
+##### 1.5.0 _(2023-01-22)_
+* Refactored ShortcodeBase.php to convert everything to classes and added namespaces to the classes (not tested)
+* Performed code cleaning: Removed unnecessary files: GenericShortcode.php, OttimizzazioneNewspaper.php, LowLevelShortcode.class.php, and shortcode-wpautop-control.php as they contained unused functionality.
+
+##### 1.4.0 _(2022-10-27)_
+* Major changes: using OOP and Composer
+* Fixed and tested Lists of Posts in Superinformati
+* Implemented PHPStan
+
+##### 1.3.3 _(2022-10-9)_
+* Forced caching of 404 pages
+
+##### 1.3.2 _(2021-10-2)_
+* Added function_exists('is_plugin_active') check, maybe unnecessary because it is related to another error
 
 ##### 1.3.1 _(2021-10-2)_
 

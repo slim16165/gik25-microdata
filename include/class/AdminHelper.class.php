@@ -1,19 +1,21 @@
 <?php
+namespace gik25microdata;
+
+use DOMDocument;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-	/**
-	 * Created by PhpStorm.
-	 * User: g.salvi
-	 * Date: 19/02/2020
-	 * Time: 11:04
-	 */
-
 	class AdminHelper
 	{
-		public function remove_extra_field_profile()
+        public function __construct()
+        {
+            add_action('init', 'update_user_activity');
+//            add_action( 'init', 'remove_extra_field_profile' );
+        }
+
+        public function remove_extra_field_profile()
 		{
 			$current_file_url =  preg_replace( "#\?.*#" , "" , basename( $_SERVER['REQUEST_URI'] ) );
 
@@ -23,9 +25,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				add_action( 'shutdown', function(){ ob_end_flush(); } );
 			}
 		}
-
-//		add_action( 'init', 'remove_extra_field_profile' );
-
 
 		public function profile_callback( $html )
 		{
@@ -65,4 +64,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 			return $profile_dom->saveHTML();
 		}
 
+    function update_user_activity(): void
+    {
+        update_user_meta(get_current_user_id(), '<last_activity>', time());
+    }
+
 	}
+
+
+

@@ -1,10 +1,10 @@
 <?php
-
+namespace gik25microdata\Utility;
 class OptimizationHelper
 {
     public function __construct()
     {
-        self::ExecuteAfterTemplateRedirect(array("OptimizationHelper", "IncludeCssOnPosts"));
+        self::ExecuteAfterTemplateRedirect([self::class, "IncludeCssOnPosts"]);
     }
 
     public static function ExecuteAfterTemplateRedirect($delegate) : void
@@ -12,13 +12,13 @@ class OptimizationHelper
         // This is the correct way of re-writing the function.
         // This action hook executes just before WordPress determines which template page to load.
         // Source: https://stackoverflow.com/questions/22070223/how-can-i-use-is-page-inside-a-plugin
-        //TODO: testare
-        add_action( 'template_redirect', $delegate);
+
+       add_action( 'template_redirect', $delegate);
     }
 
     //It's not excuted on /wp-admin pages
     //Not executed for backend pages
-    static function IncludeCssOnPosts(): void
+    public static function IncludeCssOnPosts(): void
     {
         global $post;
 
@@ -30,7 +30,7 @@ class OptimizationHelper
         if ( is_singular('post') )
         {
             //wp_enqueue_style('Footer_Links-style', get_stylesheet_directory_uri() . '/CSS_Components/Footer_Links.css?v=2.5', array( 'parent-style'));
-            if (strpos($post->post_content, '[') !== false)
+            if (str_contains($post->post_content, '['))
             {
                 wp_enqueue_style('css_single_pages', plugins_url() . '/gik25-microdata/assets/css/revious-microdata.css');
             }
@@ -43,7 +43,7 @@ class OptimizationHelper
 
     //La funzione è stata lasciata a metà, NON esegue il caricamento selettivo dei plugin
     //Perlomeno va testata
-    public static function ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode()
+    public static function ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode(): void
     {
         //PC::debug(1, 1);
 
@@ -91,7 +91,7 @@ class OptimizationHelper
         return self::CheckIfShortcodeIsUsedInThisPost($enabledShortcodes);
     }
 
-    private static function GetListOfEnabledShortcodesFromOptions()
+    private static function GetListOfEnabledShortcodesFromOptions(): ?array
     {
         $shortcode_names_arr_2 = null;
 

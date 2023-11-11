@@ -1,8 +1,7 @@
 <?php
-if (!defined('ABSPATH'))
-{
-    exit; // Exit if accessed directly.
-}
+namespace gik25microdata\Utility;
+
+use DOMDocument;
 
 class HtmlHelper
 {
@@ -25,8 +24,16 @@ class HtmlHelper
         }
         else
         {
+            $parsed_url = parse_url($textContainingDomain);
             //else keep the protocol from the source text (if present)
-            $result = preg_replace('%(https?://)?([-A-Z0-9.]+)%im', "\1$destDomain", $textContainingDomain);
+
+            $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+            $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+            $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+            $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+            $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+            $result = "$scheme$destDomain$path$query$fragment";
+            //$result = preg_replace('%(https?://)?([-A-Z0-9.]+)%im', "\1$destDomain", $textContainingDomain);
         }
 
         return $result;

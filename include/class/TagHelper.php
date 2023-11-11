@@ -1,17 +1,16 @@
 <?php
+namespace gik25microdata;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
-
-
 	class TagHelper
 	{
 		public function __construct()
         {
         }
 
-        public static function add_filter_DisableTagWith1Post()
+        public static function add_filter_DisableTagWith1Post(): void
         {
             add_filter('tag_link', array(__CLASS__, 'removeLinkFromTags'), 10, 2);
             //add_action('template_redirect', array(__CLASS__, 'tagWithOnePostRedirect'), 5);
@@ -46,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) {
          * less than 10 posts associated to them.
          */
         /** @noinspection PhpUnused */
-        public static function tagWithOnePostRedirect()
+        public static function tagWithOnePostRedirect(): void
         {
             // We're viewing a Tag archive page
             if (is_tag())

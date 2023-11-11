@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - '.gitattributes'      
+
+  push:
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - '.gitattributes'      
+
+name: static analysis
+
+jobs:
+  psalm:
+    uses: gik25-microdata/actions/.github/workflows/psalm.yml@master
+    with:
+      os: >-
+        ['ubuntu-latest']
+      php: >-
+        ['8.0', '8.1']

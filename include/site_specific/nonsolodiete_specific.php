@@ -1,10 +1,18 @@
 <?php
+namespace gik25microdata\site_specific;
+
+use gik25microdata\ListOfPosts\ListOfPostsHelper;
+use gik25microdata\ListOfPosts\Types\LinkBase;
+use Illuminate\Support\Collection;
+use Yiisoft\Html\Html;
+use Yiisoft\Html\Tag\Ul;
+
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.
 }
 
-add_action('wp_head', 'add_SuperinformatiHeaderScript');
+//add_action('wp_head', 'add_HeaderScript');
 
 function add_HeaderScript()
 {
@@ -20,71 +28,73 @@ TAG;
 
 }
 
-add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler');
-add_shortcode('link_vitamine', 'link_vitamine_handler');
-add_shortcode('link_diete', 'link_diete_handler');
-add_shortcode('link_diete2', 'link_diete_handler2');
+add_shortcode('link_analisi_sangue', __NAMESPACE__ . '\\link_analisi_sangue_handler');
+add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
+add_shortcode('link_diete', __NAMESPACE__ . '\\link_diete_handler');
+add_shortcode('link_diete2', __NAMESPACE__ . '\\link_diete_handler2');
 
 function link_vitamine_handler($atts, $content = null)
 {
     $l = new ListOfPostsHelper(false, true, false);
-    $links_data = array(
-        array(
+    $links = [
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamine-del-gruppo-b/",
             'nome' => "Vitamine del gruppo B",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b1/",
             'nome' => "Vitamina B1",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b5/",
             'nome' => "Vitamina B5",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/piridossina-vitamina-b6/",
             'nome' => "Vitamina B6",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b8/",
             'nome' => "Vitamina B8",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-b12/",
             'nome' => "Vitamina B12",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/acido-folico-tutto-quello-che-dovete-sapere/",
             'nome' => "Acido Folico",
-        ),
-        array(
+        ],
+        [
             'target_url' => "https://www.nonsolodiete.it/vitamina-d/",
             'nome' => "Vitamina D",
-        )
-    );
+        ]
+    ];
+
+    $collection = new Collection();
+
+    foreach ($links as $link) {
+        $collection->add(new LinkBase($link['target_url'], $link['nome'], ""));
+    }
 
     $result = "<h3>Lista delle principali vitamine</h3>
 		<div class='thumbnail-list'>";
 
-    $result .= "<ul class='thumbnail-list'>";
+    $result .= Html::ul()->class("thumbnail-list")->open();
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
 
-    $result .= $l->GetLinksWithImages($links_data);
-
-    $result .= "</ul></div>";
+    $result .= "</div>";
     return $result;
 }
 
 function link_diete_handler($atts, $content = null)
 {
-    $list_layout = 1;// one column
-    $list_layout = 2;// two columns
-    $l = new ListOfPostsHelperChild(false, true, false, $list_layout);
+    $l = new ListOfPostsHelper(false, true, false, 2 /* two columns */);
 
-    $result = "<h3>Lista principali Diete</h3>";
-    //	<div class='thumbnail-list'>";
 //		find_post_id_from_taxonomy("dieta");
 
-    $links_data = array(
+    $links = array(
         array(
             'target_url' => "https://www.nonsolodiete.it/le-differenti-diete/",
             'nome' => "Diete differenti"
@@ -155,11 +165,20 @@ function link_diete_handler($atts, $content = null)
         )
     );
 
-    //$result .= "<ul class='thumbnail-list'>";
+    $collection = new Collection();
 
-    $result .= $l->GetLinksWithImages($links_data);
+    foreach ($links as $link) {
+        $collection->add(new LinkBase($link['target_url'], $link['nome'], ""));
+    }
 
-    //$result .= "</ul></div>";
+    $result = "<h3>Lista delle principali Diete</h3>
+		<div class='thumbnail-list'>";
+
+    $result .= Html::ul()->class("thumbnail-list")->open();
+    $result .= $l->getLinksWithImagesCurrentColumn($collection);
+    $result .= Ul::tag()->close();
+
+    $result .= "</div>";
     return $result;
 }
 
@@ -348,7 +367,7 @@ function link_diete_handler2($atts, $content = null)
 
     if (isset($atts['list_layout'])) $list_layout = (int)$atts['list_layout'];
 
-    $l = new ListOfPostsHelperChild(false, true, false, $list_layout);
+    $l = new ListOfPostsHelper(false, true, false, $list_layout);
 
     $tag = 'analisi del sangue';// $tag = 'Horror';
 

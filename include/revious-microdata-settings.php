@@ -18,7 +18,7 @@ class ReviousMicrodataSettingsPage
     /**
      * Add options page
      */
-    public function add_plugin_page()
+    public function add_plugin_page(): void
     {
         // This page will be under "Settings"
         add_options_page(
@@ -33,7 +33,7 @@ class ReviousMicrodataSettingsPage
     /**
      * Options page callback
      */
-    public function create_admin_page()
+    public function create_admin_page(): void
     {
         // Set class property
         $this->options = get_option( 'revious_microdata_option_name' );
@@ -55,7 +55,7 @@ class ReviousMicrodataSettingsPage
     /**
      * Register and add settings
      */
-    public function page_init()
+    public function page_init(): void
     {        
         register_setting(
             'revious_microdata_option_group', // Option group
@@ -107,7 +107,7 @@ class ReviousMicrodataSettingsPage
      *
      * @param array $input Contains all settings fields as array keys
      */
-    public function sanitize( $input )
+    public function sanitize( $input ): array
     {
         $new_input = array();
         if( isset( $input['id_number'] ) )
@@ -128,7 +128,7 @@ class ReviousMicrodataSettingsPage
     /** 
      * Print the Section text
      */
-    public function print_section_info()
+    public function print_section_info(): void
     {
         print 'Enter your settings below:';
     }
@@ -155,7 +155,7 @@ class ReviousMicrodataSettingsPage
     //     );
     // }
 
-    public function shortcode_names_callback()
+    public function shortcode_names_callback(): void
     {
         // var_dump(class_exists('abc'));exit;
         // var_dump(class_exists('MicrodataBlinkingButton'));exit;
@@ -184,12 +184,12 @@ class ReviousMicrodataSettingsPage
             <script>
                 window.addEventListener('load', function() {
 
-                    var btnSubmit = document.getElementById('submit');
-                    var shortcodeNames = document.getElementById('shortcode_names');
-                    var shortcodeNamesStr = shortcodeNames.value;
-                    var shortcodeNamesArr = shortcodeNamesStr.split(',');
-                    var enabledShortcodes = '';
-                    var pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
+                    const btnSubmit = document.getElementById('submit');
+                    const shortcodeNames = document.getElementById('shortcode_names');
+                    const shortcodeNamesStr = shortcodeNames.value;
+                    const shortcodeNamesArr = shortcodeNamesStr.split(',');
+                    let enabledShortcodes = '';
+                    const pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
 
                     console.log(shortcodeNamesArr);
                     console.log(pluginShortcodes);
@@ -206,7 +206,7 @@ class ReviousMicrodataSettingsPage
                         //alert(this.value);
                         //var pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
                         console.log(pluginShortcodes);
-                        for(var i = 0; i < pluginShortcodes.length; i++) {
+                        for(let i = 0; i < pluginShortcodes.length; i++) {
                             if(pluginShortcodes[i].checked) {
                                 enabledShortcodes += pluginShortcodes[i].value + ',';
                             }
@@ -254,7 +254,8 @@ BBB;
         );
     }
 
-    public function wnd_default_image_settings_enabled_callback() {
+    public function wnd_default_image_settings_enabled_callback(): void
+    {
         //var_dump($this->options['wnd_default_image_settings_enabled']);
         $option_checked = '';
         if(isset($this->options['wnd_default_image_settings_enabled']) && $this->options['wnd_default_image_settings_enabled'] == 'on') {
@@ -275,7 +276,8 @@ BBB;
     //     add_action('after_setup_theme', array($this, 'wnd_default_image_settings'));
     // }
 
-    public function wnd_default_image_settings() {
+    public function wnd_default_image_settings(): void
+    {
         update_option('image_default_align', 'left');
         update_option('image_default_link_type', 'none');
         update_option('image_default_size', 'full-size');

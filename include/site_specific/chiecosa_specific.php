@@ -1,4 +1,8 @@
 <?php
+namespace gik25microdata\site_specific;
+
+use gik25microdata\ListOfPosts\ListOfPostsHelper;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }

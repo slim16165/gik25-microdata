@@ -1,6 +1,8 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/.vs/slnx.sqlite
-gik25-microdata.rar
+/vendor/
+/assets/js/node_modules
+/assets/js/package-lock.json
+/composer.phar
+/composer.bat
+/bin/
+/obj/
+/.vs/

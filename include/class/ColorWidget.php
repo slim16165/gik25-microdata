@@ -1,4 +1,5 @@
 <?php
+ namespace gik25microdata;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
