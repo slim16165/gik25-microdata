@@ -88,7 +88,7 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
     $result .= Ul::tag()->close();
 
     $result .= "<h4>Globuli bianchi</h4>";
-    $result .= Html::ul()->class("nicelist")->open();
+    $result .= Html::ul()->addClass("nicelist")->open();
     $collection = new Collection();
     $collection->add(new LinkBase("https://www.superinformati.com/leucociti/11969/", "Leucociti", ""));
     $collection->add(new LinkBase("https://www.superinformati.com/neutrofili/13060/", "Neutrofili", ""));
@@ -100,7 +100,7 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
     #region Globuli Rossi
 
     $result .= "<h4>Globuli Rossi</h4>";
-    $result .= Html::ul()->class("nicelist")->open();
+    $result .= Html::ul()->addClass("nicelist")->open();
     $collection = new Collection();
     $collection->add(new LinkBase("https://www.superinformati.com/globuli-rossi/12049/", "Globuli rossi", ""));
     $collection->add(new LinkBase("https://www.superinformati.com/reticolociti/20155/", "Reticolociti", "(Globuli rossi non del tutto formati)"));
@@ -115,7 +115,7 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
     #region Piastrine
 
     $result .= "<h4>Piastrine</h4>";
-    $result .= Html::ul()->class("nicelist")->open();
+    $result .= Html::ul()->addClass("nicelist")->open();
     $collection = new Collection();
     $collection->add(new LinkBase("https://www.superinformati.com/piastrine/12139/", "Piastrine", ""));
     $collection->add(new LinkBase("https://www.superinformati.com/mpv-volume-piastrinico-medio/11119/", "MPV", "(Volume piastrinico medio)"));
@@ -125,7 +125,7 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
     #endregion
 
     $result .= "<h4>Altro</h4>";
-    $result .= Html::ul()->class("nicelist")->open();
+    $result .= Html::ul()->addClass("nicelist")->open();
     $collection = new Collection();
     $collection->add(new LinkBase("https://www.superinformati.com/emazie-nelle-urine/8115/", "Emazie nelle urine", "(emazie è un sinonimo di globuli rossi)"));
     $collection->add(new LinkBase("https://www.superinformati.com/thc/12796/", "THC nelle urine", ""));
@@ -513,8 +513,8 @@ function link_vitamine_handler($atts, $content = null): string
 function printList(ListOfPostsHelper $l, array $links_data, $title, $ulClass): string
 {
     $result = Html::h3($title);
-    $result .= Html::div()->class($ulClass)->open();
-    $result .= Html::ul()->class($ulClass)->open();
+    $result .= Html::div()->addClass($ulClass)->open();
+    $result .= Html::ul()->addClass($ulClass)->open();
     $result .= $l->GetLinksWithImages($links_data);
     $result .= Html::ul()->close();
     $result .= Html::div()->close();
