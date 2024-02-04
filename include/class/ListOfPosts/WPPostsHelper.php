@@ -14,16 +14,18 @@ class WPPostsHelper
         $target_url = self::ReplaceTargetUrlIfStaging($target_url);
         $target_post = null;
         $debugMsg = "";
+
         //Check if the current post is the same of the target_url
         $isSameFile = self::IsTargetUrlSamePost($target_url);
 
-        if ($isSameFile && $removeIfSelf)
+        if ($removeIfSelf && $isSameFile)
         {
             do_action( 'qm/debug', 'Stesso file e rimuovi link' );
         }
 
         //Find the post id from the url
-        $target_postid = url_to_postid($target_url);
+        /** @var int $target_postid */
+        $target_postid = self::url_to_postid_cached($target_url, function($url) {return url_to_postid($url);});
 
         if ($target_postid == 0)
         {
@@ -34,7 +36,7 @@ class WPPostsHelper
         }
         else
         {
-            $target_post = get_post($target_postid);
+            $target_post = self::get_post_cached($target_postid);
 
             if ($target_post->post_status !== "publish" )
             {
@@ -45,6 +47,68 @@ class WPPostsHelper
 
         return [$target_post, $isSameFile, $debugMsg];
     }
+
+    private static function url_to_postid_cached($url, callable $query_function)
+    {
+        // Identificatore univoco per la cache basato sull'URL
+        $cache_key = 'unique_prefix_' . md5($url);
+        $cache_group = 'gik25_microdata';
+
+        // Prova a recuperare il risultato dalla cache
+        $result = wp_cache_get($cache_key, $cache_group);
+
+        if ($result === false) {
+            // Se non presente in cache, esegui la query al database
+            $result = $query_function($url);
+
+            // Salva il risultato in cache per utilizzi futuri
+            wp_cache_set($cache_key, $result, $cache_group, 604800); // 604800 = 1 settimana
+        }
+
+        return $result;
+    }
+
+    /**
+     * Retrieves post data given a post ID or post object.
+     *
+     * See sanitize_post() for optional $filter values. Also, the parameter
+     * `$post`, must be given as a variable, since it is passed by reference.
+     *
+     * @since 1.5.1
+     *
+     * @global WP_Post $post Global post object.
+     *
+     * @param int|WP_Post|null $post   Optional. Post ID or post object. `null`, `false`, `0` and other PHP falsey values
+     *                                 return the current global post inside the loop. A numerically valid post ID that
+     *                                 points to a non-existent post returns `null`. Defaults to global $post.
+     * @param string           $output Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
+     *                                 correspond to a WP_Post object, an associative array, or a numeric array,
+     *                                 respectively. Default OBJECT.
+     * @param string           $filter Optional. Type of filter to apply. Accepts 'raw', 'edit', 'db',
+     *                                 or 'display'. Default 'raw'.
+     * @return WP_Post|array|null Type corresponding to $output on success or null on failure.
+     *                            When $output is OBJECT, a `WP_Post` instance is returned.
+     */
+    private static function get_post_cached($post_id)
+    {
+        // Identificatore univoco per la cache basato sull'URL
+        $cache_key = 'post_id_' . $post_id;
+        $cache_group = 'gik25_microdata';
+
+        // Prova a recuperare il risultato dalla cache
+        $result = wp_cache_get($cache_key, $cache_group);
+
+        if ($result === false) {
+            // Se non presente in cache, esegui la query al database
+            $result = get_post($post_id);
+
+            // Salva il risultato in cache per utilizzi futuri
+            wp_cache_set($cache_key, $result, $cache_group, 604800); // 604800 = 1 settimana
+        }
+
+        return $result;
+    }
+
 
     /**
      * Check if the current executing post is the same of the target_url
