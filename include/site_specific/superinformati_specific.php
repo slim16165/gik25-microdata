@@ -3,13 +3,9 @@ declare(strict_types=1);
 
 namespace gik25microdata\site_specific;
 
-use gik25microdata\ListOfBlocks\ListOfBlocks;
 use gik25microdata\ListOfPosts\ListOfPostsMain;
-use gik25microdata\ListOfPosts\ListOfPostsRenderHelper;
 use gik25microdata\ListOfPosts\Types\LinkBase;
 use Illuminate\Support\Collection;
-use Yiisoft\Html\Html;
-use Yiisoft\Html\Tag\Ul;
 
 require_once "superinformati_links.php";
 
@@ -67,20 +63,19 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
     $cat = "analisi_sangue";
 
 
-
     $links[] = GetListOfMed1();
     $links[] = GetListOfMed2();
     $links[] = GetListOfMed3();
     $links[] = GetListOfMed4();
     $links[] = GetListOfMed5();
-    $descr[]= "Generale";
-    $descr[]= "Globuli bianchi";
-    $descr[]= "Globuli Rossi";
-    $descr[]= "Piastrine";
-    $descr[]= "Altro";
+    $descr[] = "Generale";
+    $descr[] = "Globuli bianchi";
+    $descr[] = "Globuli Rossi";
+    $descr[] = "Piastrine";
+    $descr[] = "Altro";
 
     $result = "";
-    for($i=0;$i< count($links);$i++)
+    for ($i = 0; $i < count($links); $i++)
     {
         /** @var Collection $link */
         $link = $links[$i];
@@ -91,7 +86,7 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
         //    $blocks->SaveListOfBlocks();
 
         $listOfPosts->InitRenderHelper(false, true, false);
-        $result.= $listOfPosts->RenderLinksAsHtml2($descr[$i], "nicelist");
+        $result .= $listOfPosts->RenderLinksAsHtml2($descr[$i], "nicelist");
     }
 
     return $result;
@@ -100,7 +95,7 @@ function link_analisi_sangue_handler_2($atts, $content = null): string
 function link_dimagrimento_handler($atts, $content = null): string
 {
     $links = ConvertArrayToList(GetListOfDimagrimentoLinks());
-    $cat="link_dimagrimento";
+    $cat = "link_dimagrimento";
     $description = "Lista dei principali metodi per dimagrire e tonificare";
 
     return standardBehavior($links, $cat, $description, "thumbnail-list");
@@ -146,14 +141,32 @@ function sedi_inps_handler($atts, $content = null): string
 
 function standardBehavior(Collection $links, string $cat, string $description, $ulClass): string
 {
-    $listOfPosts = new ListOfPostsMain($links, $cat);
-    $listOfPosts->SaveLinks();
+    $result = printCss();
 
-    $listOfBlocks = $listOfPosts->ConvertToListOfBlocks($cat, $description);
-    $listOfBlocks->SaveListOfBlocks();
+    $listOfPosts = new ListOfPostsMain($links, $cat);
+//    $listOfPosts->SaveLinks();
+
+//    $listOfBlocks = $listOfPosts->ConvertToListOfBlocks($cat, $description);
+//    $listOfBlocks->SaveListOfBlocks();
 
     $listOfPosts->InitRenderHelper(false, true, false);
-    return $listOfPosts->RenderLinksAsHtml($description, $ulClass);
+    $result .= $listOfPosts->RenderLinksAsHtml($description, $ulClass);
+    return $result;
+}
+
+function printCss(): string
+{
+    $cssFilePath = realpath(ABSPATH . '/../../assets/css/revious-microdata.css');
+
+    if ($cssFilePath === false)
+    {
+        echo "Errore nella lettura del file CSS.";
+        return "";
+    } else
+    {
+        $cssContent = file_get_contents($cssFilePath);
+        return "<style>" . PHP_EOL . $cssContent . PHP_EOL . "</style>";
+    }
 }
 
 function ConvertArrayToList($linksData): Collection

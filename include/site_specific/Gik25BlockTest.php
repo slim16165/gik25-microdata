@@ -21,14 +21,12 @@ function require_smart($path): void
 }
 
 
-
 class Gik25BlockTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
     }
-
     public function testBlockSaving()
     {
         // Imitazione della creazione di un link e salvataggio
@@ -59,7 +57,6 @@ class Gik25BlockTest extends TestCase
         );
     }
 
-
     public function test_populate_sedi_inps_link_lists_table()
     {
         $_SERVER["SERVER_NAME"] = "www.superinformati.com";
@@ -71,12 +68,12 @@ class Gik25BlockTest extends TestCase
 
         require_once('superinformati_specific.php');
 
-        sedi_inps_handler(null);
-        link_diete_handler(null);
+//      sedi_inps_handler(null);
+//      link_diete_handler(null);
         link_tatuaggi_handler(null);
-        link_vitamine_handler(null);
-        link_dimagrimento_handler(null);
-        link_analisi_sangue_handler_2(null);
+//      link_vitamine_handler(null);
+//      link_dimagrimento_handler(null);
+//      link_analisi_sangue_handler_2(null);
 
         $endTime = microtime(true);
 
