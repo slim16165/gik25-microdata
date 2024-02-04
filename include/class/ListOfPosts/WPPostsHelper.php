@@ -54,11 +54,17 @@ class WPPostsHelper
     public static function IsTargetUrlSamePost(string $target_url): bool
     {
         global $post;
-        $current_post = $post;
-        $current_permalink = get_permalink($current_post->ID);
 
-        return strcmp($current_permalink, $target_url) == 0;
+        if (is_object($post)) {
+            $current_post = $post;
+            $current_permalink = get_permalink($current_post->ID);
+            return strcmp($current_permalink, $target_url) == 0;
+        }
+
+        // Gestisci il caso in cui $post non sia un oggetto
+        return false;
     }
+
 
     /**
      * The provided url should be an article of this WordPress installation. This method is used to test on staging environments

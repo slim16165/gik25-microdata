@@ -8,13 +8,12 @@ if (!defined('ABSPATH')) {
 use gik25microdata\Utility\MyString;
 use Illuminate\Support\Collection;
 use gik25microdata\ListOfPosts\Types\LinkBase;
-use JetBrains\PhpStorm\Pure;
-use gik25microdata\ListOfPosts\LinkConfig;
-
+use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Div;
+use Yiisoft\Html\Tag\Ul;
 
 
-class ListOfPostsHelper
+class ListOfPostsRenderHelper //Diventerà LinkListPresenter
 {
     private LinkConfig $linkConfig;
 
@@ -24,7 +23,7 @@ class ListOfPostsHelper
      * @param bool $linkSelf
      * @param string $listOfPostsStyle
      */
-    #[Pure] function __construct(bool $removeIfSelf, bool $withImage, bool $linkSelf, string $listOfPostsStyle = '')
+    function __construct(bool $removeIfSelf, bool $withImage, bool $linkSelf, string $listOfPostsStyle = '')
     {
         $this->linkConfig = new LinkConfig($removeIfSelf, $withImage, $linkSelf, $listOfPostsStyle);
     }
@@ -41,17 +40,17 @@ class ListOfPostsHelper
     }
 
     /**
-     * @param array<array> $links_data
+     * @param Collection $linksData
      * @return string
      */
-    public function GetLinksWithImages(array $links_data): string
+    public function GetLinksWithImages(Collection $linksData): string
     {
-        $collection = Util::ConvertArrayToCollectionOfLinks($links_data);
+//        $collection = Util::ConvertArrayToCollectionOfLinks($links_data);
 
         if($this->linkConfig->nColumns > 1)
-            return $this->GetLinksWithImagesMulticolumn($collection);
+            return $this->GetLinksWithImagesMulticolumn($linksData);
         else
-            return $this->getLinksWithImagesCurrentColumn($collection);
+            return $this->getLinksWithImagesCurrentColumn($linksData);
     }
 
 
@@ -74,7 +73,7 @@ class ListOfPostsHelper
 
             //Genero l'html di tutte le colonne
             $links_html.= Div::tag()
-                            ->class($cssDivClass)
+                            ->AddClass($cssDivClass)
                             ->content($currentColumn)
                             ->encode(false)
                             ->render();
@@ -130,5 +129,23 @@ class ListOfPostsHelper
         return $currentColumn;
     }
 
+    public function RenderLinksAsHtml(Collection $linksData, string $title, string $ulClass): string {
+        $result = Html::h3($title);
+        $result .= Html::div()->addClass($ulClass)->open();
+        $result .= Html::ul()->addClass($ulClass)->open();
+        $result .= $this->GetLinksWithImages($linksData);
+        $result .= Html::ul()->close();
+        $result .= Html::div()->close();
 
+        return $result;
+    }
+
+    public function RenderLinksAsHtml2(Collection $linksData, string $title, string $ulClass): string {
+        $result = Html::h4($title);
+        $result .= Html::ul()->addClass("$ulClass")->open();
+        $result .= $this->getLinksWithImagesCurrentColumn($linksData);
+        $result .= Ul::tag()->close();
+
+        return $result;
+    }
 }
