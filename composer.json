@@ -16,12 +16,14 @@
   "require": {
     "athari/yalinqo": "^2.0",
     "yiisoft/html": "dev-master",
-    "illuminate/collections": "8.*"
+    "illuminate/collections": "8.*",
+    "ext-json": "*"
   },
   "config": {
     "allow-plugins": false
   },
   "require-dev": {
+    "phpunit/phpunit": "^9.0",
     "phpstan/phpstan": "^1.10",
     "phpstan/extension-installer": "^1.2.0",
     "szepeviktor/phpstan-wordpress": "dev-master",
