@@ -5,6 +5,7 @@ namespace gik25microdata\site_specific;
 
 use gik25microdata\ListOfPosts\ListOfPostsMain;
 use gik25microdata\ListOfPosts\Types\LinkBase;
+use gik25microdata\ListOfPosts\WPPostsHelper;
 use Illuminate\Support\Collection;
 
 require_once "superinformati_links.php";
@@ -156,11 +157,12 @@ function standardBehavior(Collection $links, string $cat, string $description, $
 
 function printCss(): string
 {
-    $cssFilePath = realpath(ABSPATH . '/../../assets/css/revious-microdata.css');
+    $path = __DIR__ . '../../../assets/css/revious-microdata.css';
+    $cssFilePath = realpath($path);
 
     if ($cssFilePath === false)
     {
-        echo "Errore nella lettura del file CSS.";
+        echo "Errore nella lettura del file CSS:". $path ."\n";
         return "";
     } else
     {

@@ -30,7 +30,7 @@ class Gik25BlockTest extends TestCase
     public function testBlockSaving()
     {
         // Imitazione della creazione di un link e salvataggio
-        $link = new LinkBase('Test Title', 'https://example.com', 'Test Description');
+        $link = new LinkBase('https://example.com', 'Test Title', 'Test Description');
         $link->Category = 'test_category';
         $link->SaveToDb();
 
@@ -57,9 +57,11 @@ class Gik25BlockTest extends TestCase
         );
     }
 
+
+
     public function test_populate_sedi_inps_link_lists_table()
     {
-        $_SERVER["SERVER_NAME"] = "www.superinformati.com";
+        $_SERVER["SERVER_NAME"] = "superinformati.local";
 
 
         $startTime = microtime(true);
@@ -79,6 +81,7 @@ class Gik25BlockTest extends TestCase
 
         $executionTime = $endTime - $startTime;
 
+        echo "\n";
         echo "Execution time of the method: " . $executionTime . " seconds.";
 
         //truncate table oak_custom_links;
