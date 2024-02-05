@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+use gik25microdata\ListOfPosts\Types\LinkBaseExt;
 use gik25microdata\Utility\MyString;
 use Illuminate\Support\Collection;
 use gik25microdata\ListOfPosts\Types\LinkBase;
@@ -45,8 +46,6 @@ class ListOfPostsRenderHelper //Diventerà LinkListPresenter
      */
     public function GetLinksWithImages(Collection $linksData): string
     {
-//        $collection = Util::ConvertArrayToCollectionOfLinks($links_data);
-
         if($this->linkConfig->nColumns > 1)
             return $this->GetLinksWithImagesMulticolumn($linksData);
         else
@@ -83,31 +82,23 @@ class ListOfPostsRenderHelper //Diventerà LinkListPresenter
         return $links_html;
     }
 
-    /**
-     * @param string|null $target_url
-     * @param string|null $nome
-     * @param string|null $commento
-     * @return string
-     */
-    public function GetLinkWithImage(?string $target_url, ?string $nome, ?string $commento = ""): string
+    public function GetLinkWithImage(?LinkBaseExt $link): string
     {
-        if($target_url == null)
+        if($link == null || $link->Url == null)
             return "";
 
-        list($target_post, $noLink, $debugMsg) = WPPostsHelper::GetPostData($target_url, $this->linkConfig->removeIfSelf);
+        $commento = self::ParseComment($link->Comment);
 
-        //In caso contrario il post è pubblicato
-        $commento = self::ParseComment($commento);
-
-        if ($debugMsg)
+        if ($link->error)
         {
-            $target_post = null;
+            //$link->post = null;
+            return "";
         }
 
         if ($this->linkConfig->withImage) //GetTemplateWithThumbnail per la classe child
-            $result = HtmlTemplate::GetTemplateWithThumbnail($target_url, $nome, $commento, $target_post, $noLink);
+            $result = HtmlTemplate::GetTemplateWithThumbnail($link->Url, $link->Title, $commento, $link->post, $link->isSamepage);
         else
-            $result = HtmlTemplate::GetTemplateNoThumbnail($target_url, $nome, $commento, $noLink);
+            $result = HtmlTemplate::GetTemplateNoThumbnail($link->Url, $link->Title, $commento, $link->isSamepage);
 
         return $result;
     }
@@ -120,12 +111,38 @@ class ListOfPostsRenderHelper //Diventerà LinkListPresenter
     {
         $currentColumn = "";
 
+        $links_col_x = WPPostsHelper::ReplaceTargetUrlIfStagingBulk($links_col_x);
+
+        $urls = $links_col_x->map(function (LinkBase $link) : string { return $link->Url; })->toArray();
+
+
+        // Ottiene un array di post con URL come chiave
+        $url_to_post = WPPostsHelper::GetBulkPostDataCached($urls);
+//        $url_to_post[$target_url] = [
+//            'id' => $post_id,
+//            'permalink' => get_permalink($post),
+//            'post' => $post
+//            'error' => ''
+//        ];
+
+        $current_permalink = WPPostsHelper::GetCurrentPostPermalink();
+        // Crea un array di dati dei post con URL come chiave
+        /** @var Collection<LinkBaseExt> $collectionExt */
+        $collectionExt = $this->preparePostDataForThisPost($url_to_post, $links_col_x, $current_permalink);
+
         //html di una singola colonna
-        /** @var LinkBase $item */
-        foreach ($links_col_x as $item)
+        //nota: non posso usare la collection, ha dentro gli url pre "ReplaceTargetUrlIfStagingBulk"
+        /** @var LinkBaseExt $singlePostData */
+        foreach ($collectionExt as $singlePostData)
         {
-            $currentColumn .= self::GetLinkWithImage($item->Title, $item->Url);
+            if (isset($singlePostData->error) && !MyString::IsNullOrEmptyString($singlePostData->error)) {
+                // Gestisci l'errore qui
+                echo "Errore: " . $singlePostData->error . "\n";
+            } else {
+                $currentColumn .= self::GetLinkWithImage($singlePostData);
+            }
         }
+
         return $currentColumn;
     }
 
@@ -148,4 +165,41 @@ class ListOfPostsRenderHelper //Diventerà LinkListPresenter
 
         return $result;
     }
+
+    /**
+     * @param array $url_to_post
+     * @param Collection<LinkBase> $links_col_x
+     * @param string $current_permalink
+     * @return Collection<LinkBaseExt>
+     */
+    public function preparePostDataForThisPost(array $url_to_post, Collection $links_col_x, string $current_permalink): Collection
+    {
+        $postsData = collect();
+
+        foreach ($url_to_post as $target_url => $data)
+        {
+            $isSamepage = WPPostsHelper::IsTargetUrlSamePost($target_url, $current_permalink);
+            $debugMsg = WPPostsHelper::getDebugMsg($this->linkConfig->removeIfSelf, $isSamepage, $data['post'], $target_url);
+
+            // Trova l'oggetto LinkBase corrispondente nell'originale $links_col_x
+            $originalLink = $links_col_x->firstWhere('Url', $target_url);
+
+            // Crea un nuovo oggetto LinkBaseExt
+            $link = new LinkBaseExt(
+                $originalLink->Title,
+                $originalLink->Url,
+                $originalLink->Comment,
+                $data['id'],
+                $data['permalink'],
+                $data['post'],
+                $debugMsg,
+                $isSamepage
+            );
+
+            $postsData->push($link);
+        }
+
+        return $postsData;
+    }
+
 }
