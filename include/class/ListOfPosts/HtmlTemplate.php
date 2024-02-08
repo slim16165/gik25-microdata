@@ -6,10 +6,13 @@ if (!defined('ABSPATH')) {
 }
 
 
+use gik25microdata\Utility\ImageDetails;
+use gik25microdata\Utility\ImageHelper;
 use gik25microdata\Utility\MyString;
 use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Div;
 use Yiisoft\Html\Tag\Img;
+use function plugins_url;
 
 class HtmlTemplate
 {
@@ -35,8 +38,7 @@ class HtmlTemplate
         $featured_img_html = "";
         if($target_post != null)
         {
-            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-            $featured_img_html = self::GetFeaturedImage($featured_img_url, $anchorText);
+            $featured_img_html = self::getOptimalImageHtml($target_post, $anchorText);
         }
 
         $innerHtml =
@@ -59,19 +61,32 @@ class HtmlTemplate
         return $tpl->render();
     }
 
-    public static function GetFeaturedImage($featured_img_url, string $anchorText): string
+    public static function getOptimalImageHtml($target_post, string $anchorText): string
     {
-        if ($featured_img_url == null)
-            $featured_img_url = plugins_url() . '/gik25-microdata/assets/images/placeholder-200x200.png';
+        $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
 
-        $featured_img_html = Img::tag()
-                ->width(50)
-                ->height(50)
-                ->attribute("style", "width=50px; height: 50px;")
-                ->src($featured_img_url)
-                ->alt($anchorText)
-                ->render();
+        $featured_img = ImageDetails::createFromUrl($featured_img_url);
 
-        return $featured_img_html;
+        if ($featured_img_url == null || !$featured_img->FileExists())
+        {
+            do_action( 'qm/debug', 'L\'URL dell\'immagine thumbnail è null o l\'immagine non esiste.' );
+//            $featured_img = ImageDetails::createFromPath(__DIR__ . '/../../assets/images/placeholder-50x50.png');
+            $featured_img = new ImageDetails("./../../wp-content/themes/bimber-child-theme/template-parts/ListHandler/assets/images/", "placeholder-50x50.png");
+        }
+        else
+        {
+            $featured_img = ImageHelper::getOrCreateCustomThumb($featured_img);
+        }
+
+        $html = Img::tag()
+            ->width(50)
+            ->height(50)
+            ->attribute("style", "width=50px; height: 50px;")
+            ->src($featured_img->getComputedUrl())
+            ->alt($anchorText)
+            ->render();
+
+        return $html;
     }
+
 }

@@ -47,17 +47,24 @@ class ListOfPostsMain
 
         $current_permalink = WPPostsHelper::GetCurrentPostPermalink();
 
-        // Genera una chiave univoca per il transient basata su variabili specifiche
-        $transient_key = 'render_links_' . md5($current_permalink . serialize($this->renderHelper) . serialize($this->links) . $title . $ulClass);
 
-        // Prova a ottenere i dati dal transient
-        $renderLinksAsHtml = get_transient($transient_key);
-
-        // Se i dati non sono nel transient, ottienili e memorizzali nel transient
-        if ($renderLinksAsHtml === false)
-        {
+        // Se WP_DEBUG è abilitato, salta la cache
+        if (defined('WP_DEBUG') && WP_DEBUG) {
             $renderLinksAsHtml = $this->renderHelper->RenderLinksAsHtml($this->links, $title, $ulClass);
-            set_transient($transient_key, $renderLinksAsHtml, WEEK_IN_SECONDS);
+        }
+        else
+        {
+            // Genera una chiave univoca per il transient basata su variabili specifiche
+            $transient_key = 'render_links_' . md5($current_permalink . serialize($this->renderHelper) . serialize($this->links) . $title . $ulClass);
+
+            // Prova a ottenere i dati dal transient
+            $renderLinksAsHtml = get_transient($transient_key);
+
+            // Se i dati non sono nel transient, ottienili e memorizzali nel transient
+            if ($renderLinksAsHtml === false) {
+                $renderLinksAsHtml = $this->renderHelper->RenderLinksAsHtml($this->links, $title, $ulClass);
+                set_transient($transient_key, $renderLinksAsHtml, WEEK_IN_SECONDS);
+            }
         }
 
         return $renderLinksAsHtml;

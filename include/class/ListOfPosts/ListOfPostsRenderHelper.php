@@ -137,7 +137,7 @@ class ListOfPostsRenderHelper //Diventerà LinkListPresenter
         {
             if (isset($singlePostData->error) && !MyString::IsNullOrEmptyString($singlePostData->error)) {
                 // Gestisci l'errore qui
-                echo "Errore: " . $singlePostData->error . "\n";
+                do_action('qm/warning', $singlePostData->error);
             } else {
                 $currentColumn .= self::GetLinkWithImage($singlePostData);
             }

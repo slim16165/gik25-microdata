@@ -73,6 +73,12 @@ div.container li.container {
   box-sizing: content-box;
 }
 
+div.li-img {
+  display: inline-block;
+  height: 50px;
+  box-sizing: content-box;
+}
+
 div.li-img img,
 img.li-img {
   display: inline-block;
