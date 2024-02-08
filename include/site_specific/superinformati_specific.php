@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-namespace gik25microdata\site_specific;
 
 use gik25microdata\ListOfPosts\ListOfPostsMain;
 use gik25microdata\ListOfPosts\Types\LinkBase;
@@ -142,7 +141,8 @@ function sedi_inps_handler($atts, $content = null): string
 
 function standardBehavior(Collection $links, string $cat, string $description, $ulClass): string
 {
-    $result = printCss();
+    do_action( 'qm/start', 'link_handler' );
+    $result = print_css_in_header();
 
     $listOfPosts = new ListOfPostsMain($links, $cat);
 //    $listOfPosts->SaveLinks();
@@ -151,18 +151,21 @@ function standardBehavior(Collection $links, string $cat, string $description, $
 //    $listOfBlocks->SaveListOfBlocks();
 
     $listOfPosts->InitRenderHelper(false, true, false);
-    $result .= $listOfPosts->RenderLinksAsHtml($description, $ulClass);
+    $result.= $listOfPosts->RenderLinksAsHtml($description, $ulClass);
+
+    do_action( 'qm/stop', 'link_handler' );
+
     return $result;
 }
 
-function printCss(): string
+function print_css_in_header(): string
 {
     $path = __DIR__ . '../../../assets/css/revious-microdata.css';
     $cssFilePath = realpath($path);
 
     if ($cssFilePath === false)
     {
-        echo "Errore nella lettura del file CSS:". $path ."\n";
+        do_action('qm/error', "Errore nella lettura del file CSS:". $path ."\n");
         return "";
     } else
     {

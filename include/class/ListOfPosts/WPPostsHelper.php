@@ -364,7 +364,7 @@ class WPPostsHelper
         }
         else
         {
-            echo "Dati trovati in cache";
+            do_action('qm/debug', 'Dati trovati in cache');
         }
 
         return $url_to_post;
@@ -434,7 +434,7 @@ class WPPostsHelper
         } else if ($post->post_status !== 'publish')
         {
             $debugMsg = "Post non pubblicato: " . get_permalink($post->ID);
-            do_action('qm/debug', $debugMsg);
+            do_action('qm/info', $debugMsg);
         }
         return $debugMsg;
     }
