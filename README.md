@@ -25,6 +25,18 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.8.0-PHP8 _(2024-02-11)_
+In our ongoing commitment to performance and efficiency, version 1.8.0 brings significant enhancements and optimizations to superinformati.com, emphasizing a streamlined and efficient codebase:
+
+_Enhancements and Optimizations for **List of Posts**:_
+
+- **Thumbnail Creation:** Introduced the capability to generate and use 50x50 thumbnails, further enriching media handling.
+- **Refactoring Initiatives:** Simplified the codebase with the introduction of utility classes `ImageDetails` and `ImageHelper`. Additionally, extraneous namespace declarations were removed from `superinformati_specific.php` for a more streamlined code structure.
+- **Performance Optimization Techniques:** A new bulk function was implemented to enhance performance in data and database operations, coupled with the implementation of caching for database access, specifically targeting the `get_post` function to decrease database load and improve response times.
+- **CSS and HTML Improvements:** Implemented inline CSS printing, allowing critical path CSS to be directly included in HTML, thus speeding up page load times.
+- **Content Management and Functionality:** Enhanced the management of list of links with new saving to db capabilities and the concept of composable blocks, facilitating content management or page building activities.
+- **Compatibility and Maintenance:** Updated `composer.json` to address compatibility issues with PHP 7.4, ensuring a smooth operation. Streamlined the plugin by removing non-essential features and files, aiming for a minimalistic yet functional user experience.
+
 ##### 1.7.0 _(2023-03-19)_
 * Fixed shortcode callback issue by properly referencing the namespaced function link_vitamine_handler in add_shortcode: add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
 * Fixed composer autoload.php and versions
