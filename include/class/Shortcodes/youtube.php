@@ -9,9 +9,12 @@ if (!defined('ABSPATH'))
 class Youtube extends ShortcodeBase
 {
 
+
+
     public function __construct()
     {
-        $this->shortcode = ['md_youtube', 'youtube'];
+        $this->shortcode = 'md_youtube';
+        $this->shortcodes = ['md_youtube', 'youtube'];
         parent::__construct();
     }
 
@@ -22,6 +25,8 @@ class Youtube extends ShortcodeBase
             $result = wp_oembed_get($atts["url"]);
             return $result;
         }
+
+        return "";
     }
 
     public function register_plugin($plugin_array)

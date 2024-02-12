@@ -52,7 +52,15 @@ abstract class ShortcodeBase
 
     public abstract function register_button($buttons);
 
+    protected string $asset_path = '/gik25-microdata/assets/';
+
     protected string $shortcode;
+
+
+    /**
+     * @var array<string>
+     */
+    protected array $shortcodes;
 }
 
 

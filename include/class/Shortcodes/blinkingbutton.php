@@ -58,8 +58,8 @@ ABC;
 
     public function scripts()
     {
-        script('script', plugins_url("{$this->asset_path}/js/mdbb.js"), array('jquery'));
-        script('script');
+        wp_register_script('script', plugins_url("{$this->asset_path}/js/mdbb.js"), array('jquery'));
+        wp_enqueue_script('script');
     }
 
     public function register_plugin($plugin_array)

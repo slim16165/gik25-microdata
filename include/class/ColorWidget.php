@@ -162,8 +162,8 @@ EOF;
 
     public static function GetLinkWithImageCarousel(string $target_url, string $nome)
     {
-        $target_url = ReplaceTargetUrlIfStaging($target_url);
-        global $post, $MY_DEBUG; //il post corrente
+//        $target_url = ReplaceTargetUrlIfStaging($target_url);
+        global $MY_DEBUG; //il post corrente
         $result = "";
 
         $target_postid = url_to_postid($target_url);

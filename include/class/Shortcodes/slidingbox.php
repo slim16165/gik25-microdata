@@ -8,7 +8,7 @@ class Slidingbox extends ShortcodeBase
 {
     public function __construct()
     {
-        $this->shortcode = "slidingbox";
+//        $this->shortcode = "slidingbox";
         $this->shortcode = 'md_flipbox';
         parent::__construct();
     }

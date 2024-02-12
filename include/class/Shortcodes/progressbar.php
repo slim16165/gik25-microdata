@@ -18,8 +18,8 @@ class Progressbar extends ShortcodeBase
         wp_register_style('styles', plugins_url("{asset_path}/css/md_progressbar.css"), array(), '', 'all');
         wp_enqueue_style('styles');
         $asset_path = "gik25-microdata/asset";
-        script('script', plugins_url("{$this->$asset_path}/js/progressbar.js"), array('jquery'));
-        script('script');
+        wp_register_script('script', plugins_url("{$this->$asset_path}/js/progressbar.js"), array('jquery'));
+        wp_enqueue_script('script');
     }
 
     public function ShortcodeHandler($atts, $content = null)

@@ -20,7 +20,7 @@ class Util
                 MyString::IsNullOrEmptyString($item["nome"] ) ||
                 $item["target_url"] == null
             )
-                throwException("grrr");
+                throw new Exception("grrr");
             else
             {
                 $link = new LinkBase($item["target_url"], $item["nome"]);

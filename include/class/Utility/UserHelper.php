@@ -24,7 +24,7 @@ class UserHelper
         if (!in_array($current_user->nickname, $limited_users))
             return;
 
-        list($users, $author__in) = GetAllUsersButExcluded($authors_post_to_hide);
+        list($users, $author__in) = $this->GetAllUsersButExcluded($authors_post_to_hide);
 
         if (count($users))
         {

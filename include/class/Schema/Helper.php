@@ -13,7 +13,6 @@ class Helper
             //Nessun errore
             case JSON_ERROR_NONE:
                 return "";
-                break;
 
             //varie casistiche di errori
             case JSON_ERROR_DEPTH:

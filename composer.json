@@ -11,13 +11,14 @@
     }
   ],
   "autoload": {
-    "classmap": ["include/", "include/class", "include/Shortcodes", "include/site_specific"]
+    "classmap": ["include/", "include/class", "include/site_specific"]
   },
   "require": {
     "athari/yalinqo": "^2.0",
     "yiisoft/html": "dev-master",
     "illuminate/collections": "8.*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-dom": "*"
   },
   "config": {
     "allow-plugins": false

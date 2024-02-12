@@ -2,8 +2,6 @@
 
 namespace gik25microdata\WPSettings;
 
-use function gik25microdata\add_action;
-
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.

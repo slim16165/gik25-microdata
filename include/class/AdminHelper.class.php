@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ALL */
+
 namespace gik25microdata;
 
 use DOMDocument;

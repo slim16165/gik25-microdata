@@ -30,7 +30,6 @@
         size: "small",
         onclick: function () {
           ed.execCommand("md_blinkingbutton");
-          return;
         },
       });
     },

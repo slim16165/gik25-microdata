@@ -1,6 +1,8 @@
 <?php
 namespace gik25microdata\Utility;
 
+use WP_Query;
+
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.
@@ -21,9 +23,9 @@ class Pages404Helper
      * Force cache headers on 404 pages and prevent WordPress from handling 404s.
      *
      * @param bool $preempt determines who handles 404s.
-     * @param obj $wp_query global query object.
+     * @param WP_Query $wp_query global query object.
      */
-    static function change_404_headers($preempt, $wp_query)
+    static function change_404_headers($preempt, $wp_query): bool
     {
         //se non è nel backend e non è una query finalizzata al robots.txt
         if (!is_admin() && !is_robots() && count($wp_query->posts) < 1)
