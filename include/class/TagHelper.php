@@ -74,20 +74,20 @@ if ( ! defined( 'ABSPATH' ) ) {
             global $wpdb;
 
             $sql = <<<TAG
-SELECT wp_terms.term_id, count(DISTINCT wp_posts.ID)
-FROM wp_posts
-INNER JOIN wp_term_relationships
-  ON wp_term_relationships.object_id = wp_posts.ID
-INNER JOIN wp_term_taxonomy
-  ON wp_term_taxonomy.term_taxonomy_id = wp_term_relationships.term_taxonomy_id
-    AND wp_term_taxonomy.taxonomy = 'post_tag' 
-INNER JOIN wp_terms
-  ON wp_terms.term_id = wp_term_taxonomy.term_id    
-WHERE wp_posts.post_type = 'post'
-  AND wp_posts.post_status = 'publish'
-  AND wp_posts.post_parent = 0
-GROUP by wp_terms.term_id
-HAVING count(DISTINCT wp_posts.ID) = 1
+SELECT {$wpdb->prefix}terms.term_id, count(DISTINCT {$wpdb->prefix}posts.ID)
+FROM {$wpdb->prefix}posts
+INNER JOIN {$wpdb->prefix}term_relationships
+  ON {$wpdb->prefix}term_relationships.object_id = {$wpdb->prefix}posts.ID
+INNER JOIN {$wpdb->prefix}term_taxonomy
+  ON {$wpdb->prefix}term_taxonomy.term_taxonomy_id = {$wpdb->prefix}term_relationships.term_taxonomy_id
+    AND {$wpdb->prefix}term_taxonomy.taxonomy = 'post_tag' 
+INNER JOIN {$wpdb->prefix}terms
+  ON {$wpdb->prefix}terms.term_id = {$wpdb->prefix}term_taxonomy.term_id    
+WHERE {$wpdb->prefix}posts.post_type = 'post'
+  AND {$wpdb->prefix}posts.post_status = 'publish'
+  AND {$wpdb->prefix}posts.post_parent = 0
+GROUP by {$wpdb->prefix}terms.term_id
+HAVING count(DISTINCT {$wpdb->prefix}posts.ID) = 1
 TAG;
 
 			$result = $wpdb->get_results($sql);
@@ -125,19 +125,19 @@ TAG;
 			#endregion
 
 			$sql = <<<TAG
-SELECT wp_posts.ID
-FROM wp_posts
-INNER JOIN wp_term_relationships
-  ON wp_term_relationships.object_id = wp_posts.ID
-INNER JOIN wp_term_taxonomy
-  ON wp_term_taxonomy.term_taxonomy_id = wp_term_relationships.term_taxonomy_id
-    AND wp_term_taxonomy.taxonomy = '{$taxonomy_type}'
-INNER JOIN wp_terms
-  ON wp_terms.term_id = wp_term_taxonomy.term_id
-    AND wp_terms.name = '{$term_name}'
-WHERE wp_posts.post_type = 'post'
-  AND wp_posts.post_status = 'publish'
-  AND wp_posts.post_parent = 0
+SELECT {$wpdb->prefix}posts.ID
+FROM {$wpdb->prefix}posts
+INNER JOIN {$wpdb->prefix}term_relationships
+  ON {$wpdb->prefix}term_relationships.object_id = {$wpdb->prefix}posts.ID
+INNER JOIN {$wpdb->prefix}term_taxonomy
+  ON {$wpdb->prefix}term_taxonomy.term_taxonomy_id = {$wpdb->prefix}term_relationships.term_taxonomy_id
+    AND {$wpdb->prefix}term_taxonomy.taxonomy = '{$taxonomy_type}'
+INNER JOIN {$wpdb->prefix}terms
+  ON {$wpdb->prefix}terms.term_id = {$wpdb->prefix}term_taxonomy.term_id
+    AND {$wpdb->prefix}terms.name = '{$term_name}'
+WHERE {$wpdb->prefix}posts.post_type = 'post'
+  AND {$wpdb->prefix}posts.post_status = 'publish'
+  AND {$wpdb->prefix}posts.post_parent = 0
 TAG;
 
 			$result = $wpdb->get_results($sql);
