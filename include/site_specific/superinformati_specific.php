@@ -13,17 +13,17 @@ if (!defined('ABSPATH'))
     exit; // Exit if accessed directly.
 }
 
-add_shortcode('link_analisi_sangue', 'link_analisi_sangue_handler_2');
-add_shortcode('sedi_inps', 'sedi_inps_handler');
-add_shortcode('link_vitamine', 'link_vitamine_handler');
-add_shortcode('link_diete', 'link_diete_handler');
-add_shortcode('link_dimagrimento', 'link_dimagrimento_handler');
-add_shortcode('link_tatuaggi', 'link_tatuaggi_handler');
+add_shortcode('link_analisi_sangue', __NAMESPACE__ . '\\link_analisi_sangue_handler_2');
+add_shortcode('sedi_inps', __NAMESPACE__ . '\\sedi_inps_handler');
+add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
+add_shortcode('link_diete', __NAMESPACE__ . '\\link_diete_handler');
+add_shortcode('link_dimagrimento', __NAMESPACE__ . '\\link_dimagrimento_handler');
+add_shortcode('link_tatuaggi', __NAMESPACE__ . '\\link_tatuaggi_handler');
 
-add_action('wp_head', 'add_HeaderScript');
-add_action('wp_footer', 'add_FooterScript');
+add_action('wp_head', __NAMESPACE__ . '\\add_HeaderScript');
+add_action('wp_footer', __NAMESPACE__ . '\\add_FooterScript');
 
-add_filter('the_author', 'its_my_company');
+add_filter('the_author', __NAMESPACE__ . '\\its_my_company');
 
 add_filter('elementor/frontend/print_google_fonts', '__return_false');
 

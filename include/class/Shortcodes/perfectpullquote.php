@@ -10,7 +10,7 @@ class Perfectpullquote extends ShortcodeBase
         add_shortcode('md_perfectpullquote', array($this, 'shortcode'));
         add_shortcode('perfectpullquote', array($this, 'shortcode'));
 
-        $this->shortcode = 'md_flipbox';
+        $this->shortcode = 'md_perfectpullquote';
         parent::__construct();
     }
     public function ShortcodeHandler($atts, $content = null) {

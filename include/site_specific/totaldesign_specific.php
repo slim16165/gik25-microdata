@@ -25,9 +25,9 @@ function _conditionalLoadJsCss_Colori()
         ColorWidget::carousel_js();
 }
 
-add_shortcode('link_colori', 'link_colori_handler');
-add_shortcode('grafica3d', 'grafica3d_handler');
-add_shortcode('archistar', 'archistars_handler');
+add_shortcode('link_colori', __NAMESPACE__ . '\\link_colori_handler');
+add_shortcode('grafica3d', __NAMESPACE__ . '\\grafica3d_handler');
+add_shortcode('archistar', __NAMESPACE__ . '\\archistars_handler');
 
 
 function link_colori_handler($atts, $content = null)
@@ -43,6 +43,7 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/color-tortora-colore-neutro-tendenza/", "Color Tortora");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-rosso/", "Colore Rosso");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-bordeaux/", "Colore Rosso Bordeaux");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/rosso-tiziano/", "Colore Rosso Tiziano");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde/", "Colore Verde");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde-acqua/", "Colore Verde Acqua");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-verde-salvia/", "Colore Verde Salvia");
@@ -52,7 +53,8 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-turchese/", "Color Turchese");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/grigio-chiaro/", "Colore Grigio Chiaro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-bianco/", "Colore Bianco");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/arredare-in-bianco-e-nero/", "Colore Tortora");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/arredare-in-bianco-e-nero/", "Colore Bianco e Nero");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-rosa-cipria/", "Colore Rosa Cipria");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-rosa-antico/", "Colore Rosa Antico");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-giallo/", "Colore Giallo");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/giallo-ocra/", "Colore Giallo Ocra");
@@ -78,13 +80,15 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-avio/", "Colore Avio");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-glicine/", "Colore Glicine");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-malva/", "Colore Malva");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-porpora/", "Colore Porpora");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-celeste/", "Colore Celeste");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-sabbia/", "Colore Sabbia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-bronzo/", "Colore Bronzo");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-zaffiro/", "Colore Zaffiro");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-viola/", "Colore Viola");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/color-lavanda/", "Colore Lavanda");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu/", "Colore Blu");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-blu-navy/", "Colore Blu Navy");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/blu-cobalto/", "Colore Blu Cobalto");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-fucsia/", "Colore Fucsia");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-ecru/", "Colore Ecru");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-magenta/", "Colore Magenta");
@@ -95,6 +99,7 @@ function link_colori_handler($atts, $content = null)
         <div class='row'>
             <div class='row__inner'>";
 
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/il-very-peri-e-il-colore-dellanno-2022-secondo-pantone/", "Classic Very Peri 2022");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colore-pantone-2021/", "Classic Giallo Pantone 2021");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/classic-blue-pantone/", "Classic Blue Pantone 2020");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pantone/", "Colori Pantone");
@@ -118,6 +123,9 @@ function link_colori_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pareti-soggiorno/", "Colori pareti soggiorno");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-pastello-per-arredare-la-casa/", "Colori Pastello");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/pareti-colorate/", "Pareti colorate");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/colori-arcobaleno/", "Colori arcobaleno");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/tonalita-di-giallo/", "Tonalità di Giallo");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/tonalita-di-verde/", "Tonalità di Verde");
 
 
     $result .= "</div></div></div>";
@@ -139,7 +147,7 @@ function grafica3d_handler($atts, $content = null)
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/autodesk-revit/", "Autodesk Revit");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/archicad/", "Archicad");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/maya-3d/", "Maya 3D");
-    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/blender-3d/", "Maya 3D");
+    $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/blender-3d/", "Blender 3D");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/librecad/", "Librecad");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/draftsight/", "Draftsight");
     $result .= ColorWidget::GetLinkWithImageCarousel("https://www.totaldesign.it/lumion/", "Lumion Grafica 3D");

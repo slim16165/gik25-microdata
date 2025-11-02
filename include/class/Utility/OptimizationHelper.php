@@ -16,7 +16,7 @@ class OptimizationHelper
        add_action( 'template_redirect', $delegate);
     }
 
-    //It's not excuted on /wp-admin pages
+    //It's not executed on /wp-admin pages
     //Not executed for backend pages
     public static function IncludeCssOnPosts(): void
     {
@@ -85,7 +85,7 @@ class OptimizationHelper
     protected static function IsAnyShortcodeEnabled(): bool
     {
         $enabledShortcodes = self::GetListOfEnabledShortcodesFromOptions();
-        if(!isset($shortcodes))
+        if(!isset($enabledShortcodes))
             $enabledShortcodes = true; //if I can't find any option I should suppose that a shordcode may be enabled (cautelative), instead if the list is simply populatew with few elemetns I have to check
 
         return self::CheckIfShortcodeIsUsedInThisPost($enabledShortcodes);
@@ -114,7 +114,7 @@ class OptimizationHelper
      * @param $shortcodes
      * @return bool|void
      */
-    protected static function CheckIfShortcodeIsUsedInThisPost($shortcodes)
+    protected static function CheckIfShortcodeIsUsedInThisPost($shortcodes): bool
     {
         global $post;
 
@@ -128,6 +128,7 @@ class OptimizationHelper
                 return true; //$enabled_shortcode_found
             }
         }
+        return false;
     }
 
 }

@@ -1,4 +1,10 @@
 <?php
+namespace gik25microdata;
+
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
+}
+
 class ReviousMicrodataSettingsPage
 {
     /**
@@ -10,7 +16,7 @@ class ReviousMicrodataSettingsPage
      * Start up
      */
     public function __construct()
-    {
+    {   
         add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
         add_action( 'admin_init', array( $this, 'page_init' ) );
     }
@@ -290,6 +296,7 @@ BBB;
     // }
 
 }
+
 
 if( is_admin() )
     $revious_microdata_settings_page = new ReviousMicrodataSettingsPage();

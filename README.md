@@ -25,6 +25,19 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.7.1 _(2024-01-18)_
+* Fixed critical bugs in shortcode name mismatches: Quote, Telefono, Progressbar, Slidingbox, Perfectpullquote, and Youtube now use correct shortcode names
+* Fixed YouTube shortcode to use add_shortcode() for multiple names instead of array
+* Fixed Progressbar.php syntax errors in styles() method
+* Fixed variable naming bug in OptimizationHelper.php ($shortcodes → $enabledShortcodes)
+* Fixed missing namespace declarations in ReviousMicrodataSettingsPage
+* Fixed WordpressBehaviourModifier to use __CLASS__ instead of string references
+* Fixed superinformati_specific.php to use __NAMESPACE__ for hook registrations
+* Fixed missing return statement in CheckIfShortcodeIsUsedInThisPost()
+* Fixed deprecated $_SERVER["HTTPS"] check in ServerHelper
+* Added domain mapping for www.totaldesign.it in AutomaticallyDetectTheCurrentWebsite()
+* **IMPORTANT:** I link negli shortcode site-specific (es. totaldesign_specific.php) sono hardcoded e andrebbero spostati in configurazione/database in futuro
+
 ##### 1.7.0 _(2023-03-19)_
 * Fixed shortcode callback issue by properly referencing the namespaced function link_vitamine_handler in add_shortcode: add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
 * Fixed composer autoload.php and versions

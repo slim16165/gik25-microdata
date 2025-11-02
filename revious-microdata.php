@@ -3,7 +3,7 @@
 Plugin Name: Revious Microdata
 Plugin URI:
 Description:
-Version:     1.7.0
+Version:     1.7.1
 Author:      Gianluigi Salvi
  */
 
@@ -17,6 +17,7 @@ function AutomaticallyDetectTheCurrentWebsite(): void
     $domain_specific_files = [
         'www.nonsolodiete.it' => 'nonsolodiete_specific.php',
         'www.superinformati.com' => 'superinformati_specific.php',
+        'www.totaldesign.it' => 'totaldesign_specific.php',
         // Aggiungi altre corrispondenze qui
     ];
 

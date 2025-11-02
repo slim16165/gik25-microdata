@@ -7,19 +7,16 @@ class Progressbar extends ShortcodeBase
 {
     public function __construct()
     {
-        $this->shortcode = 'md_flipbox';
+        $this->shortcode = 'md_progressbar';
         parent::__construct();
-        //add_shortcode('md_progressbar', array($this, 'shortcode'));
-        add_action('wp_enqueue_scripts', array($this, 'styles'));
     }
 
     function styles()
     {
-        wp_register_style('styles', plugins_url("{asset_path}/css/md_progressbar.css"), array(), '', 'all');
+        wp_register_style('styles', plugins_url('gik25-microdata/assets/css/md_progressbar.css'), array(), '', 'all');
         wp_enqueue_style('styles');
-        $asset_path = "gik25-microdata/asset";
-        script('script', plugins_url("{$this->$asset_path}/js/progressbar.js"), array('jquery'));
-        script('script');
+        wp_register_script('progressbar_js', plugins_url('gik25-microdata/assets/js/progressbar.js'), array('jquery'), '1.0', true);
+        wp_enqueue_script('progressbar_js');
     }
 
     public function ShortcodeHandler($atts, $content = null)

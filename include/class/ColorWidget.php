@@ -1,6 +1,8 @@
 <?php
  namespace gik25microdata;
 
+use gik25microdata\ListOfPosts\WPPostsHelper;
+
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
@@ -162,7 +164,7 @@ EOF;
 
     public static function GetLinkWithImageCarousel(string $target_url, string $nome)
     {
-        $target_url = ReplaceTargetUrlIfStaging($target_url);
+        $target_url = WPPostsHelper::ReplaceTargetUrlIfStaging($target_url);
         global $post, $MY_DEBUG; //il post corrente
         $result = "";
 

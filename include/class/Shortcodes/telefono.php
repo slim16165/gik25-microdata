@@ -9,7 +9,7 @@ class Telefono extends ShortcodeBase
     {
         add_shortcode('md_telefono', array($this, 'shortcode'));
         add_shortcode('microdata_telefono', array($this, 'shortcode'));
-        $this->shortcode = 'md_flipbox';
+        $this->shortcode = 'md_telefono';
         parent::__construct();
     }
 

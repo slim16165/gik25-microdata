@@ -11,7 +11,9 @@ class Youtube extends ShortcodeBase
 
     public function __construct()
     {
-        $this->shortcode = ['md_youtube', 'youtube'];
+        add_shortcode('md_youtube', array($this, 'shortcode'));
+        add_shortcode('youtube', array($this, 'shortcode'));
+        $this->shortcode = 'md_youtube';
         parent::__construct();
     }
 

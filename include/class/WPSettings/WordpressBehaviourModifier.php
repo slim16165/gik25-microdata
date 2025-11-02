@@ -15,8 +15,8 @@ class WordpressBehaviourModifier{
 
     public function __construct()
     {
-        add_action('admin_init', ["\WordpressBehaviourModifier", "admin_init_scripts_styles"]);
-        add_action('save_post', array("\WordpressBehaviourModifier", "add_permalink_to_posts_table"), 100, 2);
+        add_action('admin_init', array(__CLASS__, "admin_init_scripts_styles"));
+        add_action('save_post', array(__CLASS__, "add_permalink_to_posts_table"), 100, 2);
     }
 
     public static function admin_init_scripts_styles(): void

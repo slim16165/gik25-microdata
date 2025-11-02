@@ -11,7 +11,7 @@ class Quote extends ShortcodeBase
     {
         add_shortcode('md_quote', array($this, 'shortcode'));
         add_shortcode('quote', array($this, 'shortcode'));
-        $this->shortcode = 'md_flipbox';
+        $this->shortcode = 'md_quote';
         parent::__construct();
     }
 
