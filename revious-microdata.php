@@ -37,10 +37,21 @@ if (!defined('ABSPATH'))
     exit; // Exit if accessed directly.
 }
 
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-    require __DIR__ . '/vendor/autoload.php';
+if ( ! file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+    add_action('admin_notices', function() {
+        echo '<div class="error">';
+        echo '<p><strong>Revious Microdata: Dipendenze mancanti</strong></p>';
+        echo '<p>La directory <code>vendor/</code> non è stata trovata. Esegui questo comando via SSH:</p>';
+        echo '<pre style="background: #f5f5f5; padding: 10px; border-left: 4px solid #2271b1;">';
+        echo 'cd ' . __DIR__ . ' && composer install --no-dev';
+        echo '</pre>';
+        echo '<p>Se non hai Composer installato sul server, installalo prima o contatta il tuo amministratore di sistema.</p>';
+        echo '</div>';
+    });
+    return; // Esci senza caricare il plugin
 }
-else exit();
+
+require __DIR__ . '/vendor/autoload.php';
 
 if (defined('DOING_AJAX') && DOING_AJAX)
     return;
