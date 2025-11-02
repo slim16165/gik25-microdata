@@ -6,8 +6,6 @@ parameters:
     scanFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
     paths:
-        - bootstrap.php
-        - src/
-        - tests/
+        - include/
     excludePaths:
-        - tests/data/
+        - vendor/

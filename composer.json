@@ -11,7 +11,10 @@
     }
   ],
   "autoload": {
-    "classmap": ["include/", "include/class", "include/Shortcodes", "include/site_specific"]
+    "psr-4": {
+      "gik25microdata\\": "include/class/",
+      "gik25microdata\\site_specific\\": "include/site_specific/"
+    }
   },
   "require": {
     "athari/yalinqo": "^2.0",

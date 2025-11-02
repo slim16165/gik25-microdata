@@ -25,6 +25,12 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.7.2 _(2024-01-18)_
+* Migrato autoloading da classmap a PSR-4 per migliorare performance e compliance con standard industry
+* Corretto phpstan.neon paths per puntare a include/ invece di bootstrap.php/src/tests
+* Autoloader ora usa PSR-4: mapping diretto namespace → directory senza scansione completa
+* PHPStan configuration ottimizzata per analisi corretta del codebase
+
 ##### 1.7.1 _(2024-01-18)_
 * Fixed critical bugs in shortcode name mismatches: Quote, Telefono, Progressbar, Slidingbox, Perfectpullquote, and Youtube now use correct shortcode names
 * Fixed YouTube shortcode to use add_shortcode() for multiple names instead of array
