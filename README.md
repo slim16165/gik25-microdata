@@ -1,17 +1,19 @@
 # Revious Microdata
 
-[![Build Status](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/badges/build.png?b=master)](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/?branch=master)
-[![static analysis](https://github.com/yiisoft/html/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/html/actions?query=workflow%3A%22static+analysis%22)
-[![Code Intelligence Status](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
+Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazioni SEO e widget interattivi.
 
-[![WordPress rating](https://img.shields.io/wordpress/plugin/r/gik25-quotes.svg?maxAge=3600&label=wordpress%20rating)](https://wordpress.org/support/view/plugin-reviews/gik25-quotes)
-[![WordPress](https://img.shields.io/wordpress/plugin/dt/gik25-quotes.svg?maxAge=3600)](https://downloads.wordpress.org/plugin/gik25-quotes.latest-stable.zip)
-[![WordPress](https://img.shields.io/wordpress/v/gik25-quotes.svg?maxAge=3600)](https://wordpress.org/plugins/gik25-quotes/)
-[![WordPress plugin](https://img.shields.io/wordpress/plugin/v/gik25-quotes.svg?maxAge=3600)](https://wordpress.org/plugins/gik25-quotes/)
-[![license](https://img.shields.io/github/license/adamdehaven/gik25-quotes.svg?maxAge=3600)](https://raw.githubusercontent.com/adamdehaven/gik25-quotes/master/LICENSE)
+**Siti supportati**: TotalDesign.it, SuperInformati.com, NonSoloDieti.it, ChieCosa.it, Prestinforma.it
 
-A Wordpress plugin to add beautifully styled left-aligned, right-aligned, or full-width pullquotes. 
+## Caratteristiche Principali
+
+- 🎨 **Shortcode**: Quote, Pullquote, Box Info, Progress Bar, Sliding Box, Flipbox, Blinking Button
+- 🏠 **Widget cucine**: Kitchen Finder con wizard 4-step e generazione lead
+- 🎯 **SEO**: Schema markup, microdata, ottimizzazioni RankMath/Yoast
+- 🎨 **Color Widget**: Caroselli e selezioni colori dinamici
+- ⚡ **Performance**: Caricamento condizionale CSS/JS, cache, ottimizzazioni
+- 🔒 **Sicurezza**: Sanitizzazione XSS, validazione input, nonce protection
+- 📱 **Mobile-first**: Design responsive con touch targets ottimizzati
+- ♿ **Accessibilità**: ARIA labels, keyboard navigation, screen reader support 
 
 ## INSTALLATION
 
@@ -25,11 +27,34 @@ A Wordpress plugin to add beautifully styled left-aligned, right-aligned, or ful
 
 Aggiornare anche la versione del plugin su revious-microdata.php
 
+## USAGE
 
+### Kitchen Finder Widget
+Inserisci lo shortcode in qualsiasi post o pagina:
+
+```
+[kitchen_finder title="Trova la cucina perfetta per te"]
+```
+
+Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo shortcode.
+
+### Altri Shortcode Disponibili
+- `[md_quote]` - Citazioni stile quote
+- `[boxinfo title="Titolo"]` - Box informativi
+- `[md_progressbar]` - Barre di progresso
+- `[md_slidingbox]` - Box scorrevoli
+- `[md_flipbox]` - Box con effetto flip
+- `[md_blinkingbutton]` - Pulsanti animati
 
 # Changelog
 
-##### 1.8.0 _(2025-01-XX)_
+##### 1.8.1 _(2025-11-02)_
+* **Fix critical**: Rimossi conditional tags deprecati (is_single/is_page) da template_redirect - causavano warning WordPress 3.1+
+* **UX migliorata**: Gestione errore vendor mancante ora mostra messaggio admin friendly invece di exit fatale
+* **Docs**: Istruzioni installazione separate per dev/prod, bug fix verificati
+* **Refactoring**: ShortcodeBase ottimizzato per verificare global $post invece di conditional tags
+
+##### 1.8.0 _(2025-11-02)_
 * **Aggiunto Kitchen Finder Widget**: Nuovo shortcode `[kitchen_finder]` per aiutare gli utenti a trovare la cucina IKEA perfetta
 * Wizard a 4 step (spazio, layout, stile, budget) con validazione client-side e server-side
 * Design moderno con gradienti, animazioni fluide e card interattive con effetti hover
