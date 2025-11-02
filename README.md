@@ -14,10 +14,14 @@
 A Wordpress plugin to add beautifully styled left-aligned, right-aligned, or full-width pullquotes. 
 
 ## INSTALLATION
-Download the plugin and install it 
-<pre>Plugins > Add New > Upload Plugin</pre>
 
-php composer.phar update --no-dev --lock
+### Development
+<pre>php composer.phar update --no-dev --lock</pre>
+
+### Production
+<pre>composer install --no-dev</pre>
+
+**IMPORTANTE**: Dopo qualsiasi deploy su staging/produzione, assicurati di eseguire `composer install --no-dev` nella directory del plugin per rigenerare le dipendenze.
 
 Aggiornare anche la versione del plugin su revious-microdata.php
 
