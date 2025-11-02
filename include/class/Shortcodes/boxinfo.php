@@ -27,10 +27,8 @@ class Boxinfo extends ShortcodeBase
 
     public function pluginOptimizedLoad(): void
     {
-        //In alternativa potrei usare !is_admin
-        $isFe = is_page() || is_singular() || is_front_page() || is_single();
-
-        if ($isFe && $this->PostContainsShortCode('boxinfo'))
+        // Rimosso check conditional tags - verificano global $post invece
+        if ($this->PostContainsShortCode('boxinfo'))
         {
             add_action('wp_enqueue_scripts', array($this, 'styles'));
         }

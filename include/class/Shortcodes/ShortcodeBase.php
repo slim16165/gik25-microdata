@@ -25,10 +25,13 @@ abstract class ShortcodeBase
 
     public function pluginOptimizedLoad(): void
     {
-        //In alternativa potrei usare !is_admin
-        $isFe = is_page() || is_singular() || is_front_page() || is_single();
+        // Rimuovi check conditional tags su template_redirect - verificano global $post invece
+        global $post;
+        if (!is_a($post, 'WP_Post')) {
+            return; // Non siamo in un contesto con post valido
+        }
 
-        if ($isFe && $this->PostContainsShortCode($this->shortcode))
+        if ($this->PostContainsShortCode($this->shortcode))
         {
             add_shortcode($this->shortcode,  array($this, 'ShortcodeHandler'));
             add_action('wp_enqueue_scripts', array($this, 'styles'));
