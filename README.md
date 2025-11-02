@@ -25,6 +25,17 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 # Changelog
 
+##### 1.8.0 _(2025-01-XX)_
+* **Aggiunto Kitchen Finder Widget**: Nuovo shortcode `[kitchen_finder]` per aiutare gli utenti a trovare la cucina IKEA perfetta
+* Wizard a 4 step (spazio, layout, stile, budget) con validazione client-side e server-side
+* Design moderno con gradienti, animazioni fluide e card interattive con effetti hover
+* Link interni dinamici che si aggiornano automaticamente basati su post WordPress reali
+* AJAX per calcolo risultati e generazione PDF lead senza reload pagina
+* Security fixes: sanitizzazione XSS, validazione input, gestione errori migliorata
+* Performance: caricamento condizionale CSS/JS solo su pagine con lo shortcode
+* Mobile-first responsive design con touch targets ottimizzati
+* Accessibilità: ARIA labels, keyboard navigation, focus management
+
 ##### 1.7.2 _(2024-01-18)_
 * Migrato autoloading da classmap a PSR-4 per migliorare performance e compliance con standard industry
 * Corretto phpstan.neon paths per puntare a include/ invece di bootstrap.php/src/tests
