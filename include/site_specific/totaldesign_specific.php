@@ -10,11 +10,9 @@ if (!defined('ABSPATH')) {
 
 //Optimizations
 
-ConditionalLoadJsCss_Colori();
-
 function ConditionalLoadJsCss_Colori()
 {
-    add_action('wp_head', '_conditionalLoadJsCss_Colori');
+    add_action('wp_head', __NAMESPACE__ . '\\_conditionalLoadJsCss_Colori');
 }
 
 function _conditionalLoadJsCss_Colori()
@@ -24,6 +22,8 @@ function _conditionalLoadJsCss_Colori()
     if (in_array($post->ID, $postConTagColori))
         ColorWidget::carousel_js();
 }
+
+ConditionalLoadJsCss_Colori();
 
 add_shortcode('link_colori', __NAMESPACE__ . '\\link_colori_handler');
 add_shortcode('grafica3d', __NAMESPACE__ . '\\grafica3d_handler');

@@ -61,6 +61,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 ##### 1.8.1 _(2025-11-02)_
 * **Fix critical**: Rimossi conditional tags deprecati (is_single/is_page) da template_redirect - causavano warning WordPress 3.1+
+* **Fix critical**: Aggiunto namespace mancante in `add_action` per `_conditionalLoadJsCss_Colori` in totaldesign_specific.php - causava fatal error
 * **UX migliorata**: Gestione errore vendor mancante ora mostra messaggio admin friendly invece di exit fatale
 * **Docs**: Istruzioni installazione separate per dev/prod, bug fix verificati
 * **Refactoring**: ShortcodeBase ottimizzato per verificare global $post invece di conditional tags
