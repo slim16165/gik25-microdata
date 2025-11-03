@@ -17,3 +17,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 			return str_contains($haystack, $needle);
 		}
 	}
+

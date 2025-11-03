@@ -59,6 +59,20 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.8.2 _(2025-01-XX)_
+* **Fix critical**: Risolto errore autoloading PSR-4 per classi ServerHelper, MyString, HtmlHelper
+  * Rinominati file da `.class.php` a `.php` per compliance PSR-4 autoloading
+  * Classe `gik25microdata\Utility\ServerHelper` ora caricata correttamente
+* **ColorWidget improvements**: Miglioramenti UX e fix bug widget colori
+  * Fix z-index: tile zoomato ora appare sopra gli altri elementi
+  * Fix scritta: testo sempre visibile sotto tile, overlay su hover
+  * Ripristinato layout a griglia su più righe (era diventato orizzontale scrollabile)
+  * Migliorate animazioni e transizioni con cubic-bezier
+  * Dimensioni tile ripristinate a 120px come originale
+  * Aggiunti border-radius, box-shadow e effetti hover più fluidi
+  * Rimossi frecce navigazione (non necessarie con layout a griglia)
+  * Ottimizzazioni performance: will-change, backface-visibility per animazioni smoother
+
 ##### 1.8.1 _(2025-11-02)_
 * **Fix critical**: Rimossi conditional tags deprecati (is_single/is_page) da template_redirect - causavano warning WordPress 3.1+
 * **Fix critical**: Aggiunto namespace mancante in `add_action` per `_conditionalLoadJsCss_Colori` in totaldesign_specific.php - causava fatal error
