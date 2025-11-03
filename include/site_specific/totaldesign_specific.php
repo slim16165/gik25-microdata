@@ -3,6 +3,7 @@ namespace gik25microdata\site_specific;
 
 use gik25microdata\ColorWidget;
 use gik25microdata\TagHelper;
+use gik25microdata\site_specific\Totaldesign\ProgrammaticHub;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
@@ -24,6 +25,7 @@ function _conditionalLoadJsCss_Colori()
 }
 
 ConditionalLoadJsCss_Colori();
+ProgrammaticHub::init();
 
 add_shortcode('link_colori', __NAMESPACE__ . '\\link_colori_handler');
 add_shortcode('grafica3d', __NAMESPACE__ . '\\grafica3d_handler');
