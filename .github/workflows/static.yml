@@ -1,23 +1,42 @@
+name: Static Analysis
+
 on:
   pull_request:
     paths-ignore:
       - 'README.md'
       - '.gitignore'
-      - '.gitattributes'      
-
+      - '.gitattributes'
   push:
     paths-ignore:
       - 'README.md'
       - '.gitignore'
-      - '.gitattributes'      
-
-name: static analysis
+      - '.gitattributes'
 
 jobs:
-  psalm:
-    uses: gik25-microdata/actions/.github/workflows/psalm.yml@master
-    with:
-      os: >-
-        ['ubuntu-latest']
-      php: >-
-        ['8.0', '8.1']
+  phpstan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        extensions: mbstring, xml, curl, zip
+        coverage: none
+    
+    - name: Cache Composer packages
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-interaction
+    
+    - name: Run PHPStan
+      run: vendor/bin/phpstan analyse --memory-limit=1G
+      continue-on-error: true

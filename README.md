@@ -59,6 +59,35 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.8.3 _(2025-01-XX)_
+* **Refactoring Bootstrap**: Intera logica di inizializzazione spostata in classe dedicata `PluginBootstrap`
+  * File principale ridotto da 566 a 19 righe per migliore manutenibilità
+  * Separazione delle responsabilità: gestione errori, Composer, inizializzazione
+  * Codice più organizzato e testabile con metodi statici
+* **Gestione Errori Migliorata**: Sistema robusto per prevenire errori critici WordPress
+  * Try-catch per ogni componente con fallback graceful
+  * Error handlers per errori fatali e non fatali
+  * Log dettagliati con link ai file di log in admin
+  * Plugin si disabilita silenziosamente senza far crashare il sito
+* **Installazione Automatica Composer**: Supporto per installazione automatica dipendenze
+  * Rilevamento automatico PHP binary e Composer
+  * Supporto Windows/Unix con shell escaping corretto
+  * Configurazione PHP binary tramite settings page
+  * Feedback utente con messaggi di successo/errore dettagliati
+* **Fix GitHub Actions Workflows**: Corretti tutti i workflow per evitare errori
+  * Aggiornati action a versioni recenti (v4/v5)
+  * Corretto cache key da composer.lock a composer.json
+  * Convertito static.yml da workflow riusabile a standalone
+  * Cambiato da Psalm a PHPStan (già configurato nel progetto)
+* **Fix Bug Critici**: Corretti bug nelle callback di AdminHelper e HeaderHelper
+  * Fix callback scope in AdminHelper::update_user_activity()
+  * Fix callback scope in HeaderHelper::add_LogRocket()
+  * Aggiunti controlli is_user_logged_in() per sicurezza
+* **Bootstrap Centralizzato**: Inizializzazione condizionale per contesto (AJAX, Admin, Front-End)
+  * Helper admin istanziati correttamente solo in contesto admin
+  * ColorWidget::Initialize() ora chiamato correttamente
+  * Endpoint AJAX ora funzionanti (rimosso early return)
+
 ##### 1.8.2 _(2025-01-XX)_
 * **Fix critical**: Risolto errore autoloading PSR-4 per classi ServerHelper, MyString, HtmlHelper
   * Rinominati file da `.class.php` a `.php` per compliance PSR-4 autoloading

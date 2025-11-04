@@ -8,13 +8,18 @@ class HeaderHelper
 {
     public function __construct()
     {
-        add_action('admin_head', 'add_LogRocket');
+        add_action('admin_head', [$this, 'add_LogRocket']);
     }
 
     function add_LogRocket(): void
     {
         if ( defined( 'DOING_AJAX' ))
         {
+            return;
+        }
+
+        // Verifica che l'utente sia loggato prima di caricare LogRocket
+        if (!is_user_logged_in()) {
             return;
         }
 

@@ -100,6 +100,14 @@ class ReviousMicrodataSettingsPage
         );  
 
         add_settings_field(
+            'php_binary_path',
+            'Percorso PHP per Composer',
+            array( $this, 'php_binary_path_callback' ),
+            'revious-microdata-setting-admin',
+            'setting_section_id'
+        );
+
+        add_settings_field(
             'wnd_default_image_settings_enabled', 
             'Enable Default Image Settings (for inserting images in post editor)', 
             array( $this, 'wnd_default_image_settings_enabled_callback' ), 
@@ -124,6 +132,9 @@ class ReviousMicrodataSettingsPage
 
         if( isset( $input['shortcode_names'] ) )
             $new_input['shortcode_names'] = sanitize_text_field( $input['shortcode_names'] );
+
+        if( isset( $input['php_binary_path'] ) )
+            $new_input['php_binary_path'] = sanitize_text_field( $input['php_binary_path'] );
 
         if( isset( $input['wnd_default_image_settings_enabled'] ) )
             $new_input['wnd_default_image_settings_enabled'] = sanitize_text_field( $input['wnd_default_image_settings_enabled'] );
@@ -260,6 +271,20 @@ BBB;
         );
     }
 
+    public function php_binary_path_callback(): void
+    {
+        $value = isset($this->options['php_binary_path'])
+            ? esc_attr($this->options['php_binary_path'])
+            : '';
+
+        printf(
+            '<input type="text" id="php_binary_path" class="regular-text code" placeholder="%s" name="revious_microdata_option_name[php_binary_path]" value="%s" />',
+            esc_attr('Esempio: C:\path\to\php.exe'),
+            $value
+        );
+        echo '<p class="description">Percorso completo dell\'eseguibile PHP da usare per l\'installazione automatica delle dipendenze Composer.</p>';
+    }
+
     public function wnd_default_image_settings_enabled_callback(): void
     {
         //var_dump($this->options['wnd_default_image_settings_enabled']);
@@ -297,6 +322,5 @@ BBB;
 
 }
 
-
-if( is_admin() )
-    $revious_microdata_settings_page = new ReviousMicrodataSettingsPage();
+// Nota: L'istanziazione di ReviousMicrodataSettingsPage è ora gestita centralmente
+// nel file bootstrap revious-microdata.php per mantenere la logica di inizializzazione centralizzata

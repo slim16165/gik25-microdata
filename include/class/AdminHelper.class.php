@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	{
         public function __construct()
         {
-            add_action('init', 'update_user_activity');
+            add_action('init', [$this, 'update_user_activity']);
 //            add_action( 'init', 'remove_extra_field_profile' );
         }
 
@@ -66,7 +66,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
     function update_user_activity(): void
     {
-        update_user_meta(get_current_user_id(), '<last_activity>', time());
+        // Aggiorna user meta solo se l'utente è loggato
+        if (is_user_logged_in()) {
+            update_user_meta(get_current_user_id(), '<last_activity>', time());
+        }
     }
 
 	}
