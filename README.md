@@ -59,6 +59,24 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.9.0 _(2025-11-06)_
+* App-like Navigator: nuovo shortcode `[app_nav]` con tabs (Scopri, Colori, IKEA, Stanze, Trend) e card responsive
+  * File: `include/class/Shortcodes/appnav.php`, CSS `assets/css/app-nav.css`, JS `assets/js/app-nav.js`
+* Widget contestuali automatici sugli articoli
+  * File: `include/class/Widgets/ContextualWidgets.php` + attivazione in `include/site_specific/totaldesign_specific.php`
+  * Inietta automaticamente Kitchen Finder in articoli su cucine/IKEA e Palette correlate negli articoli colore
+* Kitchen Finder – UX e accessibilità
+  * Ordine wizard: prima layout, poi misure; validazione adattiva (0 ammesso quando non serve)
+  * SVG pulite monocromatiche, testo hover fix, microcopy unità (1 m = 100 cm)
+  * Toggle “cucina piccola” calcolato automaticamente (non editabile)
+  * Errori AJAX più chiari lato client
+* Kitchen Finder – Backend
+  * Verifica nonce robusta con risposta JSON e `nocache_headers()`
+  * Log payload in `WP_DEBUG` per diagnosi
+* Bootstrap & AJAX
+  * Caricamento classi Shortcodes anche in contesto `DOING_AJAX` (fix 400/`0` su `admin-ajax.php`)
+  * Helper per caricare i file degli shortcode centralizzato (`loadShortcodeFiles()`)
+
 ##### 1.8.3 _(2025-01-XX)_
 * **Refactoring Bootstrap**: Intera logica di inizializzazione spostata in classe dedicata `PluginBootstrap`
   * File principale ridotto da 566 a 19 righe per migliore manutenibilità

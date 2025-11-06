@@ -1,0 +1,17 @@
+/* App-like Navigator */
+.td-appnav {background:#fff;border-radius:16px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,.08);}
+.td-appnav__title {margin:0 0 10px;font-size:1.6rem;color:#0f172a;}
+.td-appnav__tabs {display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.td-appnav__tab {border:0;background:#e2e8f0;color:#0f172a;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer;}
+.td-appnav__tab.is-active {background:#1d4ed8;color:#fff;}
+.td-appnav__section {display:none;}
+.td-appnav__section.is-active {display:block;}
+.td-card-grid {display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+.td-card {display:block;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px;text-decoration:none;color:#0f172a;transition:.2s;}
+.td-card:hover {transform:translateY(-2px);box-shadow:0 10px 22px rgba(15,23,42,.08);}
+.td-card h3 {margin:0 0 6px;font-size:1.1rem;}
+.td-card p {margin:0;color:#475569;}
+.td-card--cta {background:linear-gradient(135deg,#1d4ed8,#6366f1);color:#fff;border-color:transparent;}
+.td-card--cta p{color:#fff;}
+
+

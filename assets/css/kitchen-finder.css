@@ -159,12 +159,35 @@
     flex: 1;
 }
 
+.kf-toggle input[disabled] {
+    opacity: .65;
+    cursor: not-allowed;
+}
+.kf-toggle input[disabled] + .kf-toggle-label {
+    color: #888;
+}
+
 .kf-help-text {
     display: block;
     font-size: 0.875rem;
     color: #666;
     margin-top: 0.5rem;
     padding-left: 2rem;
+}
+
+.kf-measure-help {
+    background: #e6f2ff;
+    border-left: 4px solid #0066cc;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.kf-info-text {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: #1a1a1a;
+    line-height: 1.5;
 }
 
 /* Option Grid */
@@ -230,9 +253,44 @@
 }
 
 .kf-option-icon {
-    font-size: 2.5rem;
-    line-height: 1;
-    transition: transform 0.3s ease;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.kf-option-icon svg {
+    width: 100%;
+    height: 100%;
+    max-width: 120px;
+    max-height: 80px;
+}
+
+.kf-option-icon svg rect,
+.kf-option-icon svg path,
+.kf-option-icon svg line,
+.kf-option-icon svg polyline {
+    stroke-width: 2;
+    stroke: #333;
+    fill: none;
+}
+
+.kf-option-card:hover .kf-option-icon svg rect,
+.kf-option-card:hover .kf-option-icon svg path,
+.kf-option-card:hover .kf-option-icon svg line,
+.kf-option-card:hover .kf-option-icon svg polyline {
+    stroke: #0066cc;
+    stroke-width: 2.5;
+}
+
+.kf-option-card.kf-selected .kf-option-icon svg rect,
+.kf-option-card.kf-selected .kf-option-icon svg path,
+.kf-option-card.kf-selected .kf-option-icon svg line,
+.kf-option-card.kf-selected .kf-option-icon svg polyline {
+    stroke: #0066cc;
+    stroke-width: 3;
 }
 
 .kf-option-card:hover .kf-option-icon {
@@ -241,6 +299,27 @@
 
 .kf-option-label {
     display: block;
+}
+
+/* SVG icons styling + testo sempre leggibile */
+.kf-option-card,
+.kf-option-card .kf-option-label {
+    color: #0f172a;
+}
+.kf-option-card:hover .kf-option-label,
+.kf-option-card.kf-selected .kf-option-label {
+    color: #0f172a;
+}
+.kf-option-icon svg {
+    width: 48px;
+    height: 48px;
+    stroke: #0f172a;
+    fill: none;
+    stroke-width: 2.5;
+}
+.kf-option-card:hover .kf-option-icon svg,
+.kf-option-card.kf-selected .kf-option-icon svg {
+    stroke: #004080;
 }
 
 /* Budget Options */

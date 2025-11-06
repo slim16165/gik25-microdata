@@ -127,6 +127,12 @@
             if (currentStepEl) {
                 currentStepEl.classList.remove('kf-hidden');
                 currentStepEl.setAttribute('aria-hidden', 'false');
+                
+                // Se siamo allo step 2 (misure), adatta i campi in base al layout
+                if (step === 2 && this.data.layout) {
+                    this.adaptMeasureStep();
+                }
+                
                 // Focus management per accessibilità
                 const firstInput = currentStepEl.querySelector('input, button, .kf-option-card, .kf-budget-card');
                 if (firstInput) {
@@ -141,6 +147,45 @@
             const widget = document.getElementById('kitchen-finder-widget');
             if (widget) {
                 widget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        },
+
+        adaptMeasureStep: function() {
+            const layout = this.data.layout;
+            const spaceBGroup = document.getElementById('kf-space-b-group');
+            const spaceBInput = document.getElementById('kf-space-b');
+            const spaceBHelp = document.getElementById('kf-space-b-help');
+            const measureHelp = document.getElementById('kf-measure-help');
+            
+            if (!spaceBGroup || !measureHelp) return;
+            
+            // Reset
+            spaceBInput.value = '';
+            spaceBInput.required = false;
+            
+            if (layout === 'lineare' || layout === 'isola') {
+                // Lineare e Isola: nascondi campo seconda parete
+                spaceBGroup.style.display = 'none';
+                spaceBInput.value = '0';
+                this.data.space_b = 0;
+                
+                if (layout === 'lineare') {
+                    measureHelp.innerHTML = '<p class="kf-info-text">💡 Per una cucina lineare ti serve solo la misura della parete principale.</p>';
+                } else {
+                    measureHelp.innerHTML = '<p class="kf-info-text">💡 Per una cucina con isola ti serve la misura della parete principale. L\'isola sarà posizionata al centro.</p>';
+                }
+            } else if (layout === 'angolare') {
+                // Angolare: mostra campo seconda parete
+                spaceBGroup.style.display = 'block';
+                spaceBInput.required = true;
+                spaceBHelp.textContent = 'Inserisci la misura della seconda parete che forma l\'angolo.';
+                measureHelp.innerHTML = '<p class="kf-info-text">💡 Per una cucina angolare ti servono entrambe le misure delle pareti che formano l\'angolo.</p>';
+            } else if (layout === 'u') {
+                // A U: mostra campo seconda parete
+                spaceBGroup.style.display = 'block';
+                spaceBInput.required = true;
+                spaceBHelp.textContent = 'Inserisci la misura della parete opposta (la terza parete della U).';
+                measureHelp.innerHTML = '<p class="kf-info-text">💡 Per una cucina a U ti servono: la parete principale, la parete laterale e la parete opposta.</p>';
             }
         },
 
@@ -166,17 +211,43 @@
 
         validateCurrentStep: function() {
             if (this.currentStep === 1) {
-                const spaceA = parseInt(document.getElementById('kf-space-a')?.value || 0);
-                const spaceB = parseInt(document.getElementById('kf-space-b')?.value || 0);
-                
-                if (spaceA <= 0 || spaceB <= 0) {
-                    alert('Inserisci le dimensioni dello spazio disponibile.');
+                // Step 1: Layout
+                if (!this.data.layout) {
+                    alert('Seleziona un layout per la tua cucina.');
                     return false;
                 }
             } else if (this.currentStep === 2) {
-                if (!this.data.layout) {
-                    alert('Seleziona un layout.');
-                    return false;
+                // Step 2: Misure (dopo layout)
+                const spaceA = parseInt(document.getElementById('kf-space-a')?.value || 0);
+                const spaceB = parseInt(document.getElementById('kf-space-b')?.value || 0);
+                
+                // Validazione in base al layout
+                if (this.data.layout === 'lineare' || this.data.layout === 'isola') {
+                    // Lineare e Isola: basta solo spaceA
+                    if (spaceA <= 0) {
+                        alert('Inserisci la misura della parete principale (almeno 120 cm).');
+                        return false;
+                    }
+                    if (spaceA < 120) {
+                        if (!confirm('La misura inserita è molto piccola. Vuoi continuare comunque?')) {
+                            return false;
+                        }
+                    }
+                } else if (this.data.layout === 'angolare' || this.data.layout === 'u') {
+                    // Angolare e U: servono entrambe le misure
+                    if (spaceA <= 0) {
+                        alert('Inserisci la misura della parete principale.');
+                        return false;
+                    }
+                    if (spaceB <= 0) {
+                        alert('Inserisci la misura della seconda parete.');
+                        return false;
+                    }
+                    if (spaceA < 120 || spaceB < 120) {
+                        if (!confirm('Una o entrambe le misure sono molto piccole. Vuoi continuare comunque?')) {
+                            return false;
+                        }
+                    }
                 }
             } else if (this.currentStep === 3) {
                 if (!this.data.stile) {
@@ -218,26 +289,32 @@
             formData.append('stile', this.data.stile);
             formData.append('budget', this.data.budget);
 
-            fetch(ajaxUrl, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
+            if (!ajaxUrl) {
+                console.error('Kitchen Finder: admin-ajax URL non disponibile');
+                alert('Errore di configurazione. Aggiorna la pagina e riprova.');
+                return;
+            }
+
+            fetch(ajaxUrl, { method: 'POST', body: formData, credentials: 'same-origin' })
+            .then(async response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const text = await response.text().catch(() => '');
+                    throw new Error(`HTTP ${response.status} ${text?.slice(0,200)}`);
                 }
-                return response.json();
+                return response.json().catch(() => {
+                    throw new Error('Risposta non valida dal server');
+                });
             })
             .then(result => {
                 if (result.success) {
                     this.displayResult(result.data);
                 } else {
-                    alert(result.data?.message || 'Errore nel calcolo. Riprova più tardi.');
+                    alert((result && result.data && result.data.message) ? result.data.message : 'Errore nel calcolo. Riprova più tardi.');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Errore di connessione. Riprova più tardi.');
+                alert(`Errore di connessione. ${error && error.message ? error.message : ''}`.trim());
             })
             .finally(() => {
                 if (loader) loader.classList.add('kf-hidden');

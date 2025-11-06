@@ -13,6 +13,15 @@ abstract class ShortcodeBase
 
     public function __construct()
     {
+        // Verifica che shortcode sia impostato dalla classe figlia
+        if (empty($this->shortcode)) {
+            throw new \RuntimeException('La proprietà $shortcode deve essere impostata nella classe figlia prima di chiamare parent::__construct()');
+        }
+        
+        // Registra sempre lo shortcode - WordPress ha bisogno che sia registrato per processarlo
+        add_shortcode($this->shortcode, array($this, 'ShortcodeHandler'));
+        
+        // Ottimizzazione: carica CSS/JS solo se lo shortcode è presente nel post
         add_action('template_redirect', array($this, 'pluginOptimizedLoad'));
 
         if (is_admin())
@@ -31,9 +40,9 @@ abstract class ShortcodeBase
             return; // Non siamo in un contesto con post valido
         }
 
+        // Ottimizzazione: carica CSS/JS solo se lo shortcode è presente nel post
         if ($this->PostContainsShortCode($this->shortcode))
         {
-            add_shortcode($this->shortcode,  array($this, 'ShortcodeHandler'));
             add_action('wp_enqueue_scripts', array($this, 'styles'));
             add_action('wp_enqueue_scripts', array($this, 'scripts'));
         }

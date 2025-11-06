@@ -48,47 +48,72 @@ class KitchenFinder extends ShortcodeBase
                 <?php endif; ?>
             </div>
 
-            <!-- Step 1: Spazio -->
+            <!-- Step 1: Layout -->
             <div class="kf-step" id="kf-step-1" data-step="1" role="tabpanel" aria-labelledby="kf-step-1-label">
-                <h3 id="kf-step-1-label" class="kf-step-title">Qual è lo spazio disponibile?</h3>
-                <div class="kf-input-group">
-                    <label for="kf-space-a">Lato A (cm)</label>
-                    <input type="number" id="kf-space-a" class="kf-input" min="0" max="1000" placeholder="Es: 200" aria-required="true">
-                </div>
-                <div class="kf-input-group">
-                    <label for="kf-space-b">Lato B (cm)</label>
-                    <input type="number" id="kf-space-b" class="kf-input" min="0" max="1000" placeholder="Es: 150" aria-required="true">
-                </div>
-                <div class="kf-toggle-group">
-                    <label class="kf-toggle">
-                        <input type="checkbox" id="kf-small-kitchen" aria-describedby="kf-small-kitchen-desc">
-                        <span class="kf-toggle-label">Cucina piccola (meno di 240 cm totali)</span>
-                    </label>
-                    <span id="kf-small-kitchen-desc" class="kf-help-text">Seleziona se lo spazio totale è inferiore a 240 cm</span>
+                <h3 id="kf-step-1-label" class="kf-step-title">Quale layout preferisci?</h3>
+                <div class="kf-option-grid">
+                    <button type="button" class="kf-option-card" data-value="lineare" onclick="kitchenFinder.selectOption('layout', 'lineare')" aria-pressed="false">
+                        <span class="kf-option-icon">
+                            <svg viewBox="0 0 120 80" aria-hidden="true" focusable="false">
+                                <title>Cucina lineare</title>
+                                <path d="M10 60 H110" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="kf-option-label">Lineare</span>
+                    </button>
+                    <button type="button" class="kf-option-card" data-value="angolare" onclick="kitchenFinder.selectOption('layout', 'angolare')" aria-pressed="false">
+                        <span class="kf-option-icon">
+                            <svg viewBox="0 0 120 80" aria-hidden="true" focusable="false">
+                                <title>Cucina angolare</title>
+                                <path d="M10 60 H75" stroke-linecap="round"/>
+                                <path d="M10 60 V20" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="kf-option-label">Angolare</span>
+                    </button>
+                    <button type="button" class="kf-option-card" data-value="u" onclick="kitchenFinder.selectOption('layout', 'u')" aria-pressed="false">
+                        <span class="kf-option-icon">
+                            <svg viewBox="0 0 120 80" aria-hidden="true" focusable="false">
+                                <title>Cucina a U</title>
+                                <path d="M20 20 V60 H100 V20" stroke-linecap="round"/>
+                            </svg>
+                        </span>
+                        <span class="kf-option-label">A U</span>
+                    </button>
+                    <button type="button" class="kf-option-card" data-value="isola" onclick="kitchenFinder.selectOption('layout', 'isola')" aria-pressed="false">
+                        <span class="kf-option-icon">
+                            <svg viewBox="0 0 120 80" aria-hidden="true" focusable="false">
+                                <title>Cucina con isola</title>
+                                <path d="M10 60 H110" stroke-linecap="round"/>
+                                <rect x="45" y="28" width="30" height="24" rx="4"/>
+                            </svg>
+                        </span>
+                        <span class="kf-option-label">Isola</span>
+                    </button>
                 </div>
                 <button type="button" class="kf-btn kf-btn-primary" onclick="kitchenFinder.nextStep()" aria-label="Continua al passo 2">Avanti</button>
             </div>
 
-            <!-- Step 2: Layout -->
+            <!-- Step 2: Spazio -->
             <div class="kf-step kf-hidden" id="kf-step-2" data-step="2" role="tabpanel" aria-labelledby="kf-step-2-label">
-                <h3 id="kf-step-2-label" class="kf-step-title">Quale layout preferisci?</h3>
-                <div class="kf-option-grid">
-                    <button type="button" class="kf-option-card" data-value="lineare" onclick="kitchenFinder.selectOption('layout', 'lineare')" aria-pressed="false">
-                        <span class="kf-option-icon">━</span>
-                        <span class="kf-option-label">Lineare</span>
-                    </button>
-                    <button type="button" class="kf-option-card" data-value="angolare" onclick="kitchenFinder.selectOption('layout', 'angolare')" aria-pressed="false">
-                        <span class="kf-option-icon">└</span>
-                        <span class="kf-option-label">Angolare</span>
-                    </button>
-                    <button type="button" class="kf-option-card" data-value="u" onclick="kitchenFinder.selectOption('layout', 'u')" aria-pressed="false">
-                        <span class="kf-option-icon">⊔</span>
-                        <span class="kf-option-label">A U</span>
-                    </button>
-                    <button type="button" class="kf-option-card" data-value="isola" onclick="kitchenFinder.selectOption('layout', 'isola')" aria-pressed="false">
-                        <span class="kf-option-icon">▣</span>
-                        <span class="kf-option-label">Isola</span>
-                    </button>
+                <h3 id="kf-step-2-label" class="kf-step-title">Quali sono le misure disponibili?</h3>
+                <div id="kf-measure-help" class="kf-measure-help"></div>
+                <div class="kf-input-group">
+                    <label for="kf-space-a">Lato lungo / parete principale (cm)</label>
+                    <input type="number" id="kf-space-a" class="kf-input" min="0" max="1000" placeholder="Es: 300" aria-required="true">
+                    <span class="kf-help-text">Inserisci la misura in centimetri (1 m = 100 cm) della parete su cui installerai i moduli principali.</span>
+                </div>
+                <div class="kf-input-group" id="kf-space-b-group">
+                    <label for="kf-space-b">Seconda parete (cm)</label>
+                    <input type="number" id="kf-space-b" class="kf-input" min="0" max="1000" placeholder="0 se non c'è" aria-required="false">
+                    <span class="kf-help-text" id="kf-space-b-help">Se cucina ad angolo inserisci la misura della seconda parete (valore in cm), altrimenti lascia 0.</span>
+                </div>
+                <div class="kf-toggle-group">
+                    <label class="kf-toggle">
+                        <input type="checkbox" id="kf-small-kitchen" aria-describedby="kf-small-kitchen-desc" disabled>
+                        <span class="kf-toggle-label">Spazio totale inferiore a 240 cm (cucina piccola)</span>
+                    </label>
+                    <span id="kf-small-kitchen-desc" class="kf-help-text">Calcolato automaticamente in base alle misure inserite. Suggerimento: il totale è Lato lungo + Seconda parete.</span>
                 </div>
                 <div class="kf-nav-buttons">
                     <button type="button" class="kf-btn kf-btn-secondary" onclick="kitchenFinder.prevStep()" aria-label="Torna al passo 1">Indietro</button>
@@ -163,11 +188,13 @@ class KitchenFinder extends ShortcodeBase
 
     public function styles()
     {
+        $css_abs = dirname(__DIR__, 3) . '/assets/css/kitchen-finder.css';
+        $css_ver = file_exists($css_abs) ? (string) filemtime($css_abs) : '1.0.1';
         wp_register_style(
             'kitchen-finder-css',
             plugins_url('gik25-microdata/assets/css/kitchen-finder.css'),
             [],
-            '1.0.0',
+            $css_ver,
             'all'
         );
         wp_enqueue_style('kitchen-finder-css');
@@ -175,11 +202,13 @@ class KitchenFinder extends ShortcodeBase
 
     public function scripts()
     {
+        $js_abs = dirname(__DIR__, 3) . '/assets/js/kitchen-finder.js';
+        $js_ver = file_exists($js_abs) ? (string) filemtime($js_abs) : '1.0.1';
         wp_register_script(
             'kitchen-finder-js',
             plugins_url('gik25-microdata/assets/js/kitchen-finder.js'),
             [],
-            '1.0.0',
+            $js_ver,
             true
         );
         wp_enqueue_script('kitchen-finder-js');
@@ -213,7 +242,15 @@ class KitchenFinder extends ShortcodeBase
      */
     public function ajax_calculate()
     {
-        check_ajax_referer('kitchen_finder_nonce', 'nonce');
+        nocache_headers();
+
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field((string) $_POST['nonce']) : '';
+        if (!wp_verify_nonce($nonce, 'kitchen_finder_nonce')) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('[KitchenFinder] Nonce non valido per ajax_calculate');
+            }
+            wp_send_json_error(['message' => 'Sicurezza: sessione scaduta. Ricarica la pagina e riprova.'], 403);
+        }
         
         $space_a = isset($_POST['space_a']) ? intval($_POST['space_a']) : 0;
         $space_b = isset($_POST['space_b']) ? intval($_POST['space_b']) : 0;
@@ -221,6 +258,17 @@ class KitchenFinder extends ShortcodeBase
         $layout = isset($_POST['layout']) ? sanitize_text_field($_POST['layout']) : '';
         $stile = isset($_POST['stile']) ? sanitize_text_field($_POST['stile']) : '';
         $budget = isset($_POST['budget']) ? sanitize_text_field($_POST['budget']) : '';
+
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('[KitchenFinder] ajax_calculate payload: ' . wp_json_encode([
+                'space_a' => $space_a,
+                'space_b' => $space_b,
+                'small_kitchen' => $small_kitchen,
+                'layout' => $layout,
+                'stile' => $stile,
+                'budget' => $budget,
+            ]));
+        }
         
         // Calcola il risultato
         $result = $this->calculateKitchenSystem($space_a, $space_b, $small_kitchen, $layout, $stile, $budget);
@@ -421,7 +469,15 @@ class KitchenFinder extends ShortcodeBase
      */
     public function ajax_generate_pdf()
     {
-        check_ajax_referer('kitchen_finder_nonce', 'nonce');
+        nocache_headers();
+
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field((string) $_POST['nonce']) : '';
+        if (!wp_verify_nonce($nonce, 'kitchen_finder_nonce')) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('[KitchenFinder] Nonce non valido per ajax_generate_pdf');
+            }
+            wp_send_json_error(['message' => 'Sicurezza: sessione scaduta. Ricarica la pagina e riprova.'], 403);
+        }
         
         // Per ora restituiamo un placeholder
         // In futuro si potrà integrare una libreria PDF (es. TCPDF, mPDF)

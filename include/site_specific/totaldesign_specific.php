@@ -4,6 +4,7 @@ namespace gik25microdata\site_specific;
 use gik25microdata\ColorWidget;
 use gik25microdata\TagHelper;
 use gik25microdata\site_specific\Totaldesign\ProgrammaticHub;
+use gik25microdata\Widgets\ContextualWidgets;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
@@ -26,6 +27,15 @@ function _conditionalLoadJsCss_Colori()
 
 ConditionalLoadJsCss_Colori();
 ProgrammaticHub::init();
+
+// Widget contestuali nelle pagine/articoli
+if (class_exists('\\gik25microdata\\Widgets\\ContextualWidgets')) {
+    ContextualWidgets::init();
+}
+
+// Attiva Kitchen Finder shortcode - il file kitchenfinder.php si auto-istanzia alla fine
+// La classe viene caricata dall'autoloader quando necessario, e l'istanziazione alla fine del file
+// ($kitchen_finder = new KitchenFinder()) registra automaticamente lo shortcode
 
 add_shortcode('link_colori', __NAMESPACE__ . '\\link_colori_handler');
 add_shortcode('grafica3d', __NAMESPACE__ . '\\grafica3d_handler');

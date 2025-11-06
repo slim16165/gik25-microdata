@@ -10,12 +10,13 @@ class Boxinfo extends ShortcodeBase
 {
     public function __construct()
     {
-        //Frontend only
-        add_shortcode('md_boxinfo',     array(__CLASS__, 'shortcode'));
-        add_shortcode('boxinfo',        array(__CLASS__, 'shortcode'));
-        add_shortcode('boxinformativo', array(__CLASS__, 'shortcode'));
+        // Imposta shortcode principale PRIMA di chiamare parent::__construct()
         $this->shortcode = 'md_boxinfo';
         parent::__construct();
+        
+        // Registra alias dello shortcode (dopo parent::__construct() per evitare conflitti)
+        add_shortcode('boxinfo',        array($this, 'ShortcodeHandler'));
+        add_shortcode('boxinformativo', array($this, 'ShortcodeHandler'));
 
         if (is_admin())
         {

@@ -9,10 +9,12 @@ class Quote extends ShortcodeBase
 
     public function __construct()
     {
-        add_shortcode('md_quote', array($this, 'shortcode'));
-        add_shortcode('quote', array($this, 'shortcode'));
+        // Imposta shortcode principale PRIMA di chiamare parent::__construct()
         $this->shortcode = 'md_quote';
         parent::__construct();
+        
+        // Registra alias dello shortcode (dopo parent::__construct() per evitare conflitti)
+        add_shortcode('quote', array($this, 'ShortcodeHandler'));
     }
 
     public function ShortcodeHandler($atts, $content = null)

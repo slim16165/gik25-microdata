@@ -141,6 +141,9 @@ class PluginBootstrap
 
             // Inizializzazione condizionale per contesto
             if (defined('DOING_AJAX') && DOING_AJAX) {
+                // Assicurati che gli shortcode vengano caricati anche in contesto AJAX
+                // in modo che gli hook wp_ajax_* siano registrati
+                self::loadShortcodeFiles();
                 // Contesto AJAX: gli endpoint AJAX vengono registrati nel costruttore delle classi 
                 // (es. KitchenFinder in include/class/Shortcodes/kitchenfinder.php)
                 // Queste classi vengono automaticamente caricate dall'autoloader di Composer quando 
@@ -212,14 +215,22 @@ class PluginBootstrap
      */
     private static function initializeFrontend(): void
     {
-        // Ottimizzazioni
-        try {
-            if (class_exists('\gik25microdata\Utility\OptimizationHelper')) {
-                OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode();
+        // Ottimizzazioni - spostato su template_redirect per evitare warning is_single()
+        // La funzione usa is_single() che non funziona prima che la query WordPress sia eseguita
+        add_action('template_redirect', function() {
+            try {
+                if (class_exists('\gik25microdata\Utility\OptimizationHelper')) {
+                    OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode();
+                }
+            } catch (\Throwable $e) {
+                self::logError('Errore nell\'inizializzazione di OptimizationHelper', $e);
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di OptimizationHelper', $e);
-        }
+        }, 5); // Priorità 5 per eseguire prima di altre azioni su template_redirect
+        
+        // Carica tutte le classi Shortcodes (compatibilità con filesystem case-sensitive)
+        add_action('init', function () {
+            self::loadShortcodeFiles();
+        }, 1);
         
         // Rilevamento automatico sito
         try {
@@ -235,6 +246,64 @@ class PluginBootstrap
             }
         } catch (\Throwable $e) {
             self::logError('Errore nell\'inizializzazione di ColorWidget', $e);
+        }
+        
+        // Debug: verifica shortcode registrati (solo se Query Monitor è attivo)
+        add_action('wp_loaded', function() {
+            if (function_exists('do_action')) {
+                global $shortcode_tags;
+                $plugin_shortcodes = [];
+                
+                // Lista degli shortcode del plugin
+                $expected_shortcodes = [
+                    'kitchen_finder', 'md_boxinfo', 'boxinfo', 'boxinformativo',
+                    'md_quote', 'quote', 'youtube', 'telefono', 'slidingbox',
+                    'progressbar', 'prezzo', 'flipbox', 'flexlist', 'blinkingbutton',
+                    'perfectpullquote', 'link_colori', 'grafica3d', 'archistar'
+                ];
+                
+                foreach ($expected_shortcodes as $tag) {
+                    if (isset($shortcode_tags[$tag])) {
+                        $handler = $shortcode_tags[$tag];
+                        if (is_array($handler)) {
+                            $handler_info = is_object($handler[0]) 
+                                ? get_class($handler[0]) . '::' . $handler[1]
+                                : $handler[0] . '::' . $handler[1];
+                        } else {
+                            $handler_info = is_string($handler) ? $handler : 'Closure';
+                        }
+                        $plugin_shortcodes[$tag] = $handler_info;
+                    } else {
+                        $plugin_shortcodes[$tag] = 'NON REGISTRATO';
+                    }
+                }
+                
+                // Formatta l'array come stringa leggibile per QM
+                $debug_message = "Shortcode registrati dal plugin:\n";
+                foreach ($plugin_shortcodes as $tag => $handler) {
+                    $status = ($handler === 'NON REGISTRATO') ? '❌' : '✅';
+                    $debug_message .= sprintf("%s [%s] => %s\n", $status, $tag, $handler);
+                }
+                
+                do_action('qm/debug', $debug_message);
+            }
+        }, 999); // Priorità alta per eseguire dopo tutte le registrazioni
+    }
+
+    /**
+     * Carica i file delle classi Shortcodes per registrare shortcode e hook AJAX
+     */
+    private static function loadShortcodeFiles(): void
+    {
+        try {
+            $shortcodes_dir = self::$plugin_dir . '/include/class/Shortcodes';
+            if (is_dir($shortcodes_dir)) {
+                foreach (glob($shortcodes_dir . '/*.php') as $file) {
+                    require_once $file;
+                }
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nel caricamento delle classi Shortcodes', $e);
         }
     }
 
@@ -358,13 +427,33 @@ class PluginBootstrap
 
         // Mostra notifica admin solo in backend e non durante AJAX
         if (is_admin() && !defined('DOING_AJAX')) {
-            add_action('admin_notices', function() use ($message, $log_location) {
+            add_action('admin_notices', function() use ($message, $exception, $log_location) {
                 echo '<div class="notice notice-error is-dismissible">';
                 echo '<p><strong>Revious Microdata:</strong> ' . esc_html($message) . '</p>';
-                echo '<p>Il plugin è stato disabilitato per prevenire errori.</p>';
+                
+                // Mostra sempre i dettagli dell'errore se disponibili
+                if ($exception instanceof \Throwable) {
+                    $error_file = str_replace(ABSPATH, '', $exception->getFile());
+                    echo '<p><strong>Dettagli errore:</strong></p>';
+                    echo '<ul style="margin-left: 20px;">';
+                    echo '<li><strong>Messaggio:</strong> ' . esc_html($exception->getMessage()) . '</li>';
+                    echo '<li><strong>File:</strong> <code>' . esc_html($error_file) . '</code></li>';
+                    echo '<li><strong>Linea:</strong> ' . esc_html($exception->getLine()) . '</li>';
+                    echo '</ul>';
+                    
+                    // Mostra stack trace se WP_DEBUG è attivo
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        echo '<details style="margin-top: 10px;"><summary style="cursor: pointer; color: #0073aa;">Stack trace (click per espandere)</summary>';
+                        echo '<pre style="background: #f5f5f5; padding: 10px; max-height: 300px; overflow: auto; font-size: 11px;">';
+                        echo esc_html($exception->getTraceAsString());
+                        echo '</pre></details>';
+                    }
+                }
+                
+                echo '<p><em>Nota: Il componente specifico è stato disabilitato, ma il resto del plugin continua a funzionare.</em></p>';
 
                 if (!empty($log_location['path'])) {
-                    echo '<p>Log dettagliato: ';
+                    echo '<p><strong>Log dettagliato:</strong> ';
                     if (!empty($log_location['url']) && (!isset($log_location['exists']) || $log_location['exists'])) {
                         echo '<a href="' . esc_url($log_location['url']) . '" target="_blank" rel="noopener noreferrer">';
                         echo esc_html($log_location['path']);
@@ -377,7 +466,13 @@ class PluginBootstrap
                     }
                     echo '</p>';
                 } else {
-                    echo '<p>Non è stato possibile determinare il file di log. Controlla il log PHP del server.</p>';
+                    // Prova a trovare il log PHP standard
+                    $php_log = ini_get('error_log');
+                    if (!empty($php_log)) {
+                        echo '<p><strong>Log PHP del server:</strong> <code>' . esc_html($php_log) . '</code></p>';
+                    } else {
+                        echo '<p><em>Non è stato possibile determinare il file di log. Controlla il log PHP del server o abilita WP_DEBUG_LOG in wp-config.php.</em></p>';
+                    }
                 }
 
                 echo '</div>';
