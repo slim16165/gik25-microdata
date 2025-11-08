@@ -227,8 +227,8 @@ class PluginBootstrap
 
         // Shortcodes admin page
         try {
-            if (class_exists('\gik25microdata\Admin\ShortcodesPage')) {
-                \gik25microdata\Admin\ShortcodesPage::init();
+            if (class_exists('\gik25microdata\Admin\ShortcodesManagerPage')) {
+                \gik25microdata\Admin\ShortcodesManagerPage::init();
             }
         } catch (\Throwable $e) {
             self::logError('Errore nell\'inizializzazione di ShortcodesPage', $e);

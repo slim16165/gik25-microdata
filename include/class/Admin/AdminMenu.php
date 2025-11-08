@@ -92,7 +92,7 @@ class AdminMenu
     }
 
     /**
-     * Sottovoce Shortcodes
+     * Sottovoce Shortcodes (unificata con settings)
      */
     private static function register_shortcodes_submenu(): void
     {
@@ -102,7 +102,7 @@ class AdminMenu
             __('Shortcodes', 'gik25-microdata'),
             self::CAPABILITY,
             self::MENU_SLUG . '-shortcodes',
-            ['\gik25microdata\Admin\ShortcodesPage', 'renderPage']
+            ['\gik25microdata\Admin\ShortcodesManagerPage', 'renderPage']
         );
     }
 
@@ -183,7 +183,7 @@ class AdminMenu
                     <div class="postbox" style="padding: 20px;">
                         <h2 style="margin-top: 0;">🎨 Shortcode</h2>
                         <p><strong>Totale registrati:</strong> <?php echo esc_html(self::count_registered_shortcodes()); ?></p>
-                        <p><a href="<?php echo esc_url(admin_url('admin.php?page=revious-microdata-setting-admin')); ?>" class="button">Gestisci Shortcode</a></p>
+                        <p><a href="<?php echo esc_url(admin_url('admin.php?page=' . self::MENU_SLUG . '-shortcodes')); ?>" class="button">Gestisci Shortcode</a></p>
                     </div>
 
                     <!-- Widget: Health Check -->
@@ -305,24 +305,9 @@ class AdminMenu
             foreach ($routes as $route => $handlers) {
                 if (strpos($route, '/wp-mcp/v1/') !== false) {
                     return true; // Trovata almeno una route MCP
+                }
+            }
         }
-    }
-
-    /**
-     * Tools tab
-     */
-    private static function register_tools_submenu(): void
-    {
-        add_submenu_page(
-            self::MENU_SLUG,
-            __('Strumenti', 'gik25-microdata'),
-            __('Strumenti', 'gik25-microdata'),
-            self::CAPABILITY,
-            self::MENU_SLUG . '-tools',
-            ['\gik25microdata\Admin\ToolsPage', 'renderPage']
-        );
-    }
-}
         
         // Fallback: verifica se l'azione rest_api_init è registrata
         // MCPApi::init() registra 'rest_api_init' che chiama 'register_routes'
@@ -343,6 +328,21 @@ class AdminMenu
         }
         
         return false;
+    }
+
+    /**
+     * Tools tab
+     */
+    private static function register_tools_submenu(): void
+    {
+        add_submenu_page(
+            self::MENU_SLUG,
+            __('Strumenti', 'gik25-microdata'),
+            __('Strumenti', 'gik25-microdata'),
+            self::CAPABILITY,
+            self::MENU_SLUG . '-tools',
+            ['\gik25microdata\Admin\ToolsPage', 'renderPage']
+        );
     }
 }
 

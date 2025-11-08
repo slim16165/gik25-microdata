@@ -72,19 +72,30 @@ class HealthChecker
     public static function render_admin_page(): void
     {
         $checks = self::run_all_checks();
-        
         ?>
         <div class="wrap">
             <h1>Health Check - Revious Microdata</h1>
             <p>Verifica che tutte le funzionalità del plugin siano operative dopo un deploy.</p>
             
-            <div style="margin: 20px 0;">
+            <nav class="nav-tab-wrapper" style="margin-bottom:15px;">
+                <a href="#summary" class="nav-tab nav-tab-active" data-tab="summary"><?php esc_html_e('Riepilogo', 'gik25-microdata'); ?></a>
+                <a href="#details" class="nav-tab" data-tab="details"><?php esc_html_e('Dettagli', 'gik25-microdata'); ?></a>
+            </nav>
+
+            <div class="health-check-toolbar">
                 <button type="button" class="button button-primary" id="run-health-check">
-                    🔄 Esegui Health Check
+                    ✅ <?php esc_html_e('Esegui Health Check', 'gik25-microdata'); ?>
                 </button>
                 <button type="button" class="button" id="copy-results">
-                    📋 Copia negli Appunti
+                    📋 <?php esc_html_e('Copia negli appunti', 'gik25-microdata'); ?>
                 </button>
+                <label class="screen-reader-text" for="filter-status"><?php esc_html_e('Filtra risultati', 'gik25-microdata'); ?></label>
+                <select id="filter-status">
+                    <option value="all"><?php esc_html_e('Mostra tutti', 'gik25-microdata'); ?></option>
+                    <option value="success"><?php esc_html_e('Solo successi', 'gik25-microdata'); ?></option>
+                    <option value="warning"><?php esc_html_e('Solo warning', 'gik25-microdata'); ?></option>
+                    <option value="error"><?php esc_html_e('Solo errori', 'gik25-microdata'); ?></option>
+                </select>
             </div>
 
             <div id="health-check-results">
@@ -93,6 +104,13 @@ class HealthChecker
         </div>
 
         <style>
+            .health-check-toolbar {
+                margin: 10px 0 20px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+            }
             .health-check-item {
                 padding: 15px;
                 margin: 10px 0;
@@ -117,6 +135,18 @@ class HealthChecker
                 align-items: center;
                 gap: 10px;
             }
+            .health-check-item .badge {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #fff;
+            }
+            .health-check-item.success .badge { background: #46b450; }
+            .health-check-item.warning .badge { background: #ffb900; }
+            .health-check-item.error .badge { background: #dc3232; }
             .health-check-item .details {
                 margin-top: 10px;
                 padding: 10px;
@@ -124,6 +154,7 @@ class HealthChecker
                 border-radius: 4px;
                 font-family: monospace;
                 font-size: 12px;
+                white-space: pre-wrap;
             }
             .health-check-summary {
                 padding: 20px;
@@ -132,116 +163,42 @@ class HealthChecker
                 border: 1px solid #ddd;
                 border-radius: 4px;
             }
+            .health-check-section { display: none; }
+            .health-check-section.active { display: block; }
         </style>
 
         <script>
         jQuery(document).ready(function($) {
-            $('#run-health-check').on('click', function() {
-                var button = $(this);
-                button.prop('disabled', true).text('⏳ Esecuzione...');
-                
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'gik25_health_check',
-                        nonce: '<?php echo wp_create_nonce('gik25_health_check'); ?>'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            $('#health-check-results').html(response.data.html);
-                        } else {
-                            alert('Errore: ' + response.data);
-                        }
-                    },
-                    error: function() {
-                        alert('Errore nella richiesta AJAX');
-                    },
-                    complete: function() {
-                        button.prop('disabled', false).text('🔄 Esegui Health Check');
-                    }
+            function bindHealthCheckUI() {
+                $('.nav-tab-wrapper a').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    var tab = $(this).data('tab');
+                    $('.nav-tab-wrapper a').removeClass('nav-tab-active');
+                    $(this).addClass('nav-tab-active');
+                    $('.health-check-section').removeClass('active');
+                    $('#' + tab).addClass('active');
                 });
-            });
 
-            $('#copy-results').on('click', function() {
-                var button = $(this);
-                
-                // Formatta i risultati in modo leggibile
-                var results = formatHealthCheckResults();
-                
-                // Usa Clipboard API moderna
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(results).then(function() {
-                        var originalText = button.text();
-                        button.text('✅ Copiato!');
-                        setTimeout(function() {
-                            button.text(originalText);
-                        }, 2000);
-                    }).catch(function(err) {
-                        alert('Errore nella copia: ' + err);
-                    });
-                } else {
-                    // Fallback per browser vecchi
-                    var temp = $('<textarea>');
-                    $('body').append(temp);
-                    temp.val(results).select();
-                    try {
-                        document.execCommand('copy');
-                        var originalText = button.text();
-                        button.text('✅ Copiato!');
-                        setTimeout(function() {
-                            button.text(originalText);
-                        }, 2000);
-                    } catch (err) {
-                        alert('Errore nella copia. Prova a selezionare e copiare manualmente.');
+                $('#filter-status').off('change').on('change', function() {
+                    var val = $(this).val();
+                    $('.health-check-item').show();
+                    if (val !== 'all') {
+                        $('.health-check-item').not('.' + val).hide();
                     }
-                    temp.remove();
-                }
-            });
-            
-            // Funzione per formattare i risultati in modo leggibile
-            function formatHealthCheckResults() {
-                var output = [];
-                output.push('=== HEALTH CHECK REPORT ===');
-                output.push('Data: ' + new Date().toLocaleString('it-IT'));
-                output.push('');
-                
-                // Riepilogo
-                var summary = $('.health-check-summary');
-                if (summary.length) {
-                    output.push('--- RIEPILOGO ---');
-                    summary.find('p').each(function() {
-                        var text = $(this).text().trim();
-                        if (text) output.push(text);
-                    });
-                    output.push('');
-                }
-                
-                // Dettagli check
-                output.push('--- DETTAGLI CHECK ---');
-                $('.health-check-item').each(function() {
-                    var $item = $(this);
-                    var title = $item.find('h3').text().trim();
-                    var message = $item.find('p').first().text().trim();
-                    var details = $item.find('.details pre').text().trim();
-                    
-                    output.push('');
-                    output.push('[' + title + ']');
-                    output.push('Stato: ' + message);
-                    if (details) {
-                        output.push('Dettagli:');
-                        output.push(details);
-                    }
-                });
-                
-                return output.join('\n');
+                }).trigger('change');
             }
-        });
-        </script>
-        <?php
-    }
-
-    /**
+@@
+            $('#copy-results').on('click', function() {
+@@
+            function formatHealthCheckResults() {
+@@
+            }
++
++            bindHealthCheckUI();
+         });
+         </script>
+         <?php
+     }    /**
      * Render risultati check
      */
     private static function render_checks_results(array $checks): void
@@ -252,33 +209,35 @@ class HealthChecker
         $errors = count(array_filter($checks, fn($c) => $c['status'] === 'error'));
 
         ?>
-        <div class="health-check-summary">
-            <h2>Riepilogo</h2>
-            <p>
-                <strong>Totale:</strong> <?php echo $total; ?> | 
-                <span style="color: #46b450;">✅ Successo: <?php echo $success; ?></span> | 
-                <span style="color: #ffb900;">⚠️ Warning: <?php echo $warnings; ?></span> | 
-                <span style="color: #dc3232;">❌ Errori: <?php echo $errors; ?></span>
-            </p>
-            <p><small>Ultimo check: <?php echo current_time('mysql'); ?></small></p>
+        <div class="health-check-section active" id="summary">
+            <div class="health-check-summary">
+                <h2><?php esc_html_e('Riepilogo', 'gik25-microdata'); ?></h2>
+                <p>
+                    <strong><?php esc_html_e('Totale:', 'gik25-microdata'); ?></strong> <?php echo $total; ?> |
+                    <span style="color:#46b450;"><?php esc_html_e('[OK] Successo:', 'gik25-microdata'); ?> <?php echo $success; ?></span> |
+                    <span style="color:#ffb900;"><?php esc_html_e('[WARN] Warning:', 'gik25-microdata'); ?> <?php echo $warnings; ?></span> |
+                    <span style="color:#dc3232;"><?php esc_html_e('[ERR] Errori:', 'gik25-microdata'); ?> <?php echo $errors; ?></span>
+                </p>
+                <p><small><?php esc_html_e('Ultimo check:', 'gik25-microdata'); ?> <?php echo current_time('mysql'); ?></small></p>
+            </div>
         </div>
 
-        <?php foreach ($checks as $check): ?>
-            <div class="health-check-item <?php echo esc_attr($check['status']); ?>">
-                <h3>
-                    <?php
-                    $icon = $check['status'] === 'success' ? '✅' : ($check['status'] === 'warning' ? '⚠️' : '❌');
-                    echo $icon . ' ' . esc_html($check['name']);
-                    ?>
-                </h3>
-                <p><?php echo esc_html($check['message']); ?></p>
-                <?php if (!empty($check['details'])): ?>
-                    <div class="details">
-                        <pre><?php echo esc_html($check['details']); ?></pre>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
+        <div class="health-check-section" id="details">
+            <?php foreach ($checks as $check): ?>
+                <div class="health-check-item <?php echo esc_attr($check['status']); ?>">
+                    <h3>
+                        <span class="badge"><?php echo esc_html(strtoupper($check['status'])); ?></span>
+                        <?php echo esc_html($check['name']); ?>
+                    </h3>
+                    <p><?php echo esc_html($check['message']); ?></p>
+                    <?php if (!empty($check['details'])): ?>
+                        <div class="details">
+                            <pre><?php echo esc_html($check['details']); ?></pre>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
         <?php
     }
 
@@ -1015,4 +974,6 @@ class HealthChecker
         ];
     }
 }
+
+
 

@@ -193,6 +193,8 @@ class CarouselCollections
             'collection_name' => '',
             'collection_description' => '',
             'display_type' => 'carousel',
+            'template_id' => null,
+            'template_config' => null,
             'shortcode_tag' => null,
             'css_class' => null,
             'is_active' => 1,
@@ -200,17 +202,36 @@ class CarouselCollections
         
         $data = array_merge($defaults, $data);
         
+        // Verifica che collection_key non sia vuoto
+        if (empty($data['collection_key'])) {
+            error_log('CarouselCollections::upsert_collection - collection_key vuoto');
+            return 0;
+        }
+        
         $existing = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM {$table} WHERE collection_key = %s",
             $data['collection_key']
         ));
         
         if ($existing) {
-            $wpdb->update($table, $data, ['id' => $existing]);
+            $result = $wpdb->update($table, $data, ['id' => $existing]);
+            if ($result === false) {
+                error_log('CarouselCollections::upsert_collection - Errore update: ' . $wpdb->last_error);
+                return 0;
+            }
             return (int) $existing;
         } else {
-            $wpdb->insert($table, $data);
-            return (int) $wpdb->insert_id;
+            $result = $wpdb->insert($table, $data);
+            if ($result === false) {
+                error_log('CarouselCollections::upsert_collection - Errore insert: ' . $wpdb->last_error);
+                error_log('CarouselCollections::upsert_collection - Dati: ' . print_r($data, true));
+                return 0;
+            }
+            $insert_id = (int) $wpdb->insert_id;
+            if ($insert_id === 0) {
+                error_log('CarouselCollections::upsert_collection - insert_id è 0 dopo insert riuscito');
+            }
+            return $insert_id;
         }
     }
 

@@ -11,7 +11,7 @@ class ReviousMicrodataSettingsPage
      * Holds the values to be used in the fields callbacks
      */
     private $options;
-    
+
     /**
      * Istanza singleton (per accesso da AdminMenu)
      */
@@ -67,13 +67,13 @@ class ReviousMicrodataSettingsPage
             // La pagina viene renderizzata quando si accede al link
         } else {
             // Fallback: aggiungi sotto "Impostazioni" se il menu principale non esiste
-            add_options_page(
-                'Settings Admin', 
-                'Revious Microdata Settings', 
-                'manage_options', 
-                'revious-microdata-setting-admin', 
-                array( $this, 'create_admin_page' )
-            );
+        add_options_page(
+            'Settings Admin', 
+            'Revious Microdata Settings', 
+            'manage_options', 
+            'revious-microdata-setting-admin', 
+            array( $this, 'create_admin_page' )
+        );
         }
     }
 
@@ -392,13 +392,14 @@ class ReviousMicrodataSettingsPage
         //     'revious-microdata-setting-admin', 
         //     'setting_section_id'
         // );      
-        add_settings_field(
-            'shortcode_names', 
-            'Carica CSS/JS per questi shortcode', 
-            array( $this, 'shortcode_names_callback' ), 
-            'revious-microdata-setting-admin', 
-            'setting_section_id'
-        );  
+        // Gestione shortcode spostata in ShortcodesManagerPage
+        // add_settings_field(
+        //     'shortcode_names', 
+        //     'Carica CSS/JS per questi shortcode', 
+        //     array( $this, 'shortcode_names_callback' ), 
+        //     'revious-microdata-setting-admin', 
+        //     'setting_section_id'
+        // );  
 
         add_settings_field(
             'wnd_default_image_settings_enabled', 
@@ -437,7 +438,7 @@ class ReviousMicrodataSettingsPage
      */
     public function print_section_info(): void
     {
-        print '<p>Gestisci gli shortcode del plugin. Attiva o disattiva il caricamento automatico di CSS e JS per ogni shortcode. Gli shortcode attivi avranno i loro stili e script caricati quando utilizzati nelle pagine.</p>';
+        print '<p>Configura le impostazioni generali del plugin. Per gestire gli shortcode, visita la pagina <a href="' . esc_url(admin_url('admin.php?page=revious-microdata-shortcodes')) . '">Shortcodes</a>.</p>';
     }
 
     /** 
@@ -526,7 +527,7 @@ class ReviousMicrodataSettingsPage
 
         <?php
         $this->render_shortcode_manager_scripts();
-        
+
         printf(
             '<input size="500" type="hidden" id="shortcode_names" name="revious_microdata_option_name[shortcode_names]" value="%s" />',
             isset( $this->options['shortcode_names'] ) ? esc_attr( $this->options['shortcode_names']) : ''
