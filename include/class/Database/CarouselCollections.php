@@ -38,6 +38,7 @@ class CarouselCollections
         
         if ($installed_version !== self::DB_VERSION) {
             self::create_tables();
+            self::migrate_database_schema();
             update_option(self::DB_VERSION_OPTION, self::DB_VERSION);
         }
     }
@@ -97,6 +98,43 @@ class CarouselCollections
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql_collections);
         dbDelta($sql_items);
+    }
+
+    /**
+     * Migra lo schema del database aggiungendo colonne mancanti
+     * dbDelta non aggiunge colonne a tabelle esistenti, quindi dobbiamo farlo manualmente
+     */
+    private static function migrate_database_schema(): void
+    {
+        global $wpdb;
+        $table_collections = $wpdb->prefix . self::TABLE_COLLECTIONS;
+        
+        // Verifica se la tabella esiste
+        $table_exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s",
+            DB_NAME,
+            $table_collections
+        ));
+        
+        if (!$table_exists) {
+            return; // La tabella non esiste, sarà creata da create_tables()
+        }
+        
+        // Verifica colonne esistenti
+        $columns = $wpdb->get_col("DESCRIBE {$table_collections}");
+        
+        // Aggiungi template_id se mancante
+        if (!in_array('template_id', $columns)) {
+            $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_id bigint(20) UNSIGNED COMMENT 'FK a wp_carousel_templates.id' AFTER display_type");
+            $wpdb->query("ALTER TABLE {$table_collections} ADD INDEX template_id (template_id)");
+            error_log('CarouselCollections: Aggiunta colonna template_id a ' . $table_collections);
+        }
+        
+        // Aggiungi template_config se mancante
+        if (!in_array('template_config', $columns)) {
+            $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_config text COMMENT 'JSON con configurazione template (override variabili CSS, opzioni)' AFTER template_id");
+            error_log('CarouselCollections: Aggiunta colonna template_config a ' . $table_collections);
+        }
     }
 
     /**
