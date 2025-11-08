@@ -272,9 +272,35 @@ class CarouselsPage
                 <div class="notice notice-error is-dismissible">
                     <p><strong>Errore!</strong> Devi selezionare un template per creare la collezione.</p>
                 </div>
-            <?php elseif ($error === 'creation_failed'): ?>
+            <?php elseif ($error === 'creation_failed' || $error === 'creation_exception'): ?>
                 <div class="notice notice-error is-dismissible">
-                    <p><strong>Errore!</strong> Impossibile creare la collezione di test. Verifica i log del server per dettagli.</p>
+                    <p><strong>❌ Errore durante la creazione della collezione di test</strong></p>
+                    <?php if (isset($_GET['error_detail'])): ?>
+                        <p><strong>Dettaglio:</strong> <?php echo esc_html(urldecode($_GET['error_detail'])); ?></p>
+                    <?php else: ?>
+                        <p>Impossibile creare la collezione di test. Possibili cause:</p>
+                        <ul style="margin-left: 20px; list-style: disc;">
+                            <li>La tabella database <code>wp_carousel_collections</code> non esiste o non è accessibile</li>
+                            <li>Errore di connessione al database</li>
+                            <li>Problemi di permessi sul database</li>
+                        </ul>
+                        <p><strong>Soluzione:</strong> Verifica i log di WordPress (wp-config.php: <code>WP_DEBUG_LOG</code>) o contatta l'amministratore del sistema.</p>
+                    <?php endif; ?>
+                </div>
+            <?php elseif ($error === 'template_not_found'): ?>
+                <div class="notice notice-error is-dismissible">
+                    <p><strong>❌ Template non trovato</strong></p>
+                    <?php if (isset($_GET['error_detail'])): ?>
+                        <p><?php echo esc_html(urldecode($_GET['error_detail'])); ?></p>
+                    <?php endif; ?>
+                    <p>Il template selezionato non esiste più nel database. Seleziona un altro template dalla lista.</p>
+                </div>
+            <?php elseif ($error === 'invalid_display_type'): ?>
+                <div class="notice notice-error is-dismissible">
+                    <p><strong>❌ Tipo display non valido</strong></p>
+                    <?php if (isset($_GET['error_detail'])): ?>
+                        <p><?php echo esc_html(urldecode($_GET['error_detail'])); ?></p>
+                    <?php endif; ?>
                 </div>
             <?php elseif ($error === 'invalid_data'): ?>
                 <div class="notice notice-error is-dismissible">
@@ -620,20 +646,47 @@ https://www.totaldesign.it/articolo-2/" required></textarea>
             exit;
         }
 
-        // Crea collezione di test
-        $collection_id = CarouselCollections::upsert_collection([
-            'collection_key' => 'test-collection',
-            'collection_name' => 'Collezione di Test',
-            'collection_description' => 'Collezione creata automaticamente per testare template e shortcode',
-            'display_type' => $display_type,
-            'template_id' => $template_id,
-            'is_active' => 1,
-        ]);
+        // Verifica che il template esista
+        $template = CarouselTemplates::get_template_by_id($template_id);
+        if (!$template) {
+            wp_redirect(add_query_arg(['page' => self::PAGE_SLUG, 'tab' => 'test', 'error' => 'template_not_found', 'error_detail' => urlencode('Template ID ' . $template_id . ' non trovato nel database')], admin_url('admin.php')));
+            exit;
+        }
 
-        if ($collection_id) {
-            wp_redirect(add_query_arg(['page' => self::PAGE_SLUG, 'tab' => 'test', 'message' => 'collection_created'], admin_url('admin.php')));
-        } else {
-            wp_redirect(add_query_arg(['page' => self::PAGE_SLUG, 'tab' => 'test', 'error' => 'creation_failed'], admin_url('admin.php')));
+        // Verifica che display_type sia valido
+        $valid_display_types = ['carousel', 'list', 'grid'];
+        if (!in_array($display_type, $valid_display_types)) {
+            wp_redirect(add_query_arg(['page' => self::PAGE_SLUG, 'tab' => 'test', 'error' => 'invalid_display_type', 'error_detail' => urlencode('Tipo display "' . $display_type . '" non valido. Valori ammessi: ' . implode(', ', $valid_display_types))], admin_url('admin.php')));
+            exit;
+        }
+
+        // Crea collezione di test
+        try {
+            $collection_id = CarouselCollections::upsert_collection([
+                'collection_key' => 'test-collection',
+                'collection_name' => 'Collezione di Test',
+                'collection_description' => 'Collezione creata automaticamente per testare template e shortcode',
+                'display_type' => $display_type,
+                'template_id' => $template_id,
+                'is_active' => 1,
+            ]);
+
+            if ($collection_id > 0) {
+                wp_redirect(add_query_arg(['page' => self::PAGE_SLUG, 'tab' => 'test', 'message' => 'collection_created'], admin_url('admin.php')));
+            } else {
+                global $wpdb;
+                $last_error = $wpdb->last_error;
+                $error_message = 'Errore durante l\'inserimento nel database.';
+                if (!empty($last_error)) {
+                    $error_message .= ' Dettaglio: ' . $last_error;
+                } else {
+                    $error_message .= ' Verifica che la tabella wp_carousel_collections esista e sia accessibile.';
+                }
+                wp_redirect(add_query_arg(['page' => self::PAGE_SLUG, 'tab' => 'test', 'error' => 'creation_failed', 'error_detail' => urlencode($error_message)], admin_url('admin.php')));
+            }
+        } catch (\Exception $e) {
+            $error_message = 'Errore: ' . $e->getMessage();
+            wp_redirect(add_query_arg(['page' => self::PAGE_SLUG, 'tab' => 'test', 'error' => 'creation_exception', 'error_detail' => urlencode($error_message)], admin_url('admin.php')));
         }
         exit;
     }
