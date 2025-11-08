@@ -10,13 +10,16 @@ class Slidingbox extends ShortcodeBase
     {
         $this->shortcode = 'md_slidingbox';
         parent::__construct();
+        
+        // Registra alias dello shortcode
+        add_shortcode('slidingbox', array($this, 'ShortcodeHandler'));
     }
 
     public function ShortcodeHandler($atts, $content = null) {
 
         $mdsb = shortcode_atts([
                 'fa_icon' => 'fa fa-search',
-                'bg_img' => plugins_url("{asset_path}/images/car1.jpg"),
+                'bg_img' => plugins_url("{$this->asset_path}/images/car1.jpg"),
                 'url' => false
         ], $atts);
 
@@ -49,9 +52,9 @@ AAA;
         wp_enqueue_style('styles');
     }
 
-    public function mdsb_admin_scripts() {
+    public function admin_scripts() {
         wp_register_style('styles', plugins_url("{$this->asset_path}/css/fontawesome.min.css"), [], '5.13.1', 'all');
-        wp_enqueue_style ('styles');
+        wp_enqueue_style('styles');
     }
 
     public function register_plugin($plugin_array) {
@@ -62,11 +65,6 @@ AAA;
     public function register_button($buttons) {
         array_push($buttons, 'md_slidingbox-menu');
         return $buttons;
-    }
-
-    public function admin_scripts()
-    {
-        // TODO: Implement admin_scripts() method.
     }
 }
 

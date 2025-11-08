@@ -11,6 +11,9 @@ class Flipbox extends ShortcodeBase
     {
         $this->shortcode = 'md_flipbox';
         parent::__construct();
+        
+        // Registra alias dello shortcode
+        add_shortcode('flipbox', array($this, 'ShortcodeHandler'));
     }
 
     public function ShortcodeHandler($atts, $content = null): string

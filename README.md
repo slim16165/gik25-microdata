@@ -65,7 +65,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - `[md_flipbox]` - Box con effetto flip
 - `[md_blinkingbutton]` - Pulsanti animati
 
-**Shortcode TotalDesign** (vedi `TOTALDESIGN_WIDGETS.md` per lista completa):
+**Shortcode TotalDesign** (vedi `docs/TOTALDESIGN_WIDGETS.md` per lista completa):
 - `[kitchen_finder]` - Wizard cucine 4-step
 - `[app_nav]` - Navigazione app-like multi-livello
 - `[link_colori]` - Carosello articoli colori (50+ colori)
@@ -83,6 +83,37 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.14.0 _(2025-11-08)_
+* **Anteprima Migrazione Dati**: Nuova pagina admin per visualizzare dati migrabili da codice hardcoded
+  * Mostra tutte le collezioni migrabili (Colori, Programmi 3D, Architetti)
+  * Anteprima completa con dettagli items, categorie e shortcode risultante
+  * Link diretto alla migrazione effettiva
+  * File: `include/class/Admin/MigrationPreview.php`
+* **Miglioramenti Pagina Settings**: UI completamente rinnovata per selezione shortcode
+  * Shortcode mostrati con card individuali e hover effects
+  * Microdocumentazione integrata per ogni shortcode (descrizione, uso, alias)
+  * Design più pulito e professionale con CSS migliorato
+  * Lista scrollabile con max-height 500px
+* **Fix Shortcode Registration**: Correzioni per shortcode mancanti
+  * Aggiunto `$asset_path` property a `ShortcodeBase` per risolvere errori "Undefined property"
+  * Corretti alias mancanti per `telefono`, `progressbar`, `slidingbox`, `flipbox`, `blinkingbutton`, `prezzo`, `flexlist`
+  * Corretti nomi metodi (`ShortcodeHandler` invece di `shortcode()`)
+  * Implementato `ShortcodeHandler()` per `progressbar` (ritorna HTML comment)
+  * Shortcode ora correttamente caricati nel backend per health check
+
+##### 1.13.0 _(2025-11-08)_
+* **Menu Admin Principale**: Creata voce primaria "Revious Microdata" nel menu admin
+  * Dashboard con informazioni plugin, statistiche e link rapidi
+  * Impostazioni spostate da "Impostazioni" al menu principale
+  * Health Check spostato da "Strumenti" al menu principale
+  * Rimossa configurazione percorso PHP per Composer (rilevamento automatico)
+  * Health Check: esportazione risultati negli appunti invece che in file
+  * Miglioramenti UI pagina settings e dashboard
+* **Fix Health Check**: Correzione check shortcode, AJAX e classi PHP
+  * Check più robusti che gestiscono correttamente shortcode opzionali
+  * Verifica AJAX endpoints più accurata
+  * Verifica classi PHP con autoloader
+
 ##### 1.12.0 _(2025-11-07)_
 * **Sistema Generico Caroselli/Liste Configurabile**: Sistema flessibile per creare caroselli, liste e griglie via database
   * Tabelle database: `wp_carousel_collections`, `wp_carousel_items`
@@ -92,17 +123,16 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * Generico per tutti i siti, non solo TotalDesign
   * Migrazione automatica da codice hardcoded: `CarouselCollections::migrate_from_hardcoded()`
   * File: `include/class/Database/CarouselCollections.php`, `include/class/Shortcodes/GenericCarousel.php`
-  * Documentazione: `GENERIC_CAROUSEL.md`
+  * Documentazione: `docs/GENERIC_CAROUSEL.md`
 * **Sistema Health Check Completo**: Verifica automatica funzionalità plugin dopo deploy
   * 7 check programmatici: shortcode, REST API, AJAX, file, database, assets, classi
   * Pagina admin: **Strumenti → Health Check** con riepilogo e dettagli
   * Pulsanti: "Esegui Health Check" (AJAX), "Esporta Risultati" (HTML)
   * REST API endpoint: `/wp-json/gik25/v1/health-check`
   * File: `include/class/HealthCheck/HealthChecker.php`
-  * Documentazione: `HEALTH_CHECK.md`
+  * Documentazione: `docs/HEALTH_CHECK.md`
 * **Documentazione Migliorata**: Descrizioni più chiare e dettagliate
-  * `TOTALDESIGN_WIDGETS.md`: Descrizioni dettagliate widget (es. Lead Box con esempi concreti)
-  * `IMPLEMENTATION_SUMMARY.md`: Riepilogo completo implementazione
+  * `docs/TOTALDESIGN_WIDGETS.md`: Descrizioni dettagliate widget (es. Lead Box con esempi concreti)
 
 ##### 1.11.0 _(2025-11-07)_
 * **Semplificazione MCP Server**: Rimossa complessità database multi-sito
@@ -111,7 +141,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * Abilitazione semplice: `add_filter('wp_mcp_enable_extended_routes', '__return_true')`
   * Sistema più semplice: niente database, solo codice PHP
   * Namespace generico: `wp-mcp/v1` (funziona su qualsiasi WordPress)
-  * Documentazione aggiornata: MCP_SETUP.md, MCP_ARCHITECTURE.md
+  * Documentazione aggiornata: `docs/MCP_SETUP.md`, `docs/MCP_ARCHITECTURE.md`
 
 ##### 1.10.0 _(2025-11-07)_
 * **MCP Server**: Integrazione Model Context Protocol per interrogazione WordPress da Cursor/AI
@@ -123,7 +153,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * Route estese opzionali per siti specifici (TotalDesign: colors, ikea, rooms, pantone)
   * Query vault opzionale per ricerca in file markdown locali (Obsidian)
   * File: `include/class/REST/MCPApi.php`, `mcp-server/server.js`, `mcp-server/package.json`
-  * Documentazione: `MCP_ARCHITECTURE.md`, `DEPLOY_MCP.md`
+  * Documentazione: `docs/MCP_ARCHITECTURE.md`, `docs/DEPLOY_MCP.md`
 
 ##### 1.9.0 _(2025-11-06)_
 * App-like Navigator: nuovo shortcode `[app_nav]` con tabs (Scopri, Colori, IKEA, Stanze, Trend) e card responsive

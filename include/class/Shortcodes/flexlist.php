@@ -14,6 +14,9 @@ class Flexlist extends ShortcodeBase
     {
         $this->shortcode = 'md_flexlist';
         parent::__construct();
+        
+        // Registra alias dello shortcode
+        add_shortcode('flexlist', array($this, 'ShortcodeHandler'));
     }
 
     public function ShortcodeHandler($atts, $content = null)

@@ -10,6 +10,9 @@ class Prezzo extends ShortcodeBase
     {
         $this->shortcode = "md_prezzo";
         parent::__construct();
+        
+        // Registra alias dello shortcode
+        add_shortcode('prezzo', array($this, 'ShortcodeHandler'));
     }
 
     public function ShortcodeHandler($atts, $content = null) {

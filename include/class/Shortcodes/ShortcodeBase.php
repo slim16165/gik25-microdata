@@ -18,6 +18,11 @@ abstract class ShortcodeBase
             throw new \RuntimeException('La proprietà $shortcode deve essere impostata nella classe figlia prima di chiamare parent::__construct()');
         }
         
+        // Inizializza asset_path se non già definito dalla classe figlia
+        if (!isset($this->asset_path)) {
+            $this->asset_path = '/gik25-microdata/assets';
+        }
+        
         // Registra sempre lo shortcode - WordPress ha bisogno che sia registrato per processarlo
         add_shortcode($this->shortcode, array($this, 'ShortcodeHandler'));
         
@@ -65,6 +70,7 @@ abstract class ShortcodeBase
     public abstract function register_button($buttons);
 
     protected string $shortcode;
+    protected string $asset_path = '/gik25-microdata/assets';
 }
 
 

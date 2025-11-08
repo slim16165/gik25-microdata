@@ -11,33 +11,75 @@ class ReviousMicrodataSettingsPage
      * Holds the values to be used in the fields callbacks
      */
     private $options;
+    
+    /**
+     * Istanza singleton (per accesso da AdminMenu)
+     */
+    private static $instance = null;
 
     /**
      * Start up
      */
     public function __construct()
     {   
-        add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+        self::$instance = $this;
+        add_action( 'admin_menu', array( $this, 'add_plugin_page' ), 15 );
         add_action( 'admin_init', array( $this, 'page_init' ) );
+    }
+    
+    /**
+     * Ottieni istanza corrente (per uso da AdminMenu)
+     */
+    public static function get_instance(): ?self
+    {
+        return self::$instance;
+    }
+    
+    /**
+     * Renderizza la pagina (metodo statico per uso da AdminMenu)
+     */
+    public static function render_page(): void
+    {
+        if (self::$instance) {
+            self::$instance->create_admin_page();
+        } else {
+            // Se non c'è istanza, creane una temporanea
+            $temp_instance = new self();
+            $temp_instance->create_admin_page();
+        }
     }
 
     /**
      * Add options page
+     * 
+     * Nota: La pagina viene ora registrata come sottovocce del menu principale "Revious Microdata"
+     * Se il menu principale non esiste, viene comunque aggiunta sotto "Impostazioni" come fallback
      */
     public function add_plugin_page(): void
     {
-        // This page will be under "Settings"
-        add_options_page(
-            'Settings Admin', 
-            'Revious Microdata Settings', 
-            'manage_options', 
-            'revious-microdata-setting-admin', 
-            array( $this, 'create_admin_page' )
-        );
+        // Verifica se il menu principale esiste (registrato da AdminMenu)
+        global $submenu;
+        $menu_exists = isset($submenu['revious-microdata']);
+        
+        if ($menu_exists) {
+            // Menu principale esiste, la sottovocce viene aggiunta automaticamente da AdminMenu
+            // Qui registriamo solo la callback se necessario
+            // La pagina viene renderizzata quando si accede al link
+        } else {
+            // Fallback: aggiungi sotto "Impostazioni" se il menu principale non esiste
+            add_options_page(
+                'Settings Admin', 
+                'Revious Microdata Settings', 
+                'manage_options', 
+                'revious-microdata-setting-admin', 
+                array( $this, 'create_admin_page' )
+            );
+        }
     }
 
     /**
      * Options page callback
+     * Metodo pubblico per renderizzare la pagina (può essere chiamato da AdminMenu)
      */
     public function create_admin_page(): void
     {
@@ -45,16 +87,116 @@ class ReviousMicrodataSettingsPage
         $this->options = get_option( 'revious_microdata_option_name' );
         ?>
         <div class="wrap">
-            <h1>Revious Microdata Settings</h1>
-            <form method="post" action="options.php">
+            <h1>Revious Microdata - Impostazioni</h1>
+            <p>Configura le impostazioni del plugin. Le modifiche verranno applicate immediatamente.</p>
+            
+            <form method="post" action="options.php" class="revious-microdata-settings-form">
             <?php
                 // This prints out all hidden setting fields
                 settings_fields( 'revious_microdata_option_group' );
                 do_settings_sections( 'revious-microdata-setting-admin' );
-                submit_button();
+                submit_button('Salva Impostazioni', 'primary', 'submit', true);
             ?>
             </form>
         </div>
+        
+        <style>
+            .revious-microdata-settings-form {
+                background: #fff;
+                padding: 20px;
+                border: 1px solid #c3c4c7;
+                box-shadow: 0 1px 1px rgba(0,0,0,.04);
+                margin-top: 20px;
+                max-width: 1200px;
+            }
+            .revious-microdata-settings-form .form-table {
+                margin-top: 20px;
+            }
+            .revious-microdata-settings-form .form-table th {
+                padding: 20px 10px 20px 0;
+                width: 200px;
+                font-weight: 600;
+            }
+            .revious-microdata-settings-form .form-table td {
+                padding: 15px 10px;
+            }
+            .revious-microdata-settings-form .description {
+                color: #646970;
+                font-style: italic;
+                margin-top: 5px;
+            }
+            .shortcodes-list {
+                border: 1px solid #c3c4c7;
+                padding: 15px;
+                background: #f6f7f7;
+                border-radius: 4px;
+                max-height: 500px;
+                overflow-y: auto;
+            }
+            .shortcode-item {
+                padding: 12px;
+                margin-bottom: 12px;
+                background: #fff;
+                border: 1px solid #dcdcde;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
+            .shortcode-item:hover {
+                border-color: #2271b1;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            .shortcode-checkbox {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                margin-bottom: 8px;
+            }
+            .shortcode-checkbox input[type="checkbox"] {
+                margin-right: 10px;
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+            .shortcode-name {
+                font-weight: 600;
+                font-size: 14px;
+            }
+            .shortcode-name code {
+                background: #f0f0f1;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 13px;
+                color: #2271b1;
+            }
+            .shortcode-doc {
+                margin-top: 8px;
+                padding-left: 28px;
+                font-size: 13px;
+                color: #646970;
+            }
+            .shortcode-description {
+                margin: 0 0 8px 0;
+                line-height: 1.5;
+            }
+            .shortcode-usage,
+            .shortcode-aliases {
+                margin: 4px 0;
+                font-size: 12px;
+            }
+            .shortcode-usage code,
+            .shortcode-aliases code {
+                background: #f0f0f1;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 12px;
+                color: #1d2327;
+            }
+            .shortcode-usage strong,
+            .shortcode-aliases strong {
+                color: #1d2327;
+                font-weight: 600;
+            }
+        </style>
         <?php
     }
 
@@ -93,23 +235,15 @@ class ReviousMicrodataSettingsPage
         // );      
         add_settings_field(
             'shortcode_names', 
-            'Load CSS/JS for these shortcodes', 
+            'Carica CSS/JS per questi shortcode', 
             array( $this, 'shortcode_names_callback' ), 
             'revious-microdata-setting-admin', 
             'setting_section_id'
         );  
 
         add_settings_field(
-            'php_binary_path',
-            'Percorso PHP per Composer',
-            array( $this, 'php_binary_path_callback' ),
-            'revious-microdata-setting-admin',
-            'setting_section_id'
-        );
-
-        add_settings_field(
             'wnd_default_image_settings_enabled', 
-            'Enable Default Image Settings (for inserting images in post editor)', 
+            'Abilita impostazioni immagine predefinite (per inserimento immagini nell\'editor)', 
             array( $this, 'wnd_default_image_settings_enabled_callback' ), 
             'revious-microdata-setting-admin', 
             'setting_section_id'
@@ -133,9 +267,6 @@ class ReviousMicrodataSettingsPage
         if( isset( $input['shortcode_names'] ) )
             $new_input['shortcode_names'] = sanitize_text_field( $input['shortcode_names'] );
 
-        if( isset( $input['php_binary_path'] ) )
-            $new_input['php_binary_path'] = sanitize_text_field( $input['php_binary_path'] );
-
         if( isset( $input['wnd_default_image_settings_enabled'] ) )
             $new_input['wnd_default_image_settings_enabled'] = sanitize_text_field( $input['wnd_default_image_settings_enabled'] );
 
@@ -147,7 +278,7 @@ class ReviousMicrodataSettingsPage
      */
     public function print_section_info(): void
     {
-        print 'Enter your settings below:';
+        print '<p>Seleziona gli shortcode per i quali vuoi caricare automaticamente CSS e JS. Gli shortcode selezionati avranno i loro stili e script caricati in tutte le pagine.</p>';
     }
 
     /** 
@@ -174,96 +305,81 @@ class ReviousMicrodataSettingsPage
 
     public function shortcode_names_callback(): void
     {
-        // var_dump(class_exists('abc'));exit;
-        // var_dump(class_exists('MicrodataBlinkingButton'));exit;
         global $shortcode_tags;
         $plugin_shortcodes = array();
-        $plugin_shortcodes_html = '';
+        $shortcode_docs = $this->get_shortcode_documentation();
 
         foreach($shortcode_tags as $k => $v) {
-            //echo $shortcode_tag . '<br>';
-            // echo $k . '<br>';
-            //var_dump(strpos($k, PLUGIN_NAME_PREFIX)) . '<br>';
             $needle_found = strpos($k, PLUGIN_NAME_PREFIX);
             if(is_int($needle_found) &&  $needle_found == 0) {
                 $plugin_shortcodes[] = $k;
             }
         }
-        //exit;
-        //var_dump($plugin_shortcodes);exit;
 
+        // Costruisci HTML con documentazione
+        $plugin_shortcodes_html = '<div id="plugin_shortcodes_wrap" class="shortcodes-list">';
+        
         foreach($plugin_shortcodes as $plugin_shortcode) {
-            $plugin_shortcodes_html .= '<input id="' . $plugin_shortcode . '" type="checkbox" name="plugin_shortcodes[]" value="'
-                 . $plugin_shortcode . '">&nbsp;<label for="' . $plugin_shortcode . '">' . $plugin_shortcode . '</label><br>';
+            $doc = $shortcode_docs[$plugin_shortcode] ?? null;
+            $aliases = $this->get_shortcode_aliases($plugin_shortcode);
+            
+            $plugin_shortcodes_html .= '<div class="shortcode-item">';
+            $plugin_shortcodes_html .= '<label class="shortcode-checkbox">';
+            $plugin_shortcodes_html .= '<input id="' . esc_attr($plugin_shortcode) . '" type="checkbox" name="plugin_shortcodes[]" value="' . esc_attr($plugin_shortcode) . '">';
+            $plugin_shortcodes_html .= '<span class="shortcode-name"><code>' . esc_html($plugin_shortcode) . '</code></span>';
+            $plugin_shortcodes_html .= '</label>';
+            
+            if ($doc) {
+                $plugin_shortcodes_html .= '<div class="shortcode-doc">';
+                $plugin_shortcodes_html .= '<p class="shortcode-description">' . esc_html($doc['description']) . '</p>';
+                if (!empty($doc['usage'])) {
+                    $plugin_shortcodes_html .= '<p class="shortcode-usage"><strong>Uso:</strong> <code>' . esc_html($doc['usage']) . '</code></p>';
+                }
+                if (!empty($aliases)) {
+                    $plugin_shortcodes_html .= '<p class="shortcode-aliases"><strong>Alias:</strong> <code>' . implode('</code>, <code>', array_map('esc_html', $aliases)) . '</code></p>';
+                }
+                $plugin_shortcodes_html .= '</div>';
+            } elseif (!empty($aliases)) {
+                $plugin_shortcodes_html .= '<div class="shortcode-doc">';
+                $plugin_shortcodes_html .= '<p class="shortcode-aliases"><strong>Alias:</strong> <code>' . implode('</code>, <code>', array_map('esc_html', $aliases)) . '</code></p>';
+                $plugin_shortcodes_html .= '</div>';
+            }
+            
+            $plugin_shortcodes_html .= '</div>';
         }
+        
+        $plugin_shortcodes_html .= '</div>';
 
         $js_script = <<<BBB
             <script>
                 window.addEventListener('load', function() {
-
                     const btnSubmit = document.getElementById('submit');
                     const shortcodeNames = document.getElementById('shortcode_names');
                     const shortcodeNamesStr = shortcodeNames.value;
-                    const shortcodeNamesArr = shortcodeNamesStr.split(',');
-                    let enabledShortcodes = '';
+                    const shortcodeNamesArr = shortcodeNamesStr ? shortcodeNamesStr.split(',') : [];
                     const pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
 
-                    console.log(shortcodeNamesArr);
-                    console.log(pluginShortcodes);
-
                     for(var i = 0; i < pluginShortcodes.length; i++) {
-                        console.log(shortcodeNamesArr.includes(pluginShortcodes[i].value));
                         if(shortcodeNamesArr.includes(pluginShortcodes[i].value)) {
                             pluginShortcodes[i].checked = 'checked';
                         }
                     }
 
                     btnSubmit.addEventListener('click', function(e) {
-                        //e.preventDefault();//temp
-                        //alert(this.value);
-                        //var pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
-                        console.log(pluginShortcodes);
+                        let enabledShortcodes = '';
                         for(let i = 0; i < pluginShortcodes.length; i++) {
                             if(pluginShortcodes[i].checked) {
                                 enabledShortcodes += pluginShortcodes[i].value + ',';
                             }
                         }
-                        //enabledShortcodes.substring(0, enabledShortcodes.length - 1);
                         enabledShortcodes = enabledShortcodes.slice(0, -1);
                         shortcodeNames.value = enabledShortcodes;
                     });
-
                 });
-                
             </script>
 BBB;
 
-        $plugin_shortcodes_html = '<div id="plugin_shortcodes_wrap" style="height: 200px; overflow-y: scroll;">' . $plugin_shortcodes_html . '</div>';
-
         echo $plugin_shortcodes_html . $js_script;
-        // var_dump($shortcode_tags);exit;
-        // echo ''; 
-        // print_r($shortcode_tags); 
-        // echo '';exit;
-        
-        // if(class_exists('MicrodataBlinkingButton')) {
-        //     $shortcode_names_arr[] = 'microdata_blinkingbutton';
-        // }
-        // if(class_exists('Boxinformativo')) {
-        //     $shortcode_names_arr[] = 'boxinformativo';
-        // }
-        // if(class_exists('Flexlist')) {
-        //     $shortcode_names_arr[] = 'flexlist';
-        // }
-        // if(class_exists('MicrodataFlipbox')) {
-        //     $shortcode_names_arr[] = 'microdata_flipbox';
-        // }
-        // if(class_exists('MicrodataFlipbox')) {
-        //     $shortcode_names_arr[] = 'microdata_flipbox';
-        // }
-        // if(class_exists('MicrodataFlipbox')) {
-        //     $shortcode_names_arr[] = 'microdata_flipbox';
-        // }
 
         printf(
             '<input size="500" type="hidden" id="shortcode_names" name="revious_microdata_option_name[shortcode_names]" value="%s" />',
@@ -271,18 +387,78 @@ BBB;
         );
     }
 
-    public function php_binary_path_callback(): void
+    /**
+     * Ottieni documentazione shortcode
+     */
+    private function get_shortcode_documentation(): array
     {
-        $value = isset($this->options['php_binary_path'])
-            ? esc_attr($this->options['php_binary_path'])
-            : '';
+        return [
+            'md_quote' => [
+                'description' => 'Mostra una citazione in formato blockquote. Utile per evidenziare frasi importanti o citazioni.',
+                'usage' => '[md_quote]Testo della citazione[/md_quote]',
+            ],
+            'md_boxinfo' => [
+                'description' => 'Box informativo con titolo opzionale. Perfetto per curiosità, note o informazioni aggiuntive.',
+                'usage' => '[md_boxinfo title="Titolo"]Contenuto del box[/md_boxinfo]',
+            ],
+            'md_progressbar' => [
+                'description' => 'Barra di progresso animata. Mostra visivamente lo stato di completamento di un processo.',
+                'usage' => '[md_progressbar]',
+            ],
+            'md_slidingbox' => [
+                'description' => 'Box con contenuto che scorre. Include un\'immagine di sfondo e testo scorrevole.',
+                'usage' => '[md_slidingbox bg_img="url"]Contenuto[/md_slidingbox]',
+            ],
+            'md_flipbox' => [
+                'description' => 'Box con effetto flip. Mostra un lato con immagine e l\'altro con testo quando si passa il mouse.',
+                'usage' => '[md_flipbox]Contenuto[/md_flipbox]',
+            ],
+            'md_blinkingbutton' => [
+                'description' => 'Pulsante con effetto lampeggiante. Attira l\'attenzione su call-to-action importanti.',
+                'usage' => '[md_blinkingbutton]Testo pulsante[/md_blinkingbutton]',
+            ],
+            'md_perfectpullquote' => [
+                'description' => 'Pullquote perfetto per citazioni. Stile elegante per evidenziare estratti di testo.',
+                'usage' => '[md_perfectpullquote]Citazione[/md_perfectpullquote]',
+            ],
+            'md_youtube' => [
+                'description' => 'Incorpora video YouTube. Carica automaticamente il video tramite oEmbed di WordPress.',
+                'usage' => '[md_youtube url="https://youtube.com/watch?v=..."]',
+            ],
+            'md_telefono' => [
+                'description' => 'Mostra un numero di telefono cliccabile. Aggiunge microdata per SEO e migliora l\'accessibilità.',
+                'usage' => '[md_telefono]+39 123 456 7890[/md_telefono]',
+            ],
+            'md_prezzo' => [
+                'description' => 'Mostra un prezzo formattato. Include microdata per dati strutturati e migliora la SEO.',
+                'usage' => '[md_prezzo]29.99[/md_prezzo]',
+            ],
+            'md_flexlist' => [
+                'description' => 'Lista flessibile e personalizzabile. Utile per elenchi stilizzati e responsive.',
+                'usage' => '[md_flexlist]Item 1|Item 2|Item 3[/md_flexlist]',
+            ],
+        ];
+    }
 
-        printf(
-            '<input type="text" id="php_binary_path" class="regular-text code" placeholder="%s" name="revious_microdata_option_name[php_binary_path]" value="%s" />',
-            esc_attr('Esempio: C:\path\to\php.exe'),
-            $value
-        );
-        echo '<p class="description">Percorso completo dell\'eseguibile PHP da usare per l\'installazione automatica delle dipendenze Composer.</p>';
+    /**
+     * Ottieni alias di uno shortcode
+     */
+    private function get_shortcode_aliases(string $shortcode): array
+    {
+        $aliases_map = [
+            'md_quote' => ['quote'],
+            'md_boxinfo' => ['boxinfo', 'boxinformativo'],
+            'md_progressbar' => ['progressbar'],
+            'md_slidingbox' => ['slidingbox'],
+            'md_flipbox' => ['flipbox'],
+            'md_blinkingbutton' => ['blinkingbutton'],
+            'md_youtube' => ['youtube'],
+            'md_telefono' => ['telefono', 'microdata_telefono'],
+            'md_prezzo' => ['prezzo'],
+            'md_flexlist' => ['flexlist'],
+        ];
+        
+        return $aliases_map[$shortcode] ?? [];
     }
 
     public function wnd_default_image_settings_enabled_callback(): void

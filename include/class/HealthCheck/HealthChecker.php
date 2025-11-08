@@ -38,17 +38,30 @@ class HealthChecker
 
     /**
      * Aggiungi pagina admin
+     * 
+     * Nota: La pagina viene ora registrata come sottovocce del menu principale "Revious Microdata"
+     * Se il menu principale non esiste, viene comunque aggiunta sotto "Strumenti" come fallback
      */
     public static function add_admin_page(): void
     {
-        add_submenu_page(
-            'tools.php',
-            'Health Check Plugin',
-            'Health Check',
-            'manage_options',
-            'gik25-health-check',
-            [self::class, 'render_admin_page']
-        );
+        // Verifica se il menu principale esiste (registrato da AdminMenu)
+        global $submenu;
+        $menu_exists = isset($submenu['revious-microdata']);
+        
+        if ($menu_exists) {
+            // Menu principale esiste, la sottovocce viene aggiunta automaticamente da AdminMenu
+            // Qui non facciamo nulla, la pagina viene renderizzata quando si accede al link
+        } else {
+            // Fallback: aggiungi sotto "Strumenti" se il menu principale non esiste
+            add_submenu_page(
+                'tools.php',
+                'Health Check Plugin',
+                'Health Check',
+                'manage_options',
+                'gik25-health-check',
+                [self::class, 'render_admin_page']
+            );
+        }
     }
 
     /**
@@ -67,8 +80,8 @@ class HealthChecker
                 <button type="button" class="button button-primary" id="run-health-check">
                     🔄 Esegui Health Check
                 </button>
-                <button type="button" class="button" id="export-results">
-                    📥 Esporta Risultati
+                <button type="button" class="button" id="copy-results">
+                    📋 Copia negli Appunti
                 </button>
             </div>
 
@@ -148,15 +161,79 @@ class HealthChecker
                 });
             });
 
-            $('#export-results').on('click', function() {
-                var results = $('#health-check-results').html();
-                var blob = new Blob([results], { type: 'text/html' });
-                var url = window.URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'health-check-' + new Date().toISOString().split('T')[0] + '.html';
-                a.click();
+            $('#copy-results').on('click', function() {
+                var button = $(this);
+                
+                // Formatta i risultati in modo leggibile
+                var results = formatHealthCheckResults();
+                
+                // Usa Clipboard API moderna
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(results).then(function() {
+                        var originalText = button.text();
+                        button.text('✅ Copiato!');
+                        setTimeout(function() {
+                            button.text(originalText);
+                        }, 2000);
+                    }).catch(function(err) {
+                        alert('Errore nella copia: ' + err);
+                    });
+                } else {
+                    // Fallback per browser vecchi
+                    var temp = $('<textarea>');
+                    $('body').append(temp);
+                    temp.val(results).select();
+                    try {
+                        document.execCommand('copy');
+                        var originalText = button.text();
+                        button.text('✅ Copiato!');
+                        setTimeout(function() {
+                            button.text(originalText);
+                        }, 2000);
+                    } catch (err) {
+                        alert('Errore nella copia. Prova a selezionare e copiare manualmente.');
+                    }
+                    temp.remove();
+                }
             });
+            
+            // Funzione per formattare i risultati in modo leggibile
+            function formatHealthCheckResults() {
+                var output = [];
+                output.push('=== HEALTH CHECK REPORT ===');
+                output.push('Data: ' + new Date().toLocaleString('it-IT'));
+                output.push('');
+                
+                // Riepilogo
+                var summary = $('.health-check-summary');
+                if (summary.length) {
+                    output.push('--- RIEPILOGO ---');
+                    summary.find('p').each(function() {
+                        var text = $(this).text().trim();
+                        if (text) output.push(text);
+                    });
+                    output.push('');
+                }
+                
+                // Dettagli check
+                output.push('--- DETTAGLI CHECK ---');
+                $('.health-check-item').each(function() {
+                    var $item = $(this);
+                    var title = $item.find('h3').text().trim();
+                    var message = $item.find('p').first().text().trim();
+                    var details = $item.find('.details pre').text().trim();
+                    
+                    output.push('');
+                    output.push('[' + title + ']');
+                    output.push('Stato: ' + message);
+                    if (details) {
+                        output.push('Dettagli:');
+                        output.push(details);
+                    }
+                });
+                
+                return output.join('\n');
+            }
         });
         </script>
         <?php
@@ -264,6 +341,10 @@ class HealthChecker
     public static function run_all_checks(): array
     {
         $checks = [];
+        
+        // Carica gli shortcode prima di verificarli (necessario perché vengono caricati solo nel frontend)
+        // Questo permette all'health check di funzionare anche nel backend
+        self::ensure_shortcodes_loaded();
 
         // 1. Check shortcode registrati
         $checks[] = self::check_shortcodes();
@@ -288,6 +369,112 @@ class HealthChecker
 
         return $checks;
     }
+    
+    /**
+     * Assicura che gli shortcode siano caricati (necessario nel backend)
+     */
+    private static function ensure_shortcodes_loaded(): void
+    {
+        // Forza il caricamento degli shortcode anche nel backend
+        // Questo è necessario perché normalmente vengono caricati solo nel frontend
+        
+        // 1. Carica i file degli shortcode (questo include i file e istanzia le classi)
+        // Gli shortcode vengono istanziati alla fine di ogni file (es. $quote = new Quote();)
+        // e vengono registrati nel costruttore tramite add_shortcode()
+        if (method_exists('\gik25microdata\PluginBootstrap', 'loadShortcodeFiles')) {
+            \gik25microdata\PluginBootstrap::loadShortcodeFiles();
+        }
+        
+        // 2. Carica anche i file site_specific che potrebbero registrare shortcode aggiuntivi
+        // (es. totaldesign_specific.php che registra kitchen_finder, app_nav, link_colori, ecc.)
+        // Usa reflection per chiamare il metodo privato detectCurrentWebsite
+        try {
+            $reflection = new \ReflectionClass('\gik25microdata\PluginBootstrap');
+            if ($reflection->hasMethod('detectCurrentWebsite')) {
+                $method = $reflection->getMethod('detectCurrentWebsite');
+                $method->setAccessible(true);
+                $method->invoke(null);
+            }
+        } catch (\ReflectionException $e) {
+            // Ignora errori di reflection
+        }
+        
+        // 3. Verifica che gli shortcode siano stati registrati
+        // Se non lo sono, potrebbe essere un problema di timing
+        global $shortcode_tags;
+        $shortcodes_before = is_array($shortcode_tags) ? count($shortcode_tags) : 0;
+        
+        // Se non ci sono molti shortcode registrati, proviamo a ricaricare manualmente
+        // Nota: require_once non ricarica se il file è già stato incluso,
+        // ma possiamo comunque verificare se gli shortcode sono registrati
+        if ($shortcodes_before < 5) {
+            // Forza il caricamento diretto dei file (anche se già inclusi, 
+            // l'istanziazione alla fine del file verrà rieseguita solo se non è già avvenuta)
+            $plugin_dir = dirname(dirname(dirname(__DIR__)));
+            $shortcodes_dir = $plugin_dir . '/include/class/Shortcodes';
+            
+            if (is_dir($shortcodes_dir)) {
+                // Usa require invece di require_once per forzare il ricaricamento
+                // ATTENZIONE: questo potrebbe causare errori se le classi sono già definite
+                // Quindi verifichiamo prima se le classi esistono
+                foreach (glob($shortcodes_dir . '/*.php') as $file) {
+                    $basename = basename($file, '.php');
+                    // Ignora ShortcodeBase.php che è una classe astratta
+                    if ($basename !== 'ShortcodeBase') {
+                        // Verifica se la classe esiste già
+                        $class_name = '\\gik25microdata\\Shortcodes\\' . ucfirst($basename);
+                        if (!class_exists($class_name)) {
+                            // La classe non esiste, possiamo includere il file
+                            require_once $file;
+                        } else {
+                            // La classe esiste, ma verifichiamo se lo shortcode è registrato
+                            // Se non lo è, proviamo a istanziarla manualmente
+                            // (ma questo potrebbe causare problemi se è già istanziata)
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Debug: verifica quanti shortcode sono stati registrati dopo il caricamento
+        $shortcodes_after = is_array($shortcode_tags) ? count($shortcode_tags) : 0;
+        
+        // Se ancora non ci sono shortcode, potrebbe essere un problema più serio
+        // Potremmo dover forzare l'istanziazione manualmente
+        if ($shortcodes_after < 5 && $shortcodes_after === $shortcodes_before) {
+            // Nessuno shortcode è stato aggiunto - problema di caricamento
+            // Proviamo a istanziare manualmente alcune classi chiave
+            // (solo se non sono già istanziate)
+            $key_classes = [
+                'Boxinfo' => ['md_boxinfo', 'boxinfo', 'boxinformativo'],
+                'Quote' => ['md_quote', 'quote'],
+                'Youtube' => ['youtube'],
+                'Telefono' => ['telefono'],
+            ];
+            
+            foreach ($key_classes as $class_name => $expected_tags) {
+                $full_class = '\\gik25microdata\\Shortcodes\\' . $class_name;
+                if (class_exists($full_class)) {
+                    // Verifica se almeno uno degli shortcode è registrato
+                    $any_registered = false;
+                    foreach ($expected_tags as $tag) {
+                        if (isset($shortcode_tags[$tag])) {
+                            $any_registered = true;
+                            break;
+                        }
+                    }
+                    
+                    // Se nessuno shortcode è registrato, prova a istanziare la classe
+                    // (solo se non è già stata istanziata - questo è tricky)
+                    if (!$any_registered) {
+                        // Non possiamo verificare facilmente se è già istanziata
+                        // Quindi non facciamo nulla - l'istanziazione dovrebbe avvenire
+                        // automaticamente quando il file viene incluso
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Check shortcode registrati
@@ -296,35 +483,143 @@ class HealthChecker
     {
         global $shortcode_tags;
         
-        $expected_shortcodes = [
-            'kitchen_finder', 'md_boxinfo', 'boxinfo', 'boxinformativo',
-            'md_quote', 'quote', 'youtube', 'telefono', 'slidingbox',
-            'progressbar', 'prezzo', 'flipbox', 'flexlist', 'blinkingbutton',
-            'perfectpullquote', 'app_nav', 'carousel', 'list', 'grid',
+        // Debug: verifica quanti shortcode sono registrati in totale
+        $total_registered = is_array($shortcode_tags) ? count($shortcode_tags) : 0;
+        
+        // Lista di tutti gli shortcode del plugin (sia richiesti che opzionali)
+        // Questi sono gli shortcode che DOVREBBERO essere registrati se i file sono stati caricati
+        $all_plugin_shortcodes = [
+            // Base - da classi ShortcodeBase
+            'md_boxinfo', 'boxinfo', 'boxinformativo',
+            'md_quote', 'quote', 
+            'youtube', 
+            'telefono',
+            'md_progressbar', 'progressbar', 
+            'slidingbox',
+            'flipbox', 'md_flipbox', 
+            'blinkingbutton', 'md_blinkingbutton',
+            'perfectpullquote', 
+            'prezzo', 
+            'flexlist',
+            // Opzionali - da file site_specific o condizioni
+            'kitchen_finder', // KitchenFinder
+            'app_nav', // AppNav
+            'carousel', 'list', 'grid', // GenericCarousel
+            // Da totaldesign_specific.php (hardcoded)
+            'link_colori', 'grafica3d', 'archistar',
+        ];
+        
+        // Shortcode base MINIMI che devono sempre esistere
+        // Questi sono quelli che vengono istanziati direttamente nei file
+        $required_shortcodes = [
+            'md_boxinfo', 'boxinfo', 'boxinformativo', // Boxinfo
+            'md_quote', 'quote', // Quote
+            'youtube', // Youtube
+            'telefono', // Telefono
+            'md_progressbar', 'progressbar', // Progressbar
+            'slidingbox', // Slidingbox
+            'flipbox', 'md_flipbox', // Flipbox
+            'blinkingbutton', 'md_blinkingbutton', // BlinkingButton
+            'perfectpullquote', // Perfectpullquote
+            'prezzo', // Prezzo
+            'flexlist', // Flexlist
+        ];
+        
+        // Shortcode opzionali (dipendono da configurazione sito o file site_specific)
+        $optional_shortcodes = [
+            'kitchen_finder', // Solo se kitchenfinder.php è caricato e istanziato
+            'app_nav', // Solo se appnav.php è caricato e istanziato
+            'carousel', 'list', 'grid', // Solo se GenericCarousel è istanziato
+            'link_colori', 'grafica3d', 'archistar', // Solo se totaldesign_specific.php è caricato
         ];
 
-        $missing = [];
-        $registered = [];
+        $missing_required = [];
+        $registered_required = [];
+        $registered_optional = [];
+        $missing_optional = [];
 
-        foreach ($expected_shortcodes as $tag) {
+        // Controlla shortcode richiesti
+        foreach ($required_shortcodes as $tag) {
             if (isset($shortcode_tags[$tag])) {
-                $registered[] = $tag;
+                $registered_required[] = $tag;
             } else {
-                $missing[] = $tag;
+                $missing_required[] = $tag;
             }
         }
+        
+        // Controlla shortcode opzionali
+        foreach ($optional_shortcodes as $tag) {
+            if (isset($shortcode_tags[$tag])) {
+                $registered_optional[] = $tag;
+            } else {
+                $missing_optional[] = $tag;
+            }
+        }
+        
+        $all_registered = array_merge($registered_required, $registered_optional);
 
-        $status = empty($missing) ? 'success' : 'error';
-        $message = empty($missing) 
-            ? sprintf('Tutti gli shortcode registrati (%d)', count($registered))
-            : sprintf('Shortcode mancanti: %s', implode(', ', $missing));
+        // Determina status
+        if (!empty($missing_required)) {
+            $status = 'error';
+            $message = sprintf('Shortcode base mancanti: %d/%d (%s)', 
+                count($missing_required),
+                count($required_shortcodes),
+                implode(', ', array_slice($missing_required, 0, 5)) . (count($missing_required) > 5 ? '...' : '')
+            );
+        } elseif (!empty($registered_required)) {
+            // Se almeno alcuni shortcode base sono registrati, è un successo
+            // (potrebbero mancare alcuni opzionali, ma non è un errore)
+            $status = 'success';
+            $message = sprintf('Shortcode base OK (%d/%d)', 
+                count($registered_required),
+                count($required_shortcodes)
+            );
+            if (!empty($registered_optional)) {
+                $message .= sprintf(', opzionali: %d', count($registered_optional));
+            }
+        } else {
+            // Nessuno shortcode registrato - problema grave
+            $status = 'error';
+            $message = sprintf('Nessuno shortcode registrato (totale WordPress: %d)', $total_registered);
+        }
+
+        // Dettagli estesi
+        $details = sprintf("Totale shortcode WordPress registrati: %d\n", $total_registered);
+        $details .= sprintf("Shortcode plugin richiesti: %d/%d registrati\n", 
+            count($registered_required), 
+            count($required_shortcodes)
+        );
+        
+        if (!empty($registered_required)) {
+            $details .= "Registrati (richiesti): " . implode(', ', $registered_required) . "\n";
+        }
+        
+        if (!empty($missing_required)) {
+            $details .= "Mancanti (richiesti): " . implode(', ', $missing_required) . "\n";
+        }
+        
+        if (!empty($registered_optional)) {
+            $details .= "Registrati (opzionali): " . implode(', ', $registered_optional) . "\n";
+        }
+        
+        if (!empty($missing_optional)) {
+            $details .= "Mancanti (opzionali): " . implode(', ', $missing_optional) . "\n";
+        }
+        
+        // Debug aggiuntivo: lista tutti gli shortcode WordPress registrati (primi 20)
+        if ($total_registered > 0) {
+            $all_wp_shortcodes = array_keys($shortcode_tags);
+            $details .= "\nPrimi 20 shortcode WordPress registrati: " . implode(', ', array_slice($all_wp_shortcodes, 0, 20));
+            if ($total_registered > 20) {
+                $details .= sprintf(" ... (e altri %d)", $total_registered - 20);
+            }
+        }
 
         return [
             'name' => 'Shortcode Registrati',
             'status' => $status,
             'message' => $message,
-            'details' => 'Registrati: ' . implode(', ', $registered) . "\n" . 
-                        (empty($missing) ? '' : 'Mancanti: ' . implode(', ', $missing)),
+            'details' => $details,
         ];
     }
 
@@ -374,7 +669,8 @@ class HealthChecker
      */
     private static function check_ajax_endpoints(): array
     {
-        $expected_actions = [
+        // AJAX endpoints opzionali (solo se kitchen_finder è attivo)
+        $optional_actions = [
             'kitchen_finder_calculate',
             'kitchen_finder_pdf',
         ];
@@ -384,28 +680,58 @@ class HealthChecker
         $registered = [];
         $missing = [];
 
-        foreach ($expected_actions as $action) {
+        foreach ($optional_actions as $action) {
             $hook_logged = 'wp_ajax_' . $action;
             $hook_nopriv = 'wp_ajax_nopriv_' . $action;
             
-            if (isset($wp_filter[$hook_logged]) || isset($wp_filter[$hook_nopriv])) {
+            // Verifica anche se le callback sono registrate e non vuote
+            $has_logged = isset($wp_filter[$hook_logged]) && 
+                         !empty($wp_filter[$hook_logged]->callbacks);
+            $has_nopriv = isset($wp_filter[$hook_nopriv]) && 
+                         !empty($wp_filter[$hook_nopriv]->callbacks);
+            
+            if ($has_logged || $has_nopriv) {
                 $registered[] = $action;
             } else {
                 $missing[] = $action;
             }
         }
 
-        $status = empty($missing) ? 'success' : 'error';
-        $message = empty($missing)
-            ? sprintf('Tutti gli endpoint AJAX registrati (%d)', count($registered))
-            : sprintf('Endpoint AJAX mancanti: %s', implode(', ', $missing));
+        // Se kitchen_finder shortcode non è registrato, questi endpoint sono opzionali
+        global $shortcode_tags;
+        $kitchen_finder_exists = isset($shortcode_tags['kitchen_finder']);
+        
+        if (empty($registered) && !$kitchen_finder_exists) {
+            // Se kitchen_finder non esiste, questi endpoint non sono necessari
+            $status = 'success';
+            $message = 'Endpoint AJAX: Nessun endpoint richiesto (kitchen_finder non attivo)';
+            $details = 'Kitchen Finder non è attivo su questo sito, quindi gli endpoint AJAX non sono necessari.';
+        } elseif (!empty($missing) && $kitchen_finder_exists) {
+            // Se kitchen_finder esiste ma gli endpoint mancano, è un errore
+            $status = 'error';
+            $message = sprintf('Endpoint AJAX mancanti: %s', implode(', ', $missing));
+            $details = 'Kitchen Finder è attivo ma gli endpoint AJAX non sono registrati.';
+        } elseif (empty($missing)) {
+            $status = 'success';
+            $message = sprintf('Tutti gli endpoint AJAX registrati (%d)', count($registered));
+            $details = 'Registrati: ' . implode(', ', $registered);
+        } else {
+            // Warning se alcuni endpoint mancano ma kitchen_finder non è attivo
+            $status = 'success'; // Non è un errore se kitchen_finder non è attivo
+            $message = sprintf('Endpoint AJAX opzionali: %d registrati, %d mancanti (non necessari)', 
+                count($registered), 
+                count($missing)
+            );
+            $details = 'Questi endpoint sono opzionali e non sono necessari perché kitchen_finder non è attivo.';
+        }
 
         return [
             'name' => 'AJAX Endpoints',
             'status' => $status,
             'message' => $message,
-            'details' => 'Registrati: ' . implode(', ', $registered) . "\n" .
-                        (empty($missing) ? '' : 'Mancanti: ' . implode(', ', $missing)),
+            'details' => $details . "\n" .
+                        (empty($registered) ? '' : 'Registrati: ' . implode(', ', $registered) . "\n") .
+                        (empty($missing) ? '' : 'Mancanti (opzionali): ' . implode(', ', $missing)),
         ];
     }
 
@@ -540,36 +866,72 @@ class HealthChecker
      */
     private static function check_classes(): array
     {
-        $expected_classes = [
+        // Classi sempre richieste
+        $required_classes = [
             'gik25microdata\PluginBootstrap',
-            'gik25microdata\Shortcodes\KitchenFinder',
-            'gik25microdata\Shortcodes\AppNav',
-            'gik25microdata\REST\MCPApi',
-            'gik25microdata\Widgets\ContextualWidgets',
+        ];
+        
+        // Classi opzionali (dipendono da configurazione)
+        $optional_classes = [
+            'gik25microdata\Shortcodes\KitchenFinder', // Solo se kitchen_finder è attivo
+            'gik25microdata\Shortcodes\AppNav', // Solo se app_nav è attivo
+            'gik25microdata\REST\MCPApi', // Solo se MCP è attivo
+            'gik25microdata\Widgets\ContextualWidgets', // Solo se attivo
+            'gik25microdata\Shortcodes\GenericCarousel', // Solo se caroselli sono usati
         ];
 
-        $existing = [];
-        $missing = [];
+        $existing_required = [];
+        $missing_required = [];
+        $existing_optional = [];
+        $missing_optional = [];
 
-        foreach ($expected_classes as $class) {
+        // Controlla classi richieste
+        foreach ($required_classes as $class) {
             if (class_exists($class)) {
-                $existing[] = $class;
+                $existing_required[] = $class;
             } else {
-                $missing[] = $class;
+                $missing_required[] = $class;
+            }
+        }
+        
+        // Controlla classi opzionali
+        foreach ($optional_classes as $class) {
+            if (class_exists($class)) {
+                $existing_optional[] = $class;
+            } else {
+                $missing_optional[] = $class;
             }
         }
 
-        $status = empty($missing) ? 'success' : 'error';
-        $message = empty($missing)
-            ? sprintf('Tutte le classi caricate (%d)', count($existing))
-            : sprintf('Classi mancanti: %d/%d', count($missing), count($expected_classes));
+        // Se mancano solo classi opzionali, è un warning
+        if (empty($missing_required) && !empty($missing_optional)) {
+            $status = 'success'; // Non è un errore se le classi opzionali mancano
+            $message = sprintf('Classi base caricate (%d), opzionali: %d/%d', 
+                count($existing_required),
+                count($existing_optional),
+                count($optional_classes)
+            );
+        } elseif (!empty($missing_required)) {
+            $status = 'error';
+            $message = sprintf('Classi base mancanti: %s', implode(', ', $missing_required));
+        } else {
+            $status = 'success';
+            $message = sprintf('Tutte le classi caricate (%d base + %d opzionali)', 
+                count($existing_required),
+                count($existing_optional)
+            );
+        }
+
+        $all_existing = array_merge($existing_required, $existing_optional);
+        $all_missing = array_merge($missing_required, $missing_optional);
 
         return [
             'name' => 'Classi PHP',
             'status' => $status,
             'message' => $message,
-            'details' => 'Caricate: ' . implode(', ', $existing) . "\n" .
-                        (empty($missing) ? '' : 'Mancanti: ' . implode(', ', $missing)),
+            'details' => 'Caricate: ' . implode(', ', $all_existing) . "\n" .
+                        (empty($missing_required) ? '' : 'Mancanti (richieste): ' . implode(', ', $missing_required) . "\n") .
+                        (!empty($missing_optional) ? 'Mancanti (opzionali): ' . implode(', ', $missing_optional) : ''),
         ];
     }
 }

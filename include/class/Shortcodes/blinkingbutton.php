@@ -12,6 +12,9 @@ class BlinkingButton extends ShortcodeBase
     {
         $this->shortcode = 'md_blinkingbutton';
         parent::__construct();
+        
+        // Registra alias dello shortcode
+        add_shortcode('blinkingbutton', array($this, 'ShortcodeHandler'));
     }
 
     public function ShortcodeHandler($atts, $content = null): string
@@ -58,8 +61,8 @@ ABC;
 
     public function scripts()
     {
-        script('script', plugins_url("{$this->asset_path}/js/mdbb.js"), array('jquery'));
-        script('script');
+        wp_register_script('mdbb-script', plugins_url("{$this->asset_path}/js/mdbb.js"), array('jquery'), '', true);
+        wp_enqueue_script('mdbb-script');
     }
 
     public function register_plugin($plugin_array)

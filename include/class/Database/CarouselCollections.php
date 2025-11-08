@@ -255,8 +255,13 @@ class CarouselCollections
     /**
      * Migrazione dati da codice hardcoded a database
      * Utile per migrare collezioni esistenti
+     * 
+     * @param string $collection_key Chiave collezione
+     * @param array $items Array di items (ogni item può avere 'title', 'url', 'category', 'image_url', 'description')
+     * @param string|null $default_category Categoria di default (usata solo se l'item non ha categoria)
+     * @return int ID collezione
      */
-    public static function migrate_from_hardcoded(string $collection_key, array $items, ?string $category = null): int
+    public static function migrate_from_hardcoded(string $collection_key, array $items, ?string $default_category = null): int
     {
         // Crea collezione se non esiste
         $collection = self::get_collection_by_key($collection_key);
@@ -273,13 +278,16 @@ class CarouselCollections
         // Aggiungi items
         $order = 0;
         foreach ($items as $item) {
+            // Determina categoria: priorità: item['category'] > default_category > null
+            $item_category = $item['category'] ?? $default_category ?? null;
+            
             $item_data = [
                 'collection_id' => $collection_id,
                 'item_title' => $item['title'] ?? $item['label'] ?? '',
                 'item_url' => $item['url'] ?? '',
                 'item_image_url' => $item['image'] ?? $item['image_url'] ?? null,
                 'item_description' => $item['description'] ?? null,
-                'category' => $category ?? $item['category'] ?? null,
+                'category' => $item_category,
                 'display_order' => $order++,
             ];
             

@@ -17,9 +17,9 @@ Un **Model Context Protocol (MCP) Server** è un servizio che permette a Cursor 
 
 Creeremmo un endpoint personalizzato:
 ```
-https://www.totaldesign.it/wp-json/wp-mcp/v1/posts?category=colori&limit=10
-https://www.totaldesign.it/wp-json/wp-mcp/v1/search?q=ikea+metod
-https://www.totaldesign.it/wp-json/wp-mcp/v1/categories
+https://www.totaldesign.it/wp-json/td-mcp/v1/posts?category=colori&limit=10
+https://www.totaldesign.it/wp-json/td-mcp/v1/search?q=ikea+metod
+https://www.totaldesign.it/wp-json/td-mcp/v1/categories
 ```
 
 ### 2. MCP Server (Node.js o PHP)

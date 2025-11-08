@@ -7,13 +7,15 @@ class Telefono extends ShortcodeBase
 {
     public function __construct()
     {
-        add_shortcode('md_telefono', array($this, 'shortcode'));
-        add_shortcode('microdata_telefono', array($this, 'shortcode'));
         $this->shortcode = 'md_telefono';
         parent::__construct();
+        
+        // Registra alias dello shortcode
+        add_shortcode('telefono', array($this, 'ShortcodeHandler'));
+        add_shortcode('microdata_telefono', array($this, 'ShortcodeHandler'));
     }
 
-    public function shortcode($atts, $content = null) {
+    public function ShortcodeHandler($atts, $content = null) {
         $attrValue = shortcode_atts(array(
             'organizationname' => null // (Optional)
         ), $atts);
@@ -68,11 +70,6 @@ EOF;
     public function register_button($buttons) {
         array_push($buttons, 'md_telefono-menu');
         return $buttons;
-    }
-
-    public function ShortcodeHandler($atts, $content = null)
-    {
-        // TODO: Implement ShortcodeHandler() method.
     }
 
     public function styles()

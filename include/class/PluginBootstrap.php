@@ -198,6 +198,46 @@ class PluginBootstrap
      */
     private static function initializeAdmin(): void
     {
+        // Carica gli shortcode anche nel backend (necessario per health check e altre funzionalità)
+        // Gli shortcode devono essere disponibili anche nel backend per essere verificati
+        add_action('init', function () {
+            self::loadShortcodeFiles();
+        }, 1);
+        
+        // Carica anche i file site_specific nel backend (per shortcode aggiuntivi)
+        try {
+            self::detectCurrentWebsite();
+        } catch (\Throwable $e) {
+            self::logError('Errore nel rilevamento automatico del sito (admin)', $e);
+        }
+        
+        // Menu admin principale (deve essere registrato per primo)
+        try {
+            if (class_exists('\gik25microdata\Admin\AdminMenu')) {
+                \gik25microdata\Admin\AdminMenu::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di AdminMenu', $e);
+        }
+        
+        // Migration Preview (solo admin)
+        try {
+            if (class_exists('\gik25microdata\Admin\MigrationPreview')) {
+                \gik25microdata\Admin\MigrationPreview::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di MigrationPreview', $e);
+        }
+        
+        // Carousel Manager (solo admin)
+        try {
+            if (class_exists('\gik25microdata\Admin\CarouselManager')) {
+                \gik25microdata\Admin\CarouselManager::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di CarouselManager', $e);
+        }
+        
         // Health Check (solo admin)
         try {
             if (class_exists('\gik25microdata\HealthCheck\HealthChecker')) {
@@ -215,6 +255,15 @@ class PluginBootstrap
             }
         } catch (\Throwable $e) {
             self::logError('Errore nel caricamento della pagina settings', $e);
+        }
+        
+        // Carica gestione caroselli (solo admin)
+        try {
+            if (class_exists('\gik25microdata\Admin\CarouselManager')) {
+                \gik25microdata\Admin\CarouselManager::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di CarouselManager', $e);
         }
         
         // Istanzia helper admin (con gestione errori individuale)
@@ -324,9 +373,11 @@ class PluginBootstrap
     }
 
     /**
+     * Carica tutti i file degli shortcode
+     * Metodo pubblico per permettere il caricamento anche nel backend (es. per health check)
      * Carica i file delle classi Shortcodes per registrare shortcode e hook AJAX
      */
-    private static function loadShortcodeFiles(): void
+    public static function loadShortcodeFiles(): void
     {
         try {
             $shortcodes_dir = self::$plugin_dir . '/include/class/Shortcodes';
