@@ -83,6 +83,17 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.15.1 _(2025-11-08)_
+* **Fix Dashboard MCP Status**: Corretto controllo stato MCP REST API
+  * Rinominato da "MCP Server" a "MCP REST API" per chiarezza
+  * Verifica corretta delle route REST API registrate (`/wp-mcp/v1/...`)
+  * Aggiunta nota esplicativa: verifica solo backend WordPress, non server Node.js locale
+  * Migliorato metodo `is_mcp_api_enabled()` per verificare direttamente le route registrate
+  * File: `include/class/Admin/AdminMenu.php`
+* **Documentazione MCP**: Chiarito architettura e flusso
+  * Documentazione aggiornata per chiarire differenza tra REST API (Cloudways) e server Node.js (locale)
+  * File: `docs/MCP_ARCHITECTURE.md`
+
 ##### 1.15.0 _(2025-11-08)_
 * **Sistema Template Configurabili per Caroselli**: Template CSS/DOM/JS configurabili via database
   * Nuova tabella `wp_carousel_templates` per template riutilizzabili

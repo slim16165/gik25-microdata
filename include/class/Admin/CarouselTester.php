@@ -35,29 +35,16 @@ class CarouselTester
      */
     public static function add_admin_page(): void
     {
-        // Verifica se il menu principale esiste
-        $main_menu_exists = has_action('admin_menu', [AdminMenu::class, 'register_menu']);
-        
-        if ($main_menu_exists) {
-            // Aggiungi come submenu del menu principale
-            add_submenu_page(
-                AdminMenu::MENU_SLUG,
-                self::PAGE_TITLE,
-                self::MENU_TITLE,
-                self::CAPABILITY,
-                self::PAGE_SLUG,
-                [self::class, 'render_page']
-            );
-        } else {
-            // Fallback: aggiungi come pagina standalone
-            add_management_page(
-                self::PAGE_TITLE,
-                self::MENU_TITLE,
-                self::CAPABILITY,
-                self::PAGE_SLUG,
-                [self::class, 'render_page']
-            );
-        }
+        // Aggiungi come submenu del menu principale
+        // MENU_SLUG è ora pubblico in AdminMenu, quindi possiamo accedervi direttamente
+        add_submenu_page(
+            AdminMenu::MENU_SLUG,
+            self::PAGE_TITLE,
+            self::MENU_TITLE,
+            self::CAPABILITY,
+            self::PAGE_SLUG,
+            [self::class, 'render_page']
+        );
     }
 
     /**

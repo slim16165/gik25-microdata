@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
  */
 class AdminMenu
 {
-    private const MENU_SLUG = 'revious-microdata';
+    public const MENU_SLUG = 'revious-microdata';
     private const MENU_TITLE = 'Revious Microdata';
     private const MENU_ICON = 'dashicons-admin-generic';
     private const CAPABILITY = 'manage_options';
@@ -159,7 +159,10 @@ class AdminMenu
                         <h2 style="margin-top: 0;">📊 Statistiche</h2>
                         <p><strong>Widget TotalDesign:</strong> 18</p>
                         <p><strong>Shortcode Base:</strong> <?php echo esc_html(self::count_base_shortcodes()); ?></p>
-                        <p><strong>MCP Server:</strong> <?php echo self::is_mcp_enabled() ? '✅ Attivo' : '❌ Disattivo'; ?></p>
+                        <p><strong>MCP REST API:</strong> <?php echo self::is_mcp_api_enabled() ? '✅ Attiva' : '❌ Disattiva'; ?></p>
+                        <p class="description" style="font-size: 11px; color: #666; margin-top: 5px;">
+                            REST API per server MCP Node.js (locale)
+                        </p>
                     </div>
 
                     <!-- Widget: Link Utili -->
@@ -238,12 +241,54 @@ class AdminMenu
     }
 
     /**
-     * Verifica se MCP è abilitato
+     * Verifica se MCP REST API è abilitata
+     * 
+     * Nota importante:
+     * - Questo verifica solo se la REST API WordPress (backend) è registrata
+     * - La REST API gira su Cloudways e fornisce dati al server MCP Node.js
+     * - Il server MCP Node.js gira localmente sul tuo PC e NON può essere verificato da qui
+     * - Il server MCP Node.js si connette alla REST API WordPress via HTTP
      */
-    private static function is_mcp_enabled(): bool
+    private static function is_mcp_api_enabled(): bool
     {
-        return class_exists('\gik25microdata\REST\MCPApi') && 
-               has_filter('rest_api_init', [\gik25microdata\REST\MCPApi::class, 'init']);
+        // Verifica che la classe esista
+        if (!class_exists('\gik25microdata\REST\MCPApi')) {
+            return false;
+        }
+        
+        // Verifica direttamente se le route REST API sono registrate
+        // Questo è il modo più affidabile per verificare se l'API è disponibile
+        if (function_exists('rest_get_server')) {
+            $server = rest_get_server();
+            $routes = $server->get_routes();
+            
+            // Verifica se esiste almeno una route del namespace wp-mcp/v1
+            foreach ($routes as $route => $handlers) {
+                if (strpos($route, '/wp-mcp/v1/') !== false) {
+                    return true; // Trovata almeno una route MCP
+                }
+            }
+        }
+        
+        // Fallback: verifica se l'azione rest_api_init è registrata
+        // MCPApi::init() registra 'rest_api_init' che chiama 'register_routes'
+        if (has_action('rest_api_init')) {
+            // Verifica se MCPApi::register_routes è registrato
+            global $wp_filter;
+            if (isset($wp_filter['rest_api_init'])) {
+                foreach ($wp_filter['rest_api_init']->callbacks as $callbacks) {
+                    foreach ($callbacks as $callback) {
+                        if (is_array($callback['function']) && 
+                            is_string($callback['function'][0]) &&
+                            strpos($callback['function'][0], 'MCPApi') !== false) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 }
 

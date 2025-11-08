@@ -2,7 +2,7 @@
 
 ## 🏗️ Componenti dell'Architettura
 
-### 1. **REST API WordPress (PHP) - Su Cloudways** ☁️
+### 1. **Backend WordPress / REST API (PHP) - Su Cloudways** ☁️
 
 **Dove gira:** Sul server Cloudways insieme al sito WordPress
 
@@ -10,6 +10,7 @@
 - Espone endpoint REST API per leggere dati dal database WordPress
 - Implementato in `include/class/REST/MCPApi.php`
 - Accessibile via: `https://www.totaldesign.it/wp-json/wp-mcp/v1/...`
+- **Questo è il "BE" (backend)** - il backend WordPress che gestisce i dati
 
 **Endpoint attuali:**
 - `GET /categories` - Lista categorie
@@ -32,36 +33,53 @@
 
 ### 2. **MCP Server Node.js - Locale** 💻
 
-**Dove gira:** Sul tuo computer locale (Windows)
+**Dove gira:** Sul tuo computer locale (Windows) - **NON su Cloudways**
 
 **Cosa fa:**
 - Comunica con Cursor via stdio (standard input/output)
-- Chiama la REST API WordPress per ottenere dati
+- Chiama la REST API WordPress (che è su Cloudways) per ottenere dati
 - Espone "tools" e "risorse" che Cursor può usare
 - Implementato in `mcp-server/server.js`
 
 **Flusso:**
 ```
-Cursor → MCP Server Node.js → REST API WordPress → Database WordPress
-         (locale)              (Cloudways)          (Cloudways)
+Cursor (locale) 
+    ↓ stdio
+MCP Server Node.js (locale - sul tuo PC)
+    ↓ HTTP request
+REST API WordPress (Cloudways - backend)
+    ↓ query
+Database WordPress (Cloudways)
 ```
 
+**⚠️ IMPORTANTE:**
+- Il server MCP Node.js **NON** gira su Cloudways
+- Il server MCP Node.js gira **sul tuo computer locale**
+- Il server MCP Node.js fa HTTP request al backend WordPress su Cloudways
+- Il backend WordPress (REST API) è quello che gira su Cloudways
+
 **Perché Node.js locale?**
-- Cursor comunica via stdio (pipe del terminale)
+- Cursor comunica via stdio (pipe del terminale) - richiede processo locale
 - Il server MCP deve essere sempre disponibile quando Cursor è aperto
 - Non richiede server esterno dedicato
 - Più semplice da gestire e debuggare
+- Non consuma risorse su Cloudways
 
 ---
 
 ## 🔄 Flusso Completo
 
-1. **Cursor chiede dati** → Chiama un tool MCP (es: `get_categories`)
-2. **MCP Server Node.js** → Riceve la richiesta via stdio
-3. **MCP Server** → Fa HTTP request alla REST API WordPress
-4. **REST API WordPress** → Interroga il database e ritorna JSON
-5. **MCP Server** → Ritorna i dati a Cursor
-6. **Cursor** → Usa i dati per aiutare a sviluppare
+1. **Cursor (locale)** → Chiama un tool MCP (es: `get_categories`)
+2. **MCP Server Node.js (locale)** → Riceve la richiesta via stdio
+3. **MCP Server (locale)** → Fa HTTP request alla REST API WordPress (Cloudways)
+4. **REST API WordPress (Cloudways - BE)** → Interroga il database e ritorna JSON
+5. **MCP Server (locale)** → Riceve JSON e ritorna i dati a Cursor
+6. **Cursor (locale)** → Usa i dati per aiutare a sviluppare
+
+**Riepilogo:**
+- ✅ **Backend WordPress (BE)**: Su Cloudways - gestisce dati e database
+- ✅ **MCP Server Node.js**: Locale - fa da ponte tra Cursor e backend WordPress
+- ✅ **Cursor**: Locale - interfaccia per sviluppare
 
 ---
 
