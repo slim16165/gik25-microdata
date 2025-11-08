@@ -44,6 +44,14 @@ class ShortcodesUsagePage
         // Ottieni dati dalla cache o scansiona
         $usage_data = self::get_usage_data($refresh_cache);
         
+        // Filtro "solo usati"
+        $filter_used_only = isset($_GET['used_only']) && $_GET['used_only'] === '1';
+        if ($filter_used_only) {
+            $usage_data['shortcodes'] = array_filter($usage_data['shortcodes'], function($data) {
+                return !empty($data['posts']);
+            });
+        }
+        
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Utilizzo Shortcode', 'gik25-microdata'); ?></h1>
@@ -51,7 +59,11 @@ class ShortcodesUsagePage
             <div class="shortcode-usage-header" style="margin: 20px 0; padding: 15px; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px;">
                 <p><?php esc_html_e('Panoramica completa degli shortcode utilizzati nel sito. I dati vengono scansionati automaticamente e memorizzati in cache per migliorare le performance.', 'gik25-microdata'); ?></p>
                 <p>
-                    <a href="<?php echo esc_url(wp_nonce_url(add_query_arg(['refresh_cache' => '1']), 'refresh_shortcode_usage_cache')); ?>" class="button">
+                    <label>
+                        <input type="checkbox" id="filter-used-only" <?php checked($filter_used_only); ?> onchange="window.location.href='<?php echo esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '-shortcodes-usage&used_only=')); ?>' + (this.checked ? '1' : '0');">
+                        Mostra solo shortcode utilizzati
+                    </label>
+                    <a href="<?php echo esc_url(wp_nonce_url(add_query_arg(['refresh_cache' => '1']), 'refresh_shortcode_usage_cache')); ?>" class="button" style="margin-left: 15px;">
                         <?php esc_html_e('🔄 Aggiorna Scansione', 'gik25-microdata'); ?>
                     </a>
                     <span class="description" style="margin-left: 10px;">
@@ -163,6 +175,29 @@ class ShortcodesUsagePage
                         </li>
                     <?php endif; ?>
                 </ul>
+                
+                <?php
+                // Validazione per shortcode lista/carousel/grid
+                if (in_array($shortcode, ['carousel', 'list', 'grid'])) {
+                    $validation = self::validate_collection_shortcode($data['posts']);
+                    if (!empty($validation['missing_items'])) {
+                        ?>
+                        <div class="validation-warning" style="margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                            <strong>⚠️ Attenzione:</strong> Alcuni items della collezione non sono presenti in questi articoli.
+                            <a href="#" class="validate-collection-link" data-shortcode="<?php echo esc_attr($shortcode); ?>">Ricontrolla items →</a>
+                            <div class="validation-details" style="display: none; margin-top: 10px;" data-shortcode="<?php echo esc_attr($shortcode); ?>">
+                                <strong>Items mancanti:</strong>
+                                <ul style="margin: 5px 0; padding-left: 20px;">
+                                    <?php foreach ($validation['missing_items'] as $missing_item) : ?>
+                                        <li><?php echo esc_html($missing_item); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                }
+                ?>
             </div>
         </div>
         <?php
@@ -215,7 +250,7 @@ class ShortcodesUsagePage
         // Scansiona tutti i contenuti
         $posts = $wpdb->get_results(
             "SELECT ID, post_title, post_type, post_status, post_content 
-             FROM {$wpdb->posts} 
+             FROM {$wpdb->posts}
              WHERE post_status NOT IN ('trash','auto-draft','inherit')
              AND post_content != ''
              ORDER BY post_modified_gmt DESC",
@@ -475,6 +510,50 @@ class ShortcodesUsagePage
     }
 
     /**
+     * Valida shortcode collezione (carousel/list/grid)
+     */
+    private static function validate_collection_shortcode(array $posts): array
+    {
+        $missing_items = [];
+        
+        // Per ogni post, estrai il parametro collection e verifica che gli items esistano
+        foreach ($posts as $post_data) {
+            $post = get_post($post_data['ID']);
+            if (!$post) {
+                continue;
+            }
+            
+            // Estrai tutti gli shortcode carousel/list/grid dal contenuto
+            preg_match_all('/\[(?:carousel|list|grid)\s+collection=["\']([^"\']+)["\']/', $post->post_content, $matches);
+            
+            if (!empty($matches[1])) {
+                foreach ($matches[1] as $collection_key) {
+                    // Verifica che la collezione esista
+                    $collection = \gik25microdata\Database\CarouselCollections::get_collection_by_key($collection_key);
+                    if (!$collection) {
+                        $missing_items[] = "Collezione '{$collection_key}' non trovata in post #{$post->ID}";
+                        continue;
+                    }
+                    
+                    // Verifica che gli items della collezione esistano
+                    $items = \gik25microdata\Database\CarouselCollections::get_collection_items((int) $collection['id']);
+                    foreach ($items as $item) {
+                        // Verifica che l'URL dell'item esista come post
+                        $item_post_id = url_to_postid($item['item_url']);
+                        if (!$item_post_id) {
+                            $missing_items[] = "Item '{$item['item_title']}' (URL: {$item['item_url']}) non trovato";
+                        }
+                    }
+                }
+            }
+        }
+        
+        return [
+            'missing_items' => array_unique($missing_items),
+        ];
+    }
+
+    /**
      * Renderizza JavaScript
      */
     private static function render_scripts(): void
@@ -495,6 +574,19 @@ class ShortcodesUsagePage
                         if (allPosts && allPosts.style.display === 'none') {
                             allPosts.style.display = 'block';
                             seeAll.style.display = 'none';
+                        }
+                    });
+                });
+                
+                // Toggle validazione
+                const validateLinks = document.querySelectorAll('.validate-collection-link');
+                validateLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const shortcode = this.dataset.shortcode;
+                        const details = document.querySelector(`.validation-details[data-shortcode="${shortcode}"]`);
+                        if (details) {
+                            details.style.display = details.style.display === 'none' ? 'block' : 'none';
                         }
                     });
                 });

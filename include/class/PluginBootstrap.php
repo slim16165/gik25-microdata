@@ -243,31 +243,13 @@ class PluginBootstrap
             self::logError('Errore nell\'inizializzazione di ShortcodesUsagePage', $e);
         }
         
-        // Migration Preview (solo admin)
+        // Carousels Page (unificata con tab: gestione, migrazione, test)
         try {
-            if (class_exists('\gik25microdata\Admin\MigrationPreview')) {
-                \gik25microdata\Admin\MigrationPreview::init();
+            if (class_exists('\gik25microdata\Admin\CarouselsPage')) {
+                \gik25microdata\Admin\CarouselsPage::init();
             }
         } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di MigrationPreview', $e);
-        }
-        
-        // Carousel Manager (solo admin)
-        try {
-            if (class_exists('\gik25microdata\Admin\CarouselManager')) {
-                \gik25microdata\Admin\CarouselManager::init();
-            }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di CarouselManager', $e);
-        }
-        
-        // Carousel Tester (solo admin)
-        try {
-            if (class_exists('\gik25microdata\Admin\CarouselTester')) {
-                \gik25microdata\Admin\CarouselTester::init();
-            }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di CarouselTester', $e);
+            self::logError('Errore nell\'inizializzazione di CarouselsPage', $e);
         }
         
         // Health Check (solo admin)
@@ -298,14 +280,7 @@ class PluginBootstrap
             self::logError('Errore nel caricamento della pagina settings', $e);
         }
         
-        // Carica gestione caroselli (solo admin)
-        try {
-            if (class_exists('\gik25microdata\Admin\CarouselManager')) {
-                \gik25microdata\Admin\CarouselManager::init();
-            }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di CarouselManager', $e);
-        }
+        // CarouselManager, MigrationPreview, CarouselTester sono ora unificati in CarouselsPage (inizializzato sopra)
         
         // Istanzia helper admin (con gestione errori individuale)
         try {
