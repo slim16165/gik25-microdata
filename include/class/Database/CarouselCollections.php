@@ -114,13 +114,18 @@ class CarouselCollections
         $table_collections = $wpdb->prefix . self::TABLE_COLLECTIONS;
         
         // Verifica se la tabella esiste usando metodo compatibile
+        // Usa direttamente il nome della tabella (già sanitizzato dal prefix)
         $table_exists = $wpdb->get_var($wpdb->prepare(
-            "SHOW TABLES LIKE %s",
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = %s",
             $table_collections
         ));
         
+        // Fallback: prova a fare DESCRIBE (se fallisce, la tabella non esiste)
         if (!$table_exists) {
-            return; // La tabella non esiste, sarà creata da create_tables()
+            $test_query = $wpdb->query("DESCRIBE {$table_collections}");
+            if ($test_query === false) {
+                return; // La tabella non esiste, sarà creata da create_tables()
+            }
         }
         
         // Verifica colonne esistenti
