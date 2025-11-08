@@ -18,6 +18,15 @@ class ShortcodesUsagePage
     private const CACHE_EXPIRATION = 3600; // 1 ora
 
     /**
+     * Inizializza la pagina
+     */
+    public static function init(): void
+    {
+        // Nessuna inizializzazione necessaria, la pagina è solo visualizzazione
+        // Gli hook per refresh cache sono gestiti direttamente in renderPage()
+    }
+
+    /**
      * Renderizza la pagina
      */
     public static function renderPage(): void
