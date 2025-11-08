@@ -143,12 +143,12 @@ Ottieni lista di tutte le categorie WordPress.
 
 ## Risorse Disponibili
 
-- `td://categories` - Lista categorie
-- `td://posts/popular` - Post popolari
-- `td://posts/recent` - Post recenti
-- `td://posts/category/{slug}` - Post per categoria
-- `td://posts/color/{color}` - Post per colore
-- `td://posts/ikea/{line}` - Post per linea IKEA
+- `wp://categories` - Lista categorie
+- `wp://posts/popular` - Post popolari
+- `wp://posts/recent` - Post recenti
+- `wp://posts/category/{slug}` - Post per categoria
+- `wp://posts/color/{color}` - Post per colore (opzionale, se abilitato sul sito)
+- `wp://posts/ikea/{line}` - Post per linea IKEA (opzionale, se abilitato sul sito)
 
 ## Test Locale
 

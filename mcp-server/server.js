@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * MCP Server per TotalDesign.it
- * Interroga il sito WordPress via REST API
+ * MCP Server generico per WordPress
+ * Interroga qualsiasi sito WordPress via REST API
+ * Supporta estensioni configurabili per siti specifici
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -16,7 +17,7 @@ import {
 
 // Configurazione (può essere passata via env)
 const WP_BASE_URL = process.env.WP_BASE_URL || 'https://www.totaldesign.it';
-const API_NAMESPACE = 'td-mcp/v1';
+const API_NAMESPACE = 'wp-mcp/v1'; // Namespace generico WordPress MCP
 const WP_API_NAMESPACE = 'wp/v2'; // REST API WordPress nativa
 
 // Autenticazione per modifiche (Application Password)
@@ -24,19 +25,22 @@ const WP_API_NAMESPACE = 'wp/v2'; // REST API WordPress nativa
 const WP_AUTH = process.env.WP_AUTH || null; // Base64 encoded username:password
 const VAULT_PATH = process.env.VAULT_PATH || null; // Percorso vault (opzionale)
 
-// Estensioni specifiche per siti
-const SITE_EXTENSIONS = {
-    'totaldesign.it': {
-        name: 'TotalDesign',
-        features: ['colors', 'ikea', 'rooms', 'pantone'],
-    },
-};
+// Estensioni specifiche per siti (configurabile via database o env)
+// Formato: { 'domain.com': { name: 'SiteName', features: ['feature1', 'feature2'] } }
+const SITE_EXTENSIONS = process.env.SITE_EXTENSIONS 
+    ? JSON.parse(process.env.SITE_EXTENSIONS)
+    : {
+        'totaldesign.it': {
+            name: 'TotalDesign',
+            features: ['colors', 'ikea', 'rooms', 'pantone'],
+        },
+    };
 
-class TotalDesignMCPServer {
+class WordPressMCPServer {
     constructor() {
         this.server = new Server(
             {
-                name: 'totaldesign-mcp-server',
+                name: 'wordpress-mcp-server',
                 version: '1.0.0',
             },
             {
@@ -56,19 +60,19 @@ class TotalDesignMCPServer {
             return {
                 resources: [
                     {
-                        uri: 'td://categories',
+                        uri: 'wp://categories',
                         name: 'Categorie WordPress',
                         description: 'Lista tutte le categorie del sito',
                         mimeType: 'application/json',
                     },
                     {
-                        uri: 'td://posts/popular',
+                        uri: 'wp://posts/popular',
                         name: 'Post Popolari',
                         description: 'Post più popolari del sito',
                         mimeType: 'application/json',
                     },
                     {
-                        uri: 'td://posts/recent',
+                        uri: 'wp://posts/recent',
                         name: 'Post Recenti',
                         description: 'Post più recenti del sito',
                         mimeType: 'application/json',
@@ -83,20 +87,22 @@ class TotalDesignMCPServer {
 
             try {
                 let data;
-                if (uri === 'td://categories') {
+                if (uri === 'wp://categories') {
                     data = await this.fetchCategories();
-                } else if (uri === 'td://posts/popular') {
+                } else if (uri === 'wp://posts/popular') {
                     data = await this.fetchPopularPosts();
-                } else if (uri === 'td://posts/recent') {
+                } else if (uri === 'wp://posts/recent') {
                     data = await this.fetchRecentPosts();
-                } else if (uri.startsWith('td://posts/category/')) {
-                    const slug = uri.replace('td://posts/category/', '');
+                } else if (uri.startsWith('wp://posts/category/')) {
+                    const slug = uri.replace('wp://posts/category/', '');
                     data = await this.fetchPostsByCategory(slug);
-                } else if (uri.startsWith('td://posts/color/')) {
-                    const color = uri.replace('td://posts/color/', '');
+                } else if (uri.startsWith('wp://posts/color/')) {
+                    // Retrocompatibilità
+                    const color = uri.replace('wp://posts/color/', '');
                     data = await this.fetchPostsByColor(color);
-                } else if (uri.startsWith('td://posts/ikea/')) {
-                    const line = uri.replace('td://posts/ikea/', '');
+                } else if (uri.startsWith('wp://posts/ikea/')) {
+                    // Retrocompatibilità
+                    const line = uri.replace('wp://posts/ikea/', '');
                     data = await this.fetchPostsByIkeaLine(line);
                 } else {
                     throw new Error(`Risorsa non trovata: ${uri}`);
@@ -805,10 +811,13 @@ class TotalDesignMCPServer {
         const siteUrl = new URL(WP_BASE_URL).hostname;
         const extension = SITE_EXTENSIONS[siteUrl] || null;
         
-        console.error(`TotalDesign MCP Server avviato`);
+        console.error(`WordPress MCP Server avviato`);
         console.error(`- WordPress: ${WP_BASE_URL}`);
+        console.error(`- API Namespace: ${API_NAMESPACE}`);
         if (extension) {
             console.error(`- Estensioni: ${extension.name} (${extension.features.join(', ')})`);
+        } else {
+            console.error(`- Estensioni: Nessuna (modo generico)`);
         }
         if (WP_AUTH) {
             console.error(`- Autenticazione: Configurata`);
@@ -820,6 +829,6 @@ class TotalDesignMCPServer {
 }
 
 // Avvia il server
-const server = new TotalDesignMCPServer();
+const server = new WordPressMCPServer();
 server.run().catch(console.error);
 

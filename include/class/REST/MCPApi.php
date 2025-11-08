@@ -8,16 +8,28 @@ if (!defined('ABSPATH')) {
 /**
  * REST API per MCP Server
  * Espone dati WordPress in formato JSON per interrogazione via MCP
+ * Generico per qualsiasi sito WordPress con estensioni configurabili
  */
 class MCPApi
 {
-    private const NAMESPACE = 'td-mcp/v1';
-    private const CACHE_GROUP = 'td_mcp';
+    private const NAMESPACE = 'wp-mcp/v1';
+    private const CACHE_GROUP = 'wp_mcp';
     private const CACHE_EXPIRATION = 3600; // 1 ora
 
     public static function init(): void
     {
         add_action('rest_api_init', [self::class, 'register_routes']);
+    }
+    
+    /**
+     * Verifica se le route estese sono abilitate per questo sito
+     * Le route estese (color, ikea, room, pantone) sono opzionali
+     * e possono essere abilitate via filter o constant
+     */
+    private static function are_extended_routes_enabled(): bool
+    {
+        // Permetti ai siti di abilitare route estese via filter
+        return apply_filters('wp_mcp_enable_extended_routes', false);
     }
 
     /**
@@ -74,73 +86,77 @@ class MCPApi
             ],
         ]);
 
-        // Post per colore
-        register_rest_route(self::NAMESPACE, '/posts/color/(?P<color>[a-zA-Z0-9-]+)', [
-            'methods' => 'GET',
-            'callback' => [self::class, 'get_posts_by_color'],
-            'permission_callback' => '__return_true',
-            'args' => [
-                'color' => [
-                    'required' => true,
-                    'type' => 'string',
+        // Route estese (color, ikea, room, pantone) - OPZIONALI
+        // Abilitate solo se il sito le supporta (via filter 'wp_mcp_enable_extended_routes')
+        if (self::are_extended_routes_enabled()) {
+            // Post per colore
+            register_rest_route(self::NAMESPACE, '/posts/color/(?P<color>[a-zA-Z0-9-]+)', [
+                'methods' => 'GET',
+                'callback' => [self::class, 'get_posts_by_color'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'color' => [
+                        'required' => true,
+                        'type' => 'string',
+                    ],
+                    'limit' => [
+                        'default' => 15,
+                        'type' => 'integer',
+                        'sanitize_callback' => 'absint',
+                    ],
                 ],
-                'limit' => [
-                    'default' => 15,
-                    'type' => 'integer',
-                    'sanitize_callback' => 'absint',
-                ],
-            ],
-        ]);
+            ]);
 
-        // Post per linea IKEA
-        register_rest_route(self::NAMESPACE, '/posts/ikea/(?P<line>[a-zA-Z0-9-]+)', [
-            'methods' => 'GET',
-            'callback' => [self::class, 'get_posts_by_ikea_line'],
-            'permission_callback' => '__return_true',
-            'args' => [
-                'line' => [
-                    'required' => true,
-                    'type' => 'string',
+            // Post per linea IKEA
+            register_rest_route(self::NAMESPACE, '/posts/ikea/(?P<line>[a-zA-Z0-9-]+)', [
+                'methods' => 'GET',
+                'callback' => [self::class, 'get_posts_by_ikea_line'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'line' => [
+                        'required' => true,
+                        'type' => 'string',
+                    ],
+                    'limit' => [
+                        'default' => 15,
+                        'type' => 'integer',
+                        'sanitize_callback' => 'absint',
+                    ],
                 ],
-                'limit' => [
-                    'default' => 15,
-                    'type' => 'integer',
-                    'sanitize_callback' => 'absint',
-                ],
-            ],
-        ]);
+            ]);
 
-        // Post per stanza
-        register_rest_route(self::NAMESPACE, '/posts/room/(?P<room>[a-zA-Z0-9-]+)', [
-            'methods' => 'GET',
-            'callback' => [self::class, 'get_posts_by_room'],
-            'permission_callback' => '__return_true',
-            'args' => [
-                'room' => [
-                    'required' => true,
-                    'type' => 'string',
+            // Post per stanza
+            register_rest_route(self::NAMESPACE, '/posts/room/(?P<room>[a-zA-Z0-9-]+)', [
+                'methods' => 'GET',
+                'callback' => [self::class, 'get_posts_by_room'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'room' => [
+                        'required' => true,
+                        'type' => 'string',
+                    ],
+                    'limit' => [
+                        'default' => 15,
+                        'type' => 'integer',
+                        'sanitize_callback' => 'absint',
+                    ],
                 ],
-                'limit' => [
-                    'default' => 15,
-                    'type' => 'integer',
-                    'sanitize_callback' => 'absint',
-                ],
-            ],
-        ]);
+            ]);
 
-        // Post Pantone
-        register_rest_route(self::NAMESPACE, '/posts/pantone', [
-            'methods' => 'GET',
-            'callback' => [self::class, 'get_pantone_posts'],
-            'permission_callback' => '__return_true',
-            'args' => [
-                'limit' => [
-                    'default' => 20,
-                    'type' => 'integer',
-                    'sanitize_callback' => 'absint',
+            // Post Pantone
+            register_rest_route(self::NAMESPACE, '/posts/pantone', [
+                'methods' => 'GET',
+                'callback' => [self::class, 'get_pantone_posts'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'limit' => [
+                        'default' => 20,
+                        'type' => 'integer',
+                        'sanitize_callback' => 'absint',
+                    ],
                 ],
-            ],
-        ]);
+            ]);
+        }
 
         // Post popolari
         register_rest_route(self::NAMESPACE, '/posts/popular', [

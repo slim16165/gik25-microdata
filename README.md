@@ -17,10 +17,12 @@ Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazi
 
 ## Caratteristiche Principali
 
-- 🎨 **Shortcode**: Quote, Pullquote, Box Info, Progress Bar, Sliding Box, Flipbox, Blinking Button
-- 🏠 **Widget cucine**: Kitchen Finder con wizard 4-step e generazione lead
+- 🎨 **Shortcode Base**: Quote, Pullquote, Box Info, Progress Bar, Sliding Box, Flipbox, Blinking Button
+- 🏠 **Widget Cucine**: Kitchen Finder con wizard 4-step e generazione lead
 - 🧭 **Navigazione App-like**: Widget navigazione multi-livello con varianti mobile/desktop
+- 🎯 **Widget TotalDesign**: 18 widget specializzati (Color Hub, IKEA Hub, Palette, Archistar, Grafica 3D, ecc.)
 - 🤖 **MCP Server**: Server Model Context Protocol per interrogazione sito WordPress da Cursor/AI
+- 🤖 **Widget Contestuali**: Inserimento automatico widget basati su keywords articoli
 - 🎯 **SEO**: Schema markup, microdata, ottimizzazioni RankMath/Yoast
 - 🎨 **Color Widget**: Caroselli e selezioni colori dinamici
 - ⚡ **Performance**: Caricamento condizionale CSS/JS, cache, ottimizzazioni
@@ -52,6 +54,8 @@ Inserisci lo shortcode in qualsiasi post o pagina:
 Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo shortcode.
 
 ### Altri Shortcode Disponibili
+
+**Shortcode Base (tutti i siti)**:
 - `[md_quote]` - Citazioni stile quote
 - `[boxinfo title="Titolo"]` - Box informativi
 - `[md_progressbar]` - Barre di progresso
@@ -59,16 +63,41 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - `[md_flipbox]` - Box con effetto flip
 - `[md_blinkingbutton]` - Pulsanti animati
 
+**Shortcode TotalDesign** (vedi `TOTALDESIGN_WIDGETS.md` per lista completa):
+- `[kitchen_finder]` - Wizard cucine 4-step
+- `[app_nav]` - Navigazione app-like multi-livello
+- `[link_colori]` - Carosello articoli colori (50+ colori)
+- `[grafica3d]` - Carosello programmi 3D
+- `[archistar]` - Carosello architetti famosi
+- `[td_colori_hub]` - Hub colori programmatico
+- `[td_ikea_hub]` - Hub IKEA programmatico
+- `[td_palette_correlate color="bianco"]` - Palette correlate
+- `[td_abbinamenti_colore color="verde"]` - Abbinamenti colore
+- `[td_lead_box type="color|ikea"]` - Box CTA lead generation
+- E altri 8 widget programmatici...
+
+**Widget Automatici**:
+- Contextual Widgets: inserimento automatico basato su keywords articoli
+
 # Changelog
+
+##### 1.11.0 _(2025-11-07)_
+* **Semplificazione MCP Server**: Rimossa complessità database multi-sito
+  * Rimosso `MCPConfig` e tabelle database (over-engineering)
+  * Route estese (color, ikea, room, pantone) ora opzionali via filter WordPress
+  * Abilitazione semplice: `add_filter('wp_mcp_enable_extended_routes', '__return_true')`
+  * Sistema più semplice: niente database, solo codice PHP
+  * Namespace generico: `wp-mcp/v1` (funziona su qualsiasi WordPress)
+  * Documentazione aggiornata: MCP_SETUP.md, MCP_ARCHITECTURE.md
 
 ##### 1.10.0 _(2025-11-07)_
 * **MCP Server**: Integrazione Model Context Protocol per interrogazione WordPress da Cursor/AI
   * Server Node.js locale che espone tools e risorse per analizzare contenuti WordPress
-  * REST API WordPress (`/wp-json/td-mcp/v1/...`) per lettura dati (categorie, post, ricerca, pattern)
+  * REST API WordPress (`/wp-json/wp-mcp/v1/...`) per lettura dati (categorie, post, ricerca, pattern)
   * Tool per analisi contenuti e suggerimenti widget basati su pattern (cucine, colori, IKEA, stanze)
   * Tool per modifica articoli (titolo, contenuto, categorie, tag) con autenticazione Application Password
   * Gestione tag completa: lista, ricerca, creazione, aggiunta a post (creazione automatica se non esistono)
-  * Sistema estensioni per siti specifici (TotalDesign con features: colors, ikea, rooms, pantone)
+  * Route estese opzionali per siti specifici (TotalDesign: colors, ikea, rooms, pantone)
   * Query vault opzionale per ricerca in file markdown locali (Obsidian)
   * File: `include/class/REST/MCPApi.php`, `mcp-server/server.js`, `mcp-server/package.json`
   * Documentazione: `MCP_ARCHITECTURE.md`, `DEPLOY_MCP.md`

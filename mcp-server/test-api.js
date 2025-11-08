@@ -6,7 +6,7 @@
  */
 
 const WP_BASE_URL = process.env.WP_BASE_URL || 'https://www.totaldesign.it';
-const API_NAMESPACE = 'td-mcp/v1';
+const API_NAMESPACE = 'wp-mcp/v1';
 
 async function testEndpoint(name, url) {
     try {

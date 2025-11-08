@@ -8,22 +8,22 @@ Apri nel browser questi URL per verificare che la REST API risponda:
 
 1. **Lista Categorie:**
    ```
-   https://www.totaldesign.it/wp-json/td-mcp/v1/categories
+   https://www.totaldesign.it/wp-json/wp-mcp/v1/categories
    ```
 
 2. **Post Recenti:**
    ```
-   https://www.totaldesign.it/wp-json/td-mcp/v1/posts/recent?limit=5
+   https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/recent?limit=5
    ```
 
 3. **Ricerca:**
    ```
-   https://www.totaldesign.it/wp-json/td-mcp/v1/posts/search?q=ikea&limit=5
+   https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/search?q=ikea&limit=5
    ```
 
 4. **Post per Colore:**
    ```
-   https://www.totaldesign.it/wp-json/td-mcp/v1/posts/color/bianco?limit=5
+   https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/color/bianco?limit=5
    ```
 
 **Risultato atteso:** JSON con array di oggetti.
@@ -41,23 +41,23 @@ Lo script testerà automaticamente tutti gli endpoint e mostrerà i risultati.
 
 ```bash
 # Lista categorie
-curl "https://www.totaldesign.it/wp-json/td-mcp/v1/categories"
+curl "https://www.totaldesign.it/wp-json/wp-mcp/v1/categories"
 
 # Post recenti
-curl "https://www.totaldesign.it/wp-json/td-mcp/v1/posts/recent?limit=5"
+curl "https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/recent?limit=5"
 
 # Ricerca
-curl "https://www.totaldesign.it/wp-json/td-mcp/v1/posts/search?q=ikea&limit=5"
+curl "https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/search?q=ikea&limit=5"
 ```
 
 ### Opzione D: PowerShell (Windows)
 
 ```powershell
 # Lista categorie
-Invoke-RestMethod -Uri "https://www.totaldesign.it/wp-json/td-mcp/v1/categories" | ConvertTo-Json
+Invoke-RestMethod -Uri "https://www.totaldesign.it/wp-json/wp-mcp/v1/categories" | ConvertTo-Json
 
 # Post recenti
-Invoke-RestMethod -Uri "https://www.totaldesign.it/wp-json/td-mcp/v1/posts/recent?limit=5" | ConvertTo-Json
+Invoke-RestMethod -Uri "https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/recent?limit=5" | ConvertTo-Json
 ```
 
 ## Test 2: MCP Server Node.js

@@ -11,15 +11,16 @@ Sistema ibrido per interrogare TotalDesign.it WordPress:
 ### 1. REST API WordPress (`include/class/REST/MCPApi.php`)
 
 Classe PHP che registra endpoint REST API:
-- `/wp-json/td-mcp/v1/categories` - Lista categorie
-- `/wp-json/td-mcp/v1/posts/category/{slug}` - Post per categoria
-- `/wp-json/td-mcp/v1/posts/search?q={query}` - Ricerca post
-- `/wp-json/td-mcp/v1/posts/color/{color}` - Post per colore
-- `/wp-json/td-mcp/v1/posts/ikea/{line}` - Post per linea IKEA
-- `/wp-json/td-mcp/v1/posts/room/{room}` - Post per stanza
-- `/wp-json/td-mcp/v1/posts/pantone` - Post Pantone
-- `/wp-json/td-mcp/v1/posts/popular` - Post popolari
-- `/wp-json/td-mcp/v1/posts/recent` - Post recenti
+- `/wp-json/wp-mcp/v1/categories` - Lista categorie
+- `/wp-json/wp-mcp/v1/posts/category/{slug}` - Post per categoria
+- `/wp-json/wp-mcp/v1/posts/search?q={query}` - Ricerca post
+- `/wp-json/wp-mcp/v1/posts/color/{color}` - Post per colore (retrocompatibilità)
+- `/wp-json/wp-mcp/v1/posts/ikea/{line}` - Post per linea IKEA (retrocompatibilità)
+- `/wp-json/wp-mcp/v1/posts/room/{room}` - Post per stanza (retrocompatibilità)
+- `/wp-json/wp-mcp/v1/posts/pantone` - Post Pantone (retrocompatibilità)
+- `/wp-json/wp-mcp/v1/posts/criterion/{type}/{key}` - Post per criterio configurabile (nuovo)
+- `/wp-json/wp-mcp/v1/posts/popular` - Post popolari
+- `/wp-json/wp-mcp/v1/posts/recent` - Post recenti
 
 **Caratteristiche:**
 - ✅ Cache WordPress (1 ora)
@@ -31,8 +32,9 @@ Classe PHP che registra endpoint REST API:
 
 Server MCP standard che:
 - Espone tools per interrogare la REST API
-- Fornisce risorse URI (`td://...`)
+- Fornisce risorse URI (`wp://...`)
 - Comunica via stdio con Cursor
+- Supporta estensioni configurabili per siti specifici
 
 ## Installazione
 
@@ -42,7 +44,7 @@ Server MCP standard che:
 2. Verifica che `MCPApi::init()` sia chiamato in `totaldesign_specific.php`
 3. Testa un endpoint:
    ```
-   https://www.totaldesign.it/wp-json/td-mcp/v1/categories
+   https://www.totaldesign.it/wp-json/wp-mcp/v1/categories
    ```
 
 ### Step 2: Installa MCP Server Node.js
@@ -93,13 +95,13 @@ Riavvia Cursor per caricare la nuova configurazione MCP.
 
 ```bash
 # Lista categorie
-curl "https://www.totaldesign.it/wp-json/td-mcp/v1/categories"
+curl "https://www.totaldesign.it/wp-json/wp-mcp/v1/categories"
 
 # Post per categoria
-curl "https://www.totaldesign.it/wp-json/td-mcp/v1/posts/category/colori?limit=5"
+curl "https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/category/colori?limit=5"
 
 # Ricerca
-curl "https://www.totaldesign.it/wp-json/td-mcp/v1/posts/search?q=ikea+metod&limit=5"
+curl "https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/search?q=ikea+metod&limit=5"
 ```
 
 ### Test MCP Server

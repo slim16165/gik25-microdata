@@ -9,7 +9,7 @@
 **Cosa fa:**
 - Espone endpoint REST API per leggere dati dal database WordPress
 - Implementato in `include/class/REST/MCPApi.php`
-- Accessibile via: `https://www.totaldesign.it/wp-json/td-mcp/v1/...`
+- Accessibile via: `https://www.totaldesign.it/wp-json/wp-mcp/v1/...`
 
 **Endpoint attuali:**
 - `GET /categories` - Lista categorie
@@ -26,6 +26,7 @@
 - ✅ Cache WordPress (1 ora)
 - ✅ Accesso pubblico (lettura)
 - ✅ Dati formattati in JSON
+- ✅ Route estese opzionali (color, ikea, room, pantone) configurabili via filter
 
 ---
 

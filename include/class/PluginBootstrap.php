@@ -16,6 +16,11 @@ class PluginBootstrap
      * @var string Percorso della directory del plugin
      */
     private static string $plugin_dir;
+    
+    /**
+     * @var string Path del file principale del plugin
+     */
+    private static string $plugin_file;
 
     /**
      * Inizializza il plugin
@@ -23,6 +28,7 @@ class PluginBootstrap
     public static function init(string $plugin_file): void
     {
         self::$plugin_dir = dirname($plugin_file);
+        self::$plugin_file = $plugin_file;
         
         // Registra error handlers
         self::registerErrorHandlers();

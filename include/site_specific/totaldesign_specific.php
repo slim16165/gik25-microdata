@@ -34,6 +34,9 @@ ProgrammaticHub::init();
 // Se non funziona, verifica che composer.json includa il namespace gik25microdata\REST
 if (class_exists('\\gik25microdata\\REST\\MCPApi')) {
     MCPApi::init();
+    
+    // Abilita route estese per TotalDesign (color, ikea, room, pantone)
+    add_filter('wp_mcp_enable_extended_routes', '__return_true');
 }
 
 // Widget contestuali nelle pagine/articoli
