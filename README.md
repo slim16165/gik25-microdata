@@ -94,6 +94,14 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * Documentazione aggiornata per chiarire differenza tra REST API (Cloudways) e server Node.js (locale)
   * File: `docs/MCP_ARCHITECTURE.md`
 
+##### 1.16.2 _(2025-11-08)_
+* **Miglioramento Messaggi Errore**: Messaggi di errore dettagliati per creazione collezione di test
+  * Validazione template esistente prima di creare collezione
+  * Validazione display_type con valori ammessi esplicitati
+  * Gestione eccezioni con messaggi informativi
+  * Suggerimenti per risoluzione problemi database
+  * File: `include/class/Admin/CarouselsPage.php`
+
 ##### 1.16.1 _(2025-01-XX)_
 * **Unificazione Pagina Caroselli**: Creata pagina unificata con tab per Gestione Collezioni, Anteprima Migrazione e Test Caroselli. Rimossi menu separati
 * **Miglioramenti Utilizzo Shortcode**: Aggiunto filtro "solo usati" e validazione per shortcode lista/carousel/grid che verifica presenza items
