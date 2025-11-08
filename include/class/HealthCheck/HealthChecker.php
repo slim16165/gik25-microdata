@@ -1,6 +1,8 @@
 <?php
 namespace gik25microdata\HealthCheck;
 
+use gik25microdata\Shortcodes\ShortcodeRegistry;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -349,25 +351,103 @@ class HealthChecker
         // 1. Check shortcode registrati
         $checks[] = self::check_shortcodes();
 
-        // 2. Check REST API endpoints
+        // 2. Shortcode disabilitati presenti nei contenuti
+        $checks[] = self::check_disabled_shortcodes_usage();
+
+        // 3. Check REST API endpoints
         $checks[] = self::check_rest_api();
 
-        // 3. Check AJAX endpoints
+        // 4. Check AJAX endpoints
         $checks[] = self::check_ajax_endpoints();
 
-        // 4. Check file esistenza
+        // 5. Check file esistenza
         $checks[] = self::check_files();
 
-        // 5. Check tabelle database
+        // 6. Check tabelle database
         $checks[] = self::check_database_tables();
 
-        // 6. Check CSS/JS caricati
+        // 7. Check CSS/JS caricati
         $checks[] = self::check_assets();
 
-        // 7. Check classi PHP
+        // 8. Check classi PHP
         $checks[] = self::check_classes();
 
         return $checks;
+    }
+
+    /**
+     * Check se shortcode disabilitati sono ancora presenti in contenuti.
+     */
+    private static function check_disabled_shortcodes_usage(): array
+    {
+        if (!class_exists(ShortcodeRegistry::class)) {
+            return [
+                'name' => 'Uso shortcode disabilitati',
+                'status' => 'success',
+                'message' => 'Registro shortcode non disponibile (nessun controllo effettuato).',
+                'details' => '',
+            ];
+        }
+
+        $items = ShortcodeRegistry::getItemsForAdmin();
+        $disabled = array_filter($items, static fn ($item) => empty($item['enabled']));
+
+        if (empty($disabled)) {
+            return [
+                'name' => 'Uso shortcode disabilitati',
+                'status' => 'success',
+                'message' => 'Nessuno shortcode disabilitato.',
+                'details' => '',
+            ];
+        }
+
+        global $wpdb;
+        $violations = [];
+
+        foreach ($disabled as $slug => $item) {
+            $like = '%[' . $wpdb->esc_like($slug) . '%';
+            $sql = $wpdb->prepare(
+                "SELECT ID, post_title 
+                 FROM {$wpdb->posts} 
+                 WHERE post_status NOT IN ('trash','auto-draft','inherit')
+                   AND post_content LIKE %s
+                 LIMIT 3",
+                $like
+            );
+            $rows = $wpdb->get_results($sql, ARRAY_A);
+            if (!empty($rows)) {
+                $first = $rows[0];
+                $violations[] = [
+                    'label' => $item['label'] ?? $slug,
+                    'slug' => $slug,
+                    'count' => count($rows),
+                    'example' => sprintf('#%d %s', (int) $first['ID'], $first['post_title'] ?? ''),
+                ];
+            }
+        }
+
+        if (empty($violations)) {
+            return [
+                'name' => 'Uso shortcode disabilitati',
+                'status' => 'success',
+                'message' => 'Gli shortcode disabilitati non risultano nei contenuti.',
+                'details' => '',
+            ];
+        }
+
+        $lines = array_map(static fn($info) => sprintf(
+            '[%s] trovati in %d contenuti (esempio %s)',
+            $info['label'],
+            $info['count'],
+            $info['example']
+        ), $violations);
+
+        return [
+            'name' => 'Uso shortcode disabilitati',
+            'status' => 'warning',
+            'message' => 'Alcuni contenuti contengono shortcode disattivati: valuta se riabilitarli o rimuoverli.',
+            'details' => implode("\n", $lines),
+        ];
     }
     
     /**
