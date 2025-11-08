@@ -58,6 +58,11 @@ class PluginBootstrap
             if (class_exists('\gik25microdata\Database\CarouselCollections')) {
                 \gik25microdata\Database\CarouselCollections::init(self::$plugin_file);
             }
+            
+            // Tabelle template caroselli
+            if (class_exists('\gik25microdata\Database\CarouselTemplates')) {
+                \gik25microdata\Database\CarouselTemplates::init(self::$plugin_file);
+            }
         } catch (\Throwable $e) {
             self::logError('Errore nell\'inizializzazione database caroselli', $e);
         }
@@ -236,6 +241,15 @@ class PluginBootstrap
             }
         } catch (\Throwable $e) {
             self::logError('Errore nell\'inizializzazione di CarouselManager', $e);
+        }
+        
+        // Carousel Tester (solo admin)
+        try {
+            if (class_exists('\gik25microdata\Admin\CarouselTester')) {
+                \gik25microdata\Admin\CarouselTester::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di CarouselTester', $e);
         }
         
         // Health Check (solo admin)

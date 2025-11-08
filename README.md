@@ -83,6 +83,32 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.15.0 _(2025-11-08)_
+* **Sistema Template Configurabili per Caroselli**: Template CSS/DOM/JS configurabili via database
+  * Nuova tabella `wp_carousel_templates` per template riutilizzabili
+  * Template di sistema predefiniti: `thumbnail-list`, `simple-list`, `grid-modern`
+  * Supporto variabili CSS configurabili (es: `{{css.tile-size}}`, `{{css.gap}}`)
+  * Template engine con parsing variabili e rendering dinamico
+  * File: `include/class/Database/CarouselTemplates.php`, `include/class/Carousel/CarouselTemplateEngine.php`
+* **Estensione GenericCarousel**: Integrazione template system
+  * `GenericCarousel` ora usa template configurabili per `list` e `grid` display types
+  * Recupero automatico immagini dai post WordPress se non specificate
+  * Fallback a placeholder se immagine non disponibile
+  * Retrocompatibilità: caroselli esistenti continuano a funzionare
+  * File: `include/class/Shortcodes/GenericCarousel.php`
+* **Pagina Admin "Test Caroselli"**: Interfaccia per testare collezioni e shortcode
+  * Creazione collezione di test con selezione template
+  * Aggiunta items di test tramite URL (recupero automatico titolo/immagine)
+  * Anteprima rendering in tempo reale
+  * Shortcode pronti all'uso con varianti (display, limit, title)
+  * Gestione completa collezione di test (crea/elimina)
+  * File: `include/class/Admin/CarouselTester.php`
+* **Estensione Database Collezioni**: Supporto template nelle collezioni
+  * Aggiunto campo `template_id` a `wp_carousel_collections`
+  * Aggiunto campo `template_config` (JSON) per configurazione template
+  * Migration automatica per tabelle esistenti
+  * File: `include/class/Database/CarouselCollections.php`
+
 ##### 1.14.0 _(2025-11-08)_
 * **Anteprima Migrazione Dati**: Nuova pagina admin per visualizzare dati migrabili da codice hardcoded
   * Mostra tutte le collezioni migrabili (Colori, Programmi 3D, Architetti)

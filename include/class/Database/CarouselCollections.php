@@ -16,7 +16,7 @@ class CarouselCollections
 {
     private const TABLE_COLLECTIONS = 'carousel_collections';
     private const TABLE_ITEMS = 'carousel_items';
-    private const DB_VERSION = '1.0.0';
+    private const DB_VERSION = '1.1.0'; // Incrementato per aggiungere template_id e template_config
     private const DB_VERSION_OPTION = 'carousel_collections_db_version';
 
     /**
@@ -58,6 +58,8 @@ class CarouselCollections
             collection_name varchar(255) NOT NULL COMMENT 'nome visualizzato (es: Colori, Architetti)',
             collection_description text COMMENT 'descrizione della collezione',
             display_type varchar(20) DEFAULT 'carousel' COMMENT 'carousel, list, grid',
+            template_id bigint(20) UNSIGNED COMMENT 'FK a wp_carousel_templates.id',
+            template_config text COMMENT 'JSON con configurazione template (override variabili CSS, opzioni)',
             shortcode_tag varchar(50) COMMENT 'tag shortcode personalizzato (opzionale)',
             css_class varchar(255) COMMENT 'classi CSS personalizzate',
             is_active tinyint(1) DEFAULT 1,
@@ -66,7 +68,8 @@ class CarouselCollections
             PRIMARY KEY (id),
             UNIQUE KEY collection_key (collection_key),
             KEY is_active (is_active),
-            KEY shortcode_tag (shortcode_tag)
+            KEY shortcode_tag (shortcode_tag),
+            KEY template_id (template_id)
         ) {$charset_collate};";
 
         // Tabella: Items collezioni

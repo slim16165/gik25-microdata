@@ -3,6 +3,7 @@ namespace gik25microdata\Shortcodes;
 
 use gik25microdata\Database\CarouselCollections;
 use gik25microdata\ColorWidget;
+use gik25microdata\Carousel\CarouselTemplateEngine;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -92,6 +93,32 @@ class GenericCarousel extends ShortcodeBase
             }
         }
 
+        // Usa template engine se disponibile e se non è carousel (ColorWidget)
+        // Per ora usiamo template engine solo per list e grid, non per carousel
+        $use_template_engine = in_array($display_type, ['list', 'grid']) && 
+                               class_exists('\gik25microdata\Carousel\CarouselTemplateEngine');
+        
+        if ($use_template_engine) {
+            // Flatten grouped_items per template engine
+            $flat_items = [];
+            foreach ($grouped_items as $category => $category_items) {
+                foreach ($category_items as $item) {
+                    $flat_items[] = $item;
+                }
+            }
+            
+            // Usa template engine
+            return CarouselTemplateEngine::render_collection(
+                $collection,
+                $flat_items,
+                [
+                    'title' => !empty($atts['title']) ? $atts['title'] : ($collection['collection_name'] ?? ucfirst($atts['collection'])),
+                    'css_class' => $atts['css_class'] ?? $collection['css_class'] ?? '',
+                ]
+            );
+        }
+        
+        // Fallback al rendering tradizionale (per carousel o se template engine non disponibile)
         // Carica CSS se necessario
         $css = '';
         if ($display_type === 'carousel') {

@@ -125,76 +125,235 @@ class ReviousMicrodataSettingsPage
                 font-style: italic;
                 margin-top: 5px;
             }
-            .shortcodes-list {
-                border: 1px solid #c3c4c7;
-                padding: 15px;
-                background: #f6f7f7;
-                border-radius: 4px;
-                max-height: 500px;
-                overflow-y: auto;
+            /* Shortcode Manager - Layout tipo Elementor */
+            .shortcode-manager-wrapper {
+                margin-top: 20px;
             }
-            .shortcode-item {
-                padding: 12px;
-                margin-bottom: 12px;
+            .shortcode-manager-filters {
+                margin-bottom: 20px;
+                padding: 20px;
                 background: #fff;
-                border: 1px solid #dcdcde;
+                border: 1px solid #c3c4c7;
                 border-radius: 4px;
-                transition: all 0.2s ease;
+                box-shadow: 0 1px 1px rgba(0,0,0,.04);
             }
-            .shortcode-item:hover {
-                border-color: #2271b1;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            .shortcode-search {
+                margin-bottom: 15px;
             }
-            .shortcode-checkbox {
-                display: flex;
-                align-items: center;
-                cursor: pointer;
-                margin-bottom: 8px;
-            }
-            .shortcode-checkbox input[type="checkbox"] {
-                margin-right: 10px;
-                width: 18px;
-                height: 18px;
-                cursor: pointer;
-            }
-            .shortcode-name {
-                font-weight: 600;
+            .shortcode-search-field {
+                width: 100%;
+                max-width: 400px;
+                padding: 8px 12px;
+                border: 1px solid #8c8f94;
+                border-radius: 4px;
                 font-size: 14px;
             }
-            .shortcode-name code {
+            .shortcode-search-field:focus {
+                border-color: #2271b1;
+                outline: none;
+                box-shadow: 0 0 0 1px #2271b1;
+            }
+            .shortcode-category-filters {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .category-filter {
+                padding: 8px 16px;
+                background: #f6f7f7;
+                border: 1px solid #dcdcde;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.2s ease;
+            }
+            .category-filter:hover {
                 background: #f0f0f1;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-size: 13px;
+                border-color: #8c8f94;
+            }
+            .category-filter.active {
+                background: #2271b1;
+                color: #fff;
+                border-color: #2271b1;
+            }
+            
+            /* Grid Shortcode Cards */
+            .shortcode-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+            .shortcode-card {
+                background: #fff;
+                border: 1px solid #dcdcde;
+                border-radius: 8px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                display: flex;
+                flex-direction: column;
+            }
+            .shortcode-card:hover {
+                border-color: #2271b1;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transform: translateY(-2px);
+            }
+            .shortcode-card-header {
+                position: relative;
+                padding: 20px;
+                background: linear-gradient(135deg, #f6f7f7 0%, #fff 100%);
+                border-bottom: 1px solid #e5e5e5;
+            }
+            .shortcode-card-icon {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #fff;
+                border-radius: 8px;
+                border: 1px solid #e5e5e5;
+                overflow: hidden;
+            }
+            .shortcode-icon-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                padding: 8px;
+            }
+            .shortcode-icon-placeholder,
+            .shortcode-icon-dashicon {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 color: #2271b1;
             }
-            .shortcode-doc {
-                margin-top: 8px;
-                padding-left: 28px;
+            .shortcode-icon-dashicon .dashicons {
+                font-size: 32px;
+                width: 32px;
+                height: 32px;
+            }
+            .shortcode-card-toggle {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+            }
+            .shortcode-toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 44px;
+                height: 24px;
+            }
+            .shortcode-toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            .toggle-slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 24px;
+            }
+            .toggle-slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
+            .shortcode-toggle-switch input:checked + .toggle-slider {
+                background-color: #2271b1;
+            }
+            .shortcode-toggle-switch input:checked + .toggle-slider:before {
+                transform: translateX(20px);
+            }
+            
+            .shortcode-card-body {
+                padding: 15px 20px;
+                flex-grow: 1;
+            }
+            .shortcode-card-title {
+                margin: 0 0 10px 0;
+                font-size: 16px;
+                font-weight: 600;
+                color: #1d2327;
+            }
+            .shortcode-card-description {
+                margin: 0 0 12px 0;
                 font-size: 13px;
                 color: #646970;
-            }
-            .shortcode-description {
-                margin: 0 0 8px 0;
                 line-height: 1.5;
             }
-            .shortcode-usage,
-            .shortcode-aliases {
-                margin: 4px 0;
+            .shortcode-card-aliases {
+                margin: 12px 0;
                 font-size: 12px;
             }
-            .shortcode-usage code,
-            .shortcode-aliases code {
-                background: #f0f0f1;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-size: 12px;
-                color: #1d2327;
-            }
-            .shortcode-usage strong,
-            .shortcode-aliases strong {
+            .shortcode-card-aliases strong {
+                display: block;
+                margin-bottom: 5px;
                 color: #1d2327;
                 font-weight: 600;
+            }
+            .shortcode-alias-tag {
+                display: inline-block;
+                margin: 2px 4px 2px 0;
+                padding: 2px 6px;
+                background: #f0f0f1;
+                border-radius: 3px;
+                font-size: 11px;
+                color: #2271b1;
+            }
+            .shortcode-card-usage {
+                margin-top: 12px;
+                padding: 8px;
+                background: #f6f7f7;
+                border-radius: 4px;
+            }
+            .shortcode-usage-code {
+                font-size: 11px;
+                color: #1d2327;
+                word-break: break-all;
+            }
+            
+            .shortcode-card-footer {
+                padding: 10px 20px;
+                background: #f6f7f7;
+                border-top: 1px solid #e5e5e5;
+            }
+            .shortcode-card-category {
+                font-size: 11px;
+                color: #646970;
+                text-transform: uppercase;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+            }
+            
+            .shortcode-no-results {
+                text-align: center;
+                padding: 40px 20px;
+                color: #646970;
+            }
+            
+            /* Responsive */
+            @media (max-width: 782px) {
+                .shortcode-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                    gap: 15px;
+                }
             }
         </style>
         <?php
@@ -278,7 +437,7 @@ class ReviousMicrodataSettingsPage
      */
     public function print_section_info(): void
     {
-        print '<p>Seleziona gli shortcode per i quali vuoi caricare automaticamente CSS e JS. Gli shortcode selezionati avranno i loro stili e script caricati in tutte le pagine.</p>';
+        print '<p>Gestisci gli shortcode del plugin. Attiva o disattiva il caricamento automatico di CSS e JS per ogni shortcode. Gli shortcode attivi avranno i loro stili e script caricati quando utilizzati nelle pagine.</p>';
     }
 
     /** 
@@ -308,6 +467,7 @@ class ReviousMicrodataSettingsPage
         global $shortcode_tags;
         $plugin_shortcodes = array();
         $shortcode_docs = $this->get_shortcode_documentation();
+        $shortcode_categories = $this->get_shortcode_categories();
 
         foreach($shortcode_tags as $k => $v) {
             $needle_found = strpos($k, PLUGIN_NAME_PREFIX);
@@ -316,75 +476,207 @@ class ReviousMicrodataSettingsPage
             }
         }
 
-        // Costruisci HTML con documentazione
-        $plugin_shortcodes_html = '<div id="plugin_shortcodes_wrap" class="shortcodes-list">';
-        
-        foreach($plugin_shortcodes as $plugin_shortcode) {
-            $doc = $shortcode_docs[$plugin_shortcode] ?? null;
-            $aliases = $this->get_shortcode_aliases($plugin_shortcode);
-            
-            $plugin_shortcodes_html .= '<div class="shortcode-item">';
-            $plugin_shortcodes_html .= '<label class="shortcode-checkbox">';
-            $plugin_shortcodes_html .= '<input id="' . esc_attr($plugin_shortcode) . '" type="checkbox" name="plugin_shortcodes[]" value="' . esc_attr($plugin_shortcode) . '">';
-            $plugin_shortcodes_html .= '<span class="shortcode-name"><code>' . esc_html($plugin_shortcode) . '</code></span>';
-            $plugin_shortcodes_html .= '</label>';
-            
-            if ($doc) {
-                $plugin_shortcodes_html .= '<div class="shortcode-doc">';
-                $plugin_shortcodes_html .= '<p class="shortcode-description">' . esc_html($doc['description']) . '</p>';
-                if (!empty($doc['usage'])) {
-                    $plugin_shortcodes_html .= '<p class="shortcode-usage"><strong>Uso:</strong> <code>' . esc_html($doc['usage']) . '</code></p>';
-                }
-                if (!empty($aliases)) {
-                    $plugin_shortcodes_html .= '<p class="shortcode-aliases"><strong>Alias:</strong> <code>' . implode('</code>, <code>', array_map('esc_html', $aliases)) . '</code></p>';
-                }
-                $plugin_shortcodes_html .= '</div>';
-            } elseif (!empty($aliases)) {
-                $plugin_shortcodes_html .= '<div class="shortcode-doc">';
-                $plugin_shortcodes_html .= '<p class="shortcode-aliases"><strong>Alias:</strong> <code>' . implode('</code>, <code>', array_map('esc_html', $aliases)) . '</code></p>';
-                $plugin_shortcodes_html .= '</div>';
+        // Organizza shortcode per categoria
+        $shortcodes_by_category = [];
+        foreach($plugin_shortcodes as $shortcode) {
+            $category = $shortcode_categories[$shortcode] ?? 'other';
+            if (!isset($shortcodes_by_category[$category])) {
+                $shortcodes_by_category[$category] = [];
             }
-            
-            $plugin_shortcodes_html .= '</div>';
+            $shortcodes_by_category[$category][] = $shortcode;
         }
-        
-        $plugin_shortcodes_html .= '</div>';
 
-        $js_script = <<<BBB
-            <script>
-                window.addEventListener('load', function() {
-                    const btnSubmit = document.getElementById('submit');
-                    const shortcodeNames = document.getElementById('shortcode_names');
-                    const shortcodeNamesStr = shortcodeNames.value;
-                    const shortcodeNamesArr = shortcodeNamesStr ? shortcodeNamesStr.split(',') : [];
-                    const pluginShortcodes = document.getElementsByName('plugin_shortcodes[]');
+        // Genera HTML con layout a card tipo Elementor
+        ?>
+        <div class="shortcode-manager-wrapper">
+            <!-- Filtri e Ricerca -->
+            <div class="shortcode-manager-filters">
+                <div class="shortcode-search">
+                    <input type="text" id="shortcode-search-input" placeholder="Cerca shortcode..." class="shortcode-search-field">
+                </div>
+                <div class="shortcode-category-filters">
+                    <button class="category-filter active" data-category="all">Tutti</button>
+                    <button class="category-filter" data-category="visual">🎨 Widget Grafici</button>
+                    <button class="category-filter" data-category="functional">⚙️ Shortcode Funzionali</button>
+                    <button class="category-filter" data-category="totaldesign">🏠 Widget TotalDesign</button>
+                </div>
+            </div>
 
-                    for(var i = 0; i < pluginShortcodes.length; i++) {
-                        if(shortcodeNamesArr.includes(pluginShortcodes[i].value)) {
-                            pluginShortcodes[i].checked = 'checked';
-                        }
+            <!-- Grid Shortcode Cards -->
+            <div class="shortcode-grid" id="shortcode-grid">
+                <?php
+                foreach($shortcodes_by_category as $category => $shortcodes) {
+                    foreach($shortcodes as $plugin_shortcode) {
+                        $doc = $shortcode_docs[$plugin_shortcode] ?? null;
+                        $aliases = $this->get_shortcode_aliases($plugin_shortcode);
+                        $icon = $this->get_shortcode_icon($plugin_shortcode);
+                        $category_label = $this->get_category_label($category);
+                        
+                        $this->render_shortcode_card($plugin_shortcode, $doc, $aliases, $icon, $category, $category_label);
                     }
+                }
+                ?>
+            </div>
 
-                    btnSubmit.addEventListener('click', function(e) {
-                        let enabledShortcodes = '';
-                        for(let i = 0; i < pluginShortcodes.length; i++) {
-                            if(pluginShortcodes[i].checked) {
-                                enabledShortcodes += pluginShortcodes[i].value + ',';
-                            }
-                        }
-                        enabledShortcodes = enabledShortcodes.slice(0, -1);
-                        shortcodeNames.value = enabledShortcodes;
-                    });
-                });
-            </script>
-BBB;
+            <!-- Messaggio nessun risultato -->
+            <div class="shortcode-no-results" id="shortcode-no-results" style="display: none;">
+                <p>Nessuno shortcode trovato. Prova a modificare i filtri o la ricerca.</p>
+            </div>
+        </div>
 
-        echo $plugin_shortcodes_html . $js_script;
-
+        <?php
+        $this->render_shortcode_manager_scripts();
+        
         printf(
             '<input size="500" type="hidden" id="shortcode_names" name="revious_microdata_option_name[shortcode_names]" value="%s" />',
             isset( $this->options['shortcode_names'] ) ? esc_attr( $this->options['shortcode_names']) : ''
         );
+    }
+
+    /**
+     * Renderizza una card shortcode
+     */
+    private function render_shortcode_card(string $shortcode, ?array $doc, array $aliases, string $icon, string $category, string $category_label): void
+    {
+        $enabled_shortcodes = isset($this->options['shortcode_names']) ? explode(',', $this->options['shortcode_names']) : [];
+        $is_enabled = in_array($shortcode, $enabled_shortcodes);
+        ?>
+        <div class="shortcode-card" data-category="<?php echo esc_attr($category); ?>" data-shortcode="<?php echo esc_attr($shortcode); ?>">
+            <div class="shortcode-card-header">
+                <div class="shortcode-card-icon">
+                    <?php if (strpos($icon, 'dashicon:') === 0): ?>
+                        <?php 
+                        $dashicon_class = str_replace('dashicon:', '', $icon);
+                        ?>
+                        <div class="shortcode-icon-dashicon">
+                            <span class="dashicons <?php echo esc_attr($dashicon_class); ?>"></span>
+                        </div>
+                    <?php elseif ($icon): ?>
+                        <img src="<?php echo esc_url($icon); ?>" alt="<?php echo esc_attr($shortcode); ?>" class="shortcode-icon-img">
+                    <?php else: ?>
+                        <div class="shortcode-icon-placeholder">
+                            <span class="dashicons dashicons-shortcode"></span>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="shortcode-card-toggle">
+                    <label class="shortcode-toggle-switch">
+                        <input type="checkbox" name="plugin_shortcodes[]" value="<?php echo esc_attr($shortcode); ?>" <?php checked($is_enabled); ?>>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="shortcode-card-body">
+                <h3 class="shortcode-card-title"><?php echo esc_html($shortcode); ?></h3>
+                <?php if ($doc && !empty($doc['description'])): ?>
+                    <p class="shortcode-card-description"><?php echo esc_html($doc['description']); ?></p>
+                <?php endif; ?>
+                <?php if (!empty($aliases)): ?>
+                    <div class="shortcode-card-aliases">
+                        <strong>Alias:</strong>
+                        <?php foreach($aliases as $alias): ?>
+                            <code class="shortcode-alias-tag"><?php echo esc_html($alias); ?></code>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                <?php if ($doc && !empty($doc['usage'])): ?>
+                    <div class="shortcode-card-usage">
+                        <code class="shortcode-usage-code"><?php echo esc_html($doc['usage']); ?></code>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <div class="shortcode-card-footer">
+                <span class="shortcode-card-category"><?php echo esc_html($category_label); ?></span>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Renderizza script per gestione shortcode manager
+     */
+    private function render_shortcode_manager_scripts(): void
+    {
+        ?>
+        <script>
+        (function() {
+            const searchInput = document.getElementById('shortcode-search-input');
+            const categoryFilters = document.querySelectorAll('.category-filter');
+            const shortcodeCards = document.querySelectorAll('.shortcode-card');
+            const shortcodeGrid = document.getElementById('shortcode-grid');
+            const noResults = document.getElementById('shortcode-no-results');
+            const shortcodeNamesInput = document.getElementById('shortcode_names');
+
+            // Funzione per filtrare shortcode
+            function filterShortcodes() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeCategory = document.querySelector('.category-filter.active')?.dataset.category || 'all';
+                let visibleCount = 0;
+
+                shortcodeCards.forEach(card => {
+                    const shortcode = card.dataset.shortcode.toLowerCase();
+                    const category = card.dataset.category;
+                    const description = card.querySelector('.shortcode-card-description')?.textContent.toLowerCase() || '';
+                    const aliases = Array.from(card.querySelectorAll('.shortcode-alias-tag')).map(tag => tag.textContent.toLowerCase()).join(' ');
+
+                    const matchesSearch = !searchTerm || 
+                        shortcode.includes(searchTerm) || 
+                        description.includes(searchTerm) || 
+                        aliases.includes(searchTerm);
+                    
+                    const matchesCategory = activeCategory === 'all' || category === activeCategory;
+
+                    if (matchesSearch && matchesCategory) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Mostra/nascondi messaggio nessun risultato
+                if (visibleCount === 0) {
+                    noResults.style.display = 'block';
+                    shortcodeGrid.style.display = 'none';
+                } else {
+                    noResults.style.display = 'none';
+                    shortcodeGrid.style.display = 'grid';
+                }
+            }
+
+            // Event listener per ricerca
+            searchInput.addEventListener('input', filterShortcodes);
+
+            // Event listener per filtri categoria
+            categoryFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    categoryFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    filterShortcodes();
+                });
+            });
+
+            // Salva stato checkboxes al submit
+            const submitButton = document.getElementById('submit');
+            if (submitButton) {
+                submitButton.addEventListener('click', function(e) {
+                    const checkboxes = document.querySelectorAll('input[name="plugin_shortcodes[]"]:checked');
+                    const enabledShortcodes = Array.from(checkboxes).map(cb => cb.value).join(',');
+                    shortcodeNamesInput.value = enabledShortcodes;
+                });
+            }
+
+            // Inizializza stato checkboxes
+            const enabledShortcodes = shortcodeNamesInput.value ? shortcodeNamesInput.value.split(',') : [];
+            enabledShortcodes.forEach(code => {
+                const checkbox = document.querySelector(`input[name="plugin_shortcodes[]"][value="${code}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        })();
+        </script>
+        <?php
     }
 
     /**
@@ -459,6 +751,85 @@ BBB;
         ];
         
         return $aliases_map[$shortcode] ?? [];
+    }
+
+    /**
+     * Ottieni categoria di uno shortcode
+     */
+    private function get_shortcode_categories(): array
+    {
+        return [
+            // Widget Grafici
+            'md_quote' => 'visual',
+            'md_boxinfo' => 'visual',
+            'md_progressbar' => 'visual',
+            'md_slidingbox' => 'visual',
+            'md_flipbox' => 'visual',
+            'md_blinkingbutton' => 'visual',
+            'md_perfectpullquote' => 'visual',
+            'md_flexlist' => 'visual',
+            
+            // Shortcode Funzionali
+            'md_youtube' => 'functional',
+            'md_telefono' => 'functional',
+            'md_prezzo' => 'functional',
+            
+            // Widget TotalDesign (se presenti)
+            'kitchen_finder' => 'totaldesign',
+            'app_nav' => 'totaldesign',
+            'link_colori' => 'totaldesign',
+            'grafica3d' => 'totaldesign',
+            'archistar' => 'totaldesign',
+        ];
+    }
+
+    /**
+     * Ottieni icona di uno shortcode
+     * Ritorna 'dashicon' per usare Dashicons, o URL immagine
+     */
+    private function get_shortcode_icon(string $shortcode): string
+    {
+        $plugin_url = plugins_url('gik25-microdata');
+        $icons_map = [
+            // Widget Grafici - usa immagini esistenti quando disponibili
+            'md_quote' => $plugin_url . '/assets/images/quote-left.png',
+            'md_boxinfo' => 'dashicon:dashicons-info',
+            'md_progressbar' => 'dashicon:dashicons-performance',
+            'md_slidingbox' => $plugin_url . '/assets/images/icon-sliding-box.png',
+            'md_flipbox' => $plugin_url . '/assets/images/icon-flipbox.png',
+            'md_blinkingbutton' => $plugin_url . '/assets/images/icon-blinking-button.png',
+            'md_perfectpullquote' => $plugin_url . '/assets/images/quote-left.png',
+            'md_flexlist' => 'dashicon:dashicons-list-view',
+            
+            // Shortcode Funzionali - usa dashicons
+            'md_youtube' => 'dashicon:dashicons-video-alt3',
+            'md_telefono' => 'dashicon:dashicons-phone',
+            'md_prezzo' => 'dashicon:dashicons-money-alt',
+            
+            // Widget TotalDesign - usa dashicons appropriati
+            'kitchen_finder' => 'dashicon:dashicons-building',
+            'app_nav' => 'dashicon:dashicons-menu',
+            'link_colori' => 'dashicon:dashicons-art',
+            'grafica3d' => 'dashicon:dashicons-desktop',
+            'archistar' => 'dashicon:dashicons-star-filled',
+        ];
+        
+        return $icons_map[$shortcode] ?? 'dashicon:dashicons-shortcode';
+    }
+
+    /**
+     * Ottieni etichetta categoria
+     */
+    private function get_category_label(string $category): string
+    {
+        $labels = [
+            'visual' => 'Widget Grafico',
+            'functional' => 'Shortcode Funzionale',
+            'totaldesign' => 'Widget TotalDesign',
+            'other' => 'Altro',
+        ];
+        
+        return $labels[$category] ?? 'Altro';
     }
 
     public function wnd_default_image_settings_enabled_callback(): void
