@@ -14,6 +14,8 @@ if (!defined('ABSPATH')) {
 class ShortcodeRegistry
 {
     private const OPTION = 'gik25_shortcodes_enabled';
+    private const USAGE_OPTION = 'gik25_shortcodes_usage_summary';
+    private const MAX_USAGE_SCAN_ROWS = 500;
     private static bool $bootstrapped = false;
 
     /**
@@ -204,9 +206,9 @@ class ShortcodeRegistry
     /**
      * Count occurrences of a tag inside given content.
      */
-    public static function countOccurrences(string $tag, string $content): int
+    public static function countOccurrences(string $tag, ?string $content): int
     {
-        if ($content === '') {
+        if ($content === '' || $content === null) {
             return 0;
         }
 
@@ -260,5 +262,79 @@ class ShortcodeRegistry
         }
 
         return (bool) $settings[$slug];
+    }
+
+    /**
+     * Get cached usage summary data.
+     *
+     * @return array{updated_at:string|null,data:array<string,array>} 
+     */
+    public static function getUsageSummary(): array
+    {
+        $option = get_option(self::USAGE_OPTION, [
+            'updated_at' => null,
+            'data' => [],
+        ]);
+
+        if (!is_array($option)) {
+            return ['updated_at' => null, 'data' => []];
+        }
+
+        $option['data'] = isset($option['data']) && is_array($option['data']) ? $option['data'] : [];
+
+        return $option;
+    }
+
+    /**
+     * Run LIKE queries for every shortcode and store the summary.
+     *
+     * @return array<string,array{posts:int,occurrences:int,label:string}>
+     */
+    public static function scanUsageSummary(): array
+    {
+        global $wpdb;
+
+        $summary = [];
+        foreach (self::getRegistry() as $slug => $meta) {
+            $like = '%[' . $wpdb->esc_like($slug) . '%';
+            $sql = $wpdb->prepare(
+                "SELECT ID, post_content
+                 FROM {$wpdb->posts}
+                 WHERE post_status NOT IN ('trash','auto-draft','inherit')
+                   AND post_content LIKE %s
+                 LIMIT %d",
+                $like,
+                self::MAX_USAGE_SCAN_ROWS
+            );
+            $rows = $wpdb->get_results($sql, ARRAY_A);
+            $posts = is_array($rows) ? count($rows) : 0;
+            $occurrences = 0;
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $occurrences += self::countOccurrences($slug, $row['post_content'] ?? '');
+                }
+            }
+            $summary[$slug] = [
+                'posts' => $posts,
+                'occurrences' => $occurrences,
+                'label' => $meta['label'] ?? $slug,
+            ];
+        }
+
+        update_option(self::USAGE_OPTION, [
+            'updated_at' => current_time('mysql'),
+            'data' => $summary,
+        ], false);
+
+        return $summary;
+    }
+
+    /**
+     * Helper to return human readable label for slug.
+     */
+    public static function getLabel(string $slug): string
+    {
+        $registry = self::getRegistry();
+        return $registry[$slug]['label'] ?? $slug;
     }
 }

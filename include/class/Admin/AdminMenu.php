@@ -66,6 +66,9 @@ class AdminMenu
         // Health Check - sposta la pagina health check esistente
         self::register_health_check_submenu();
 
+        // Tools
+        self::register_tools_submenu();
+
         // Rimuovi le voci di menu vecchie (se esistono)
         remove_submenu_page('options-general.php', 'revious-microdata-setting-admin');
         remove_submenu_page('tools.php', 'gik25-health-check');
@@ -302,9 +305,24 @@ class AdminMenu
             foreach ($routes as $route => $handlers) {
                 if (strpos($route, '/wp-mcp/v1/') !== false) {
                     return true; // Trovata almeno una route MCP
-                }
-            }
         }
+    }
+
+    /**
+     * Tools tab
+     */
+    private static function register_tools_submenu(): void
+    {
+        add_submenu_page(
+            self::MENU_SLUG,
+            __('Strumenti', 'gik25-microdata'),
+            __('Strumenti', 'gik25-microdata'),
+            self::CAPABILITY,
+            self::MENU_SLUG . '-tools',
+            ['\gik25microdata\Admin\ToolsPage', 'renderPage']
+        );
+    }
+}
         
         // Fallback: verifica se l'azione rest_api_init è registrata
         // MCPApi::init() registra 'rest_api_init' che chiama 'register_routes'

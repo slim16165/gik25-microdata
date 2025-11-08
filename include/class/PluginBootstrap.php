@@ -278,6 +278,15 @@ class PluginBootstrap
         } catch (\Throwable $e) {
             self::logError('Errore nell\'inizializzazione di HealthChecker', $e);
         }
+
+        // Tools tab
+        try {
+            if (class_exists('\gik25microdata\Admin\ToolsPage')) {
+                \gik25microdata\Admin\ToolsPage::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di ToolsPage', $e);
+        }
         
         // Carica settings page
         try {
