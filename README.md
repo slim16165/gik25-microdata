@@ -18,11 +18,13 @@ Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazi
 ## Caratteristiche Principali
 
 - 🎨 **Shortcode Base**: Quote, Pullquote, Box Info, Progress Bar, Sliding Box, Flipbox, Blinking Button
+- 🎨 **Sistema Caroselli Generico**: Caroselli/liste/griglie configurabili via database WordPress (`[carousel collection="..."]`)
 - 🏠 **Widget Cucine**: Kitchen Finder con wizard 4-step e generazione lead
 - 🧭 **Navigazione App-like**: Widget navigazione multi-livello con varianti mobile/desktop
 - 🎯 **Widget TotalDesign**: 18 widget specializzati (Color Hub, IKEA Hub, Palette, Archistar, Grafica 3D, ecc.)
 - 🤖 **MCP Server**: Server Model Context Protocol per interrogazione sito WordPress da Cursor/AI
 - 🤖 **Widget Contestuali**: Inserimento automatico widget basati su keywords articoli
+- 🔍 **Health Check**: Sistema verifica funzionalità plugin dopo deploy (pagina admin + REST API)
 - 🎯 **SEO**: Schema markup, microdata, ottimizzazioni RankMath/Yoast
 - 🎨 **Color Widget**: Caroselli e selezioni colori dinamici
 - ⚡ **Performance**: Caricamento condizionale CSS/JS, cache, ottimizzazioni
@@ -80,6 +82,27 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - Contextual Widgets: inserimento automatico basato su keywords articoli
 
 # Changelog
+
+##### 1.12.0 _(2025-11-07)_
+* **Sistema Generico Caroselli/Liste Configurabile**: Sistema flessibile per creare caroselli, liste e griglie via database
+  * Tabelle database: `wp_carousel_collections`, `wp_carousel_items`
+  * Shortcode generico: `[carousel collection="colori"]`, `[list]`, `[grid]`
+  * Supporto parametri: `collection`, `category`, `limit`, `display`, `title`, `css_class`
+  * Rendering: carousel, list, grid
+  * Generico per tutti i siti, non solo TotalDesign
+  * Migrazione automatica da codice hardcoded: `CarouselCollections::migrate_from_hardcoded()`
+  * File: `include/class/Database/CarouselCollections.php`, `include/class/Shortcodes/GenericCarousel.php`
+  * Documentazione: `GENERIC_CAROUSEL.md`
+* **Sistema Health Check Completo**: Verifica automatica funzionalità plugin dopo deploy
+  * 7 check programmatici: shortcode, REST API, AJAX, file, database, assets, classi
+  * Pagina admin: **Strumenti → Health Check** con riepilogo e dettagli
+  * Pulsanti: "Esegui Health Check" (AJAX), "Esporta Risultati" (HTML)
+  * REST API endpoint: `/wp-json/gik25/v1/health-check`
+  * File: `include/class/HealthCheck/HealthChecker.php`
+  * Documentazione: `HEALTH_CHECK.md`
+* **Documentazione Migliorata**: Descrizioni più chiare e dettagliate
+  * `TOTALDESIGN_WIDGETS.md`: Descrizioni dettagliate widget (es. Lead Box con esempi concreti)
+  * `IMPLEMENTATION_SUMMARY.md`: Riepilogo completo implementazione
 
 ##### 1.11.0 _(2025-11-07)_
 * **Semplificazione MCP Server**: Rimossa complessità database multi-sito

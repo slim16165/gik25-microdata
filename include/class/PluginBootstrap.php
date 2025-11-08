@@ -41,8 +41,26 @@ class PluginBootstrap
         // Carica autoloader
         require_once self::$plugin_dir . '/vendor/autoload.php';
         
+        // Inizializza tabelle database (caroselli, health check)
+        self::initializeDatabase();
+        
         // Inizializza il plugin
         self::initializePlugin();
+    }
+    
+    /**
+     * Inizializza tabelle database
+     */
+    private static function initializeDatabase(): void
+    {
+        try {
+            // Tabelle caroselli generici
+            if (class_exists('\gik25microdata\Database\CarouselCollections')) {
+                \gik25microdata\Database\CarouselCollections::init(self::$plugin_file);
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione database caroselli', $e);
+        }
     }
 
     /**
@@ -180,6 +198,15 @@ class PluginBootstrap
      */
     private static function initializeAdmin(): void
     {
+        // Health Check (solo admin)
+        try {
+            if (class_exists('\gik25microdata\HealthCheck\HealthChecker')) {
+                \gik25microdata\HealthCheck\HealthChecker::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di HealthChecker', $e);
+        }
+        
         // Carica settings page
         try {
             require_once(self::$plugin_dir . '/include/revious-microdata-settings.php');
