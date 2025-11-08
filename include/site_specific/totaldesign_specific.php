@@ -5,6 +5,7 @@ use gik25microdata\ColorWidget;
 use gik25microdata\TagHelper;
 use gik25microdata\site_specific\Totaldesign\ProgrammaticHub;
 use gik25microdata\Widgets\ContextualWidgets;
+use gik25microdata\REST\MCPApi;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
@@ -27,6 +28,13 @@ function _conditionalLoadJsCss_Colori()
 
 ConditionalLoadJsCss_Colori();
 ProgrammaticHub::init();
+
+// REST API per MCP Server
+// L'autoloader Composer dovrebbe caricare la classe automaticamente
+// Se non funziona, verifica che composer.json includa il namespace gik25microdata\REST
+if (class_exists('\\gik25microdata\\REST\\MCPApi')) {
+    MCPApi::init();
+}
 
 // Widget contestuali nelle pagine/articoli
 if (class_exists('\\gik25microdata\\Widgets\\ContextualWidgets')) {

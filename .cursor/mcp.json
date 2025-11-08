@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "totaldesign": {
+      "env": {
+        "WP_BASE_URL": "https://www.totaldesign.it"
+      },
+      "command": "node",
+      "args": [
+        "C:\\Users\\g.salvi\\Dropbox\\Siti internet\\Altri siti\\Principali\\TotalDesign.it\\wp-content\\plugins\\gik25-microdata\\mcp-server\\server.js"
+      ]
+    }
+  }
+}

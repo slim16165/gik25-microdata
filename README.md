@@ -19,6 +19,8 @@ Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazi
 
 - 🎨 **Shortcode**: Quote, Pullquote, Box Info, Progress Bar, Sliding Box, Flipbox, Blinking Button
 - 🏠 **Widget cucine**: Kitchen Finder con wizard 4-step e generazione lead
+- 🧭 **Navigazione App-like**: Widget navigazione multi-livello con varianti mobile/desktop
+- 🤖 **MCP Server**: Server Model Context Protocol per interrogazione sito WordPress da Cursor/AI
 - 🎯 **SEO**: Schema markup, microdata, ottimizzazioni RankMath/Yoast
 - 🎨 **Color Widget**: Caroselli e selezioni colori dinamici
 - ⚡ **Performance**: Caricamento condizionale CSS/JS, cache, ottimizzazioni
@@ -58,6 +60,18 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - `[md_blinkingbutton]` - Pulsanti animati
 
 # Changelog
+
+##### 1.10.0 _(2025-11-07)_
+* **MCP Server**: Integrazione Model Context Protocol per interrogazione WordPress da Cursor/AI
+  * Server Node.js locale che espone tools e risorse per analizzare contenuti WordPress
+  * REST API WordPress (`/wp-json/td-mcp/v1/...`) per lettura dati (categorie, post, ricerca, pattern)
+  * Tool per analisi contenuti e suggerimenti widget basati su pattern (cucine, colori, IKEA, stanze)
+  * Tool per modifica articoli (titolo, contenuto, categorie, tag) con autenticazione Application Password
+  * Gestione tag completa: lista, ricerca, creazione, aggiunta a post (creazione automatica se non esistono)
+  * Sistema estensioni per siti specifici (TotalDesign con features: colors, ikea, rooms, pantone)
+  * Query vault opzionale per ricerca in file markdown locali (Obsidian)
+  * File: `include/class/REST/MCPApi.php`, `mcp-server/server.js`, `mcp-server/package.json`
+  * Documentazione: `MCP_ARCHITECTURE.md`, `DEPLOY_MCP.md`
 
 ##### 1.9.0 _(2025-11-06)_
 * App-like Navigator: nuovo shortcode `[app_nav]` con tabs (Scopri, Colori, IKEA, Stanze, Trend) e card responsive
