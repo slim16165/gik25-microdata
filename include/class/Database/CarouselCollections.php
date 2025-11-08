@@ -40,6 +40,10 @@ class CarouselCollections
             self::create_tables();
             self::migrate_database_schema();
             update_option(self::DB_VERSION_OPTION, self::DB_VERSION);
+        } else {
+            // Verifica comunque che le colonne esistano (per sicurezza)
+            // Questo gestisce il caso in cui la versione è aggiornata ma la migrazione non è stata eseguita
+            self::migrate_database_schema();
         }
     }
 
@@ -109,10 +113,9 @@ class CarouselCollections
         global $wpdb;
         $table_collections = $wpdb->prefix . self::TABLE_COLLECTIONS;
         
-        // Verifica se la tabella esiste
+        // Verifica se la tabella esiste usando metodo compatibile
         $table_exists = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %s AND table_name = %s",
-            DB_NAME,
+            "SHOW TABLES LIKE %s",
             $table_collections
         ));
         
@@ -121,19 +124,32 @@ class CarouselCollections
         }
         
         // Verifica colonne esistenti
-        $columns = $wpdb->get_col("DESCRIBE {$table_collections}");
+        $columns_result = $wpdb->get_results("DESCRIBE {$table_collections}", ARRAY_A);
+        $columns = array_column($columns_result, 'Field');
         
         // Aggiungi template_id se mancante
         if (!in_array('template_id', $columns)) {
-            $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_id bigint(20) UNSIGNED COMMENT 'FK a wp_carousel_templates.id' AFTER display_type");
-            $wpdb->query("ALTER TABLE {$table_collections} ADD INDEX template_id (template_id)");
-            error_log('CarouselCollections: Aggiunta colonna template_id a ' . $table_collections);
+            $result = $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_id bigint(20) UNSIGNED COMMENT 'FK a wp_carousel_templates.id' AFTER display_type");
+            if ($result !== false) {
+                // Verifica se l'indice esiste già prima di aggiungerlo
+                $indexes = $wpdb->get_results("SHOW INDEX FROM {$table_collections} WHERE Key_name = 'template_id'");
+                if (empty($indexes)) {
+                    $wpdb->query("ALTER TABLE {$table_collections} ADD INDEX template_id (template_id)");
+                }
+                error_log('CarouselCollections: Aggiunta colonna template_id a ' . $table_collections);
+            } else {
+                error_log('CarouselCollections: ERRORE aggiunta colonna template_id: ' . $wpdb->last_error);
+            }
         }
         
         // Aggiungi template_config se mancante
         if (!in_array('template_config', $columns)) {
-            $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_config text COMMENT 'JSON con configurazione template (override variabili CSS, opzioni)' AFTER template_id");
-            error_log('CarouselCollections: Aggiunta colonna template_config a ' . $table_collections);
+            $result = $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_config text COMMENT 'JSON con configurazione template (override variabili CSS, opzioni)' AFTER template_id");
+            if ($result !== false) {
+                error_log('CarouselCollections: Aggiunta colonna template_config a ' . $table_collections);
+            } else {
+                error_log('CarouselCollections: ERRORE aggiunta colonna template_config: ' . $wpdb->last_error);
+            }
         }
     }
 
