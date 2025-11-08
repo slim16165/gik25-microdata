@@ -219,10 +219,13 @@ class CarouselsPage
                     </table>
                     
                     <div style="margin-top: 15px; padding: 15px; background: #f6f7f7; border-radius: 4px;">
-                        <strong>Shortcode risultante:</strong>
-                        <code style="display: block; margin-top: 5px; padding: 10px; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px;">
-                            [carousel collection="<?php echo esc_attr($collection_key); ?>"]
-                        </code>
+                        <strong>Riepilogo:</strong>
+                        <ul style="margin: 5px 0 0 20px;">
+                            <li><strong>Totale items:</strong> <?php echo count($collection_data['items']); ?></li>
+                            <li><strong>Tipo display:</strong> <?php echo esc_html($collection_data['display_type'] ?? 'carousel'); ?></li>
+                            <li><strong>Shortcode originale:</strong> <code><?php echo esc_html($collection_data['original_shortcode'] ?? 'N/A'); ?></code></li>
+                            <li><strong>Shortcode dopo migrazione:</strong> <code>[carousel collection="<?php echo esc_attr($collection_key); ?>"]</code></li>
+                        </ul>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -418,29 +421,171 @@ https://www.totaldesign.it/articolo-2/" required></textarea>
      */
     private static function get_migrable_data(): array
     {
-        // Usa metodi esistenti da MigrationPreview
-        if (method_exists('\gik25microdata\Database\CarouselCollections', 'extract_colori_items')) {
-            $colori_items = CarouselCollections::extract_colori_items();
-            $programmi3d_items = CarouselCollections::extract_programmi3d_items();
-            $architetti_items = CarouselCollections::extract_architetti_items();
+        return [
+            'colori' => [
+                'name' => 'Colori',
+                'display_type' => 'carousel',
+                'original_shortcode' => '[link_colori]',
+                'items' => self::extract_colori_items(),
+            ],
+            'programmi3d' => [
+                'name' => 'Programmi Grafica 3D',
+                'display_type' => 'carousel',
+                'original_shortcode' => '[grafica3d]',
+                'items' => self::extract_programmi3d_items(),
+            ],
+            'architetti' => [
+                'name' => 'Architetti Famosi',
+                'display_type' => 'carousel',
+                'original_shortcode' => '[archistar]',
+                'items' => self::extract_architetti_items(),
+            ],
+        ];
+    }
+
+    /**
+     * Estrae items per collezione Colori
+     */
+    private static function extract_colori_items(): array
+    {
+        return [
+            // Colori Specifici
+            ['title' => 'Color Tortora', 'url' => 'https://www.totaldesign.it/color-tortora-colore-neutro-tendenza/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Rosso', 'url' => 'https://www.totaldesign.it/colore-rosso/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Rosso Bordeaux', 'url' => 'https://www.totaldesign.it/colore-bordeaux/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Rosso Tiziano', 'url' => 'https://www.totaldesign.it/rosso-tiziano/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Verde', 'url' => 'https://www.totaldesign.it/colore-verde/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Verde Acqua', 'url' => 'https://www.totaldesign.it/colore-verde-acqua/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Verde Salvia', 'url' => 'https://www.totaldesign.it/colore-verde-salvia/', 'category' => 'colori-specifici'],
+            ['title' => 'Color Petrolio', 'url' => 'https://www.totaldesign.it/color-petrolio-verde/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Verde Tiffany', 'url' => 'https://www.totaldesign.it/verde-tiffany/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Verde Smeraldo', 'url' => 'https://www.totaldesign.it/verde-smeraldo/', 'category' => 'colori-specifici'],
+            ['title' => 'Color Turchese', 'url' => 'https://www.totaldesign.it/colore-turchese/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Grigio Chiaro', 'url' => 'https://www.totaldesign.it/grigio-chiaro/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Bianco', 'url' => 'https://www.totaldesign.it/colore-bianco/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Bianco e Nero', 'url' => 'https://www.totaldesign.it/arredare-in-bianco-e-nero/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Rosa Cipria', 'url' => 'https://www.totaldesign.it/colore-rosa-cipria/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Rosa Antico', 'url' => 'https://www.totaldesign.it/colore-rosa-antico/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Giallo', 'url' => 'https://www.totaldesign.it/colore-giallo/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Giallo Ocra', 'url' => 'https://www.totaldesign.it/giallo-ocra/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Oro', 'url' => 'https://www.totaldesign.it/colore-oro/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Ciano', 'url' => 'https://www.totaldesign.it/colore-ciano/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Azzurro', 'url' => 'https://www.totaldesign.it/colore-azzurro/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Corallo', 'url' => 'https://www.totaldesign.it/colore-corallo/', 'category' => 'colori-specifici'],
+            ['title' => 'Color Tortora (arredamento)', 'url' => 'https://www.totaldesign.it/color-tortora-e-larredamento-per-interni/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Carta da Zucchero', 'url' => 'https://www.totaldesign.it/colore-carta-da-zucchero/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Beige', 'url' => 'https://www.totaldesign.it/colore-beige/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Lilla', 'url' => 'https://www.totaldesign.it/colore-lilla/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Indaco', 'url' => 'https://www.totaldesign.it/colore-indaco/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Ecrù', 'url' => 'https://www.totaldesign.it/colore-ecru-cose-pareti-divano-mobili-e-abbinamenti/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Avorio', 'url' => 'https://www.totaldesign.it/colore-avorio/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Antracite', 'url' => 'https://www.totaldesign.it/colore-antracite/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Arancione', 'url' => 'https://www.totaldesign.it/colore-arancione/', 'category' => 'colori-specifici'],
+            ['title' => 'Pareti grigio perlate', 'url' => 'https://www.totaldesign.it/pareti-grigie-perlato/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore grigio perla', 'url' => 'https://www.totaldesign.it/colore-grigio-perla/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Nero', 'url' => 'https://www.totaldesign.it/colore-nero/', 'category' => 'colori-specifici'],
+            ['title' => 'Color Porpora', 'url' => 'https://www.totaldesign.it/colore-porpora/', 'category' => 'colori-specifici'],
+            ['title' => 'Color Pesca', 'url' => 'https://www.totaldesign.it/color-pesca/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Ambra', 'url' => 'https://www.totaldesign.it/colore-ambra/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Avio', 'url' => 'https://www.totaldesign.it/colore-avio/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Glicine', 'url' => 'https://www.totaldesign.it/colore-glicine/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Malva', 'url' => 'https://www.totaldesign.it/colore-malva/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Celeste', 'url' => 'https://www.totaldesign.it/colore-celeste/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Sabbia', 'url' => 'https://www.totaldesign.it/colore-sabbia/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Bronzo', 'url' => 'https://www.totaldesign.it/colore-bronzo/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Zaffiro', 'url' => 'https://www.totaldesign.it/colore-zaffiro/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Viola', 'url' => 'https://www.totaldesign.it/colore-viola/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Lavanda', 'url' => 'https://www.totaldesign.it/color-lavanda/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Blu', 'url' => 'https://www.totaldesign.it/colore-blu/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Blu Navy', 'url' => 'https://www.totaldesign.it/colore-blu-navy/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Blu Cobalto', 'url' => 'https://www.totaldesign.it/blu-cobalto/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Fucsia', 'url' => 'https://www.totaldesign.it/colore-fucsia/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Ecru', 'url' => 'https://www.totaldesign.it/colore-ecru/', 'category' => 'colori-specifici'],
+            ['title' => 'Colore Magenta', 'url' => 'https://www.totaldesign.it/colore-magenta/', 'category' => 'colori-specifici'],
             
-            return [
-                'colori' => [
-                    'name' => 'Colori',
-                    'items' => $colori_items,
-                ],
-                'programmi-3d' => [
-                    'name' => 'Programmi 3D',
-                    'items' => $programmi3d_items,
-                ],
-                'architetti' => [
-                    'name' => 'Architetti',
-                    'items' => $architetti_items,
-                ],
-            ];
-        }
-        
-        return [];
+            // Colori Pantone
+            ['title' => 'Classic Very Peri 2022', 'url' => 'https://www.totaldesign.it/il-very-peri-e-il-colore-dellanno-2022-secondo-pantone/', 'category' => 'pantone'],
+            ['title' => 'Classic Giallo Pantone 2021', 'url' => 'https://www.totaldesign.it/colore-pantone-2021/', 'category' => 'pantone'],
+            ['title' => 'Classic Blue Pantone 2020', 'url' => 'https://www.totaldesign.it/classic-blue-pantone/', 'category' => 'pantone'],
+            ['title' => 'Colori Pantone', 'url' => 'https://www.totaldesign.it/colori-pantone/', 'category' => 'pantone'],
+            ['title' => 'Colori Pantone 2016', 'url' => 'https://www.totaldesign.it/colori-pantone-2016/', 'category' => 'pantone'],
+            ['title' => 'Colore Ultra Violet', 'url' => 'https://www.totaldesign.it/ultra-violet-inspiration-scopri-come-arredare-la-casa-con-il-colore-pantone-2018/', 'category' => 'pantone'],
+            ['title' => 'Total White', 'url' => 'https://www.totaldesign.it/total-white-arredare-in-bianco/', 'category' => 'pantone'],
+            
+            // Articoli Vari
+            ['title' => 'Colori Complementari', 'url' => 'https://www.totaldesign.it/colori-complementari/', 'category' => 'articoli-vari'],
+            ['title' => 'Colori Neutri e Freddi', 'url' => 'https://www.totaldesign.it/colori-caldi-freddi-e-neutri/', 'category' => 'articoli-vari'],
+            ['title' => 'Colori freddi', 'url' => 'https://www.totaldesign.it/colori-freddi/', 'category' => 'articoli-vari'],
+            ['title' => 'Colori Neutri', 'url' => 'https://www.totaldesign.it/colori-neutri/', 'category' => 'articoli-vari'],
+            ['title' => 'Abbinamento colori', 'url' => 'https://www.totaldesign.it/abbinamento-colori/', 'category' => 'articoli-vari'],
+            ['title' => 'Colori per arredare', 'url' => 'https://www.totaldesign.it/catalogo-colori-pareti/', 'category' => 'articoli-vari'],
+            ['title' => 'Colori pareti soggiorno', 'url' => 'https://www.totaldesign.it/colori-pareti-soggiorno/', 'category' => 'articoli-vari'],
+            ['title' => 'Colori Pastello', 'url' => 'https://www.totaldesign.it/colori-pastello-per-arredare-la-casa/', 'category' => 'articoli-vari'],
+            ['title' => 'Pareti colorate', 'url' => 'https://www.totaldesign.it/pareti-colorate/', 'category' => 'articoli-vari'],
+            ['title' => 'Colori arcobaleno', 'url' => 'https://www.totaldesign.it/colori-arcobaleno/', 'category' => 'articoli-vari'],
+            ['title' => 'Tonalità di Giallo', 'url' => 'https://www.totaldesign.it/tonalita-di-giallo/', 'category' => 'articoli-vari'],
+            ['title' => 'Tonalità di Verde', 'url' => 'https://www.totaldesign.it/tonalita-di-verde/', 'category' => 'articoli-vari'],
+        ];
+    }
+
+    /**
+     * Estrae items per collezione Programmi 3D
+     */
+    private static function extract_programmi3d_items(): array
+    {
+        return [
+            ['title' => 'Freecad 3D', 'url' => 'https://www.totaldesign.it/freecad/'],
+            ['title' => 'Homestyler', 'url' => 'https://www.totaldesign.it/homestyler-2/'],
+            ['title' => 'Autodesk Revit', 'url' => 'https://www.totaldesign.it/autodesk-revit/'],
+            ['title' => 'Archicad', 'url' => 'https://www.totaldesign.it/archicad/'],
+            ['title' => 'Maya 3D', 'url' => 'https://www.totaldesign.it/maya-3d/'],
+            ['title' => 'Blender 3D', 'url' => 'https://www.totaldesign.it/blender-3d/'],
+            ['title' => 'Librecad', 'url' => 'https://www.totaldesign.it/librecad/'],
+            ['title' => 'Draftsight', 'url' => 'https://www.totaldesign.it/draftsight/'],
+            ['title' => 'Lumion Grafica 3D', 'url' => 'https://www.totaldesign.it/lumion/'],
+            ['title' => 'Rhinoceros', 'url' => 'https://www.totaldesign.it/rhinoceros-mac/'],
+            ['title' => 'Schetchup', 'url' => 'https://www.totaldesign.it/sketchup-2/'],
+            ['title' => 'Migliori Programmi Gratuiti per la progettazione 3D', 'url' => 'https://www.totaldesign.it/migliori-programmi-gratuiti-per-la-progettazione-3d/'],
+        ];
+    }
+
+    /**
+     * Estrae items per collezione Architetti
+     */
+    private static function extract_architetti_items(): array
+    {
+        return [
+            ['title' => 'Renzo Piano', 'url' => 'https://www.totaldesign.it/renzo-piano/'],
+            ['title' => 'Zaha Hadid', 'url' => 'https://www.totaldesign.it/zaha-hadid/'],
+            ['title' => 'Stefano Boeri', 'url' => 'https://www.totaldesign.it/stefano-boeri/'],
+            ['title' => 'Massimiliano Fuksas', 'url' => 'https://www.totaldesign.it/massimiliano-fuksas/'],
+            ['title' => 'Frank Gehry', 'url' => 'https://www.totaldesign.it/frank-gehry/'],
+            ['title' => 'Norman Foster', 'url' => 'https://www.totaldesign.it/norman-foster/'],
+            ['title' => 'OMA Rem Koolhaas', 'url' => 'https://www.totaldesign.it/oma-rem-koolhaas/'],
+            ['title' => 'Mario Botta', 'url' => 'https://www.totaldesign.it/mario-botta/'],
+            ['title' => 'Jean Nouvel', 'url' => 'https://www.totaldesign.it/jean-nouvel/'],
+            ['title' => 'Santiago Calatrava', 'url' => 'https://www.totaldesign.it/santiago-calatrava/'],
+            ['title' => 'Tadao Ando', 'url' => 'https://www.totaldesign.it/tadao-ando/'],
+            ['title' => 'Richard Meier', 'url' => 'https://www.totaldesign.it/richard-meier/'],
+            ['title' => 'Daniel Libeskind', 'url' => 'https://www.totaldesign.it/daniel-libeskind/'],
+            ['title' => 'Bjarke Ingels', 'url' => 'https://www.totaldesign.it/bjarke-ingels/'],
+            ['title' => 'Shigeru Ban', 'url' => 'https://www.totaldesign.it/shigeru-ban/'],
+            ['title' => 'Alvaro Siza', 'url' => 'https://www.totaldesign.it/alvaro-siza/'],
+            ['title' => 'Oscar Niemeyer', 'url' => 'https://www.totaldesign.it/oscar-niemeyer/'],
+            ['title' => 'Le Corbusier', 'url' => 'https://www.totaldesign.it/le-corbusier/'],
+            ['title' => 'Frank Lloyd Wright', 'url' => 'https://www.totaldesign.it/frank-lloyd-wright/'],
+            ['title' => 'Ludwig Mies van der Rohe', 'url' => 'https://www.totaldesign.it/ludwig-mies-van-der-rohe/'],
+            ['title' => 'Antoni Gaudí', 'url' => 'https://www.totaldesign.it/antoni-gaudi/'],
+            ['title' => 'Peter Zumthor', 'url' => 'https://www.totaldesign.it/peter-zumthor/'],
+            ['title' => 'Herzog & de Meuron', 'url' => 'https://www.totaldesign.it/herzog-de-meuron/'],
+            ['title' => 'David Chipperfield', 'url' => 'https://www.totaldesign.it/david-chipperfield/'],
+            ['title' => 'Renzo Piano Building Workshop', 'url' => 'https://www.totaldesign.it/renzo-piano-building-workshop/'],
+            ['title' => 'Carlo Scarpa', 'url' => 'https://www.totaldesign.it/carlo-scarpa/'],
+            ['title' => 'Aldo Rossi', 'url' => 'https://www.totaldesign.it/aldo-rossi/'],
+            ['title' => 'Paolo Portoghesi', 'url' => 'https://www.totaldesign.it/paolo-portoghesi/'],
+            ['title' => 'Gio Ponti', 'url' => 'https://www.totaldesign.it/gio-ponti/'],
+            ['title' => 'Giancarlo De Carlo', 'url' => 'https://www.totaldesign.it/giancarlo-de-carlo/'],
+        ];
     }
 
     /**
