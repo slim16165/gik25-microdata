@@ -57,6 +57,12 @@ class AdminMenu
         // Settings - sposta la pagina settings esistente
         self::register_settings_submenu();
 
+        // Shortcodes management
+        self::register_shortcodes_submenu();
+
+        // Shortcode usage report
+        self::register_shortcodes_usage_submenu();
+
         // Health Check - sposta la pagina health check esistente
         self::register_health_check_submenu();
 
@@ -79,6 +85,36 @@ class AdminMenu
             self::CAPABILITY,
             'revious-microdata-setting-admin',
             [self::class, 'redirect_to_settings']
+        );
+    }
+
+    /**
+     * Sottovoce Shortcodes
+     */
+    private static function register_shortcodes_submenu(): void
+    {
+        add_submenu_page(
+            self::MENU_SLUG,
+            __('Shortcodes', 'gik25-microdata'),
+            __('Shortcodes', 'gik25-microdata'),
+            self::CAPABILITY,
+            self::MENU_SLUG . '-shortcodes',
+            ['\gik25microdata\Admin\ShortcodesPage', 'renderPage']
+        );
+    }
+
+    /**
+     * Sottovoce Utilizzo shortcode
+     */
+    private static function register_shortcodes_usage_submenu(): void
+    {
+        add_submenu_page(
+            self::MENU_SLUG,
+            __('Utilizzo Shortcode', 'gik25-microdata'),
+            __('Utilizzo Shortcode', 'gik25-microdata'),
+            self::CAPABILITY,
+            self::MENU_SLUG . '-shortcodes-usage',
+            ['\gik25microdata\Admin\ShortcodesUsagePage', 'renderPage']
         );
     }
 

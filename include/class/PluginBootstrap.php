@@ -224,6 +224,24 @@ class PluginBootstrap
         } catch (\Throwable $e) {
             self::logError('Errore nell\'inizializzazione di AdminMenu', $e);
         }
+
+        // Shortcodes admin page
+        try {
+            if (class_exists('\gik25microdata\Admin\ShortcodesPage')) {
+                \gik25microdata\Admin\ShortcodesPage::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di ShortcodesPage', $e);
+        }
+
+        // Shortcode usage admin page
+        try {
+            if (class_exists('\gik25microdata\Admin\ShortcodesUsagePage')) {
+                \gik25microdata\Admin\ShortcodesUsagePage::init();
+            }
+        } catch (\Throwable $e) {
+            self::logError('Errore nell\'inizializzazione di ShortcodesUsagePage', $e);
+        }
         
         // Migration Preview (solo admin)
         try {
@@ -399,6 +417,10 @@ class PluginBootstrap
                 foreach (glob($shortcodes_dir . '/*.php') as $file) {
                     require_once $file;
                 }
+            }
+
+            if (class_exists('\gik25microdata\Shortcodes\ShortcodeRegistry')) {
+                \gik25microdata\Shortcodes\ShortcodeRegistry::init();
             }
         } catch (\Throwable $e) {
             self::logError('Errore nel caricamento delle classi Shortcodes', $e);
