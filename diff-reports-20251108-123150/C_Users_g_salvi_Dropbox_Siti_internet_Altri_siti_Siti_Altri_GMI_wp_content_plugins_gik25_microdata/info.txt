@@ -1,4 +1,0 @@
-MAIN=C:\Users\g.salvi\Dropbox\Siti internet\Altri siti\Principali\TotalDesign.it\wp-content\plugins\gik25-microdata
-TARGET=C:\Users\g.salvi\Dropbox\Siti internet\Altri siti\Siti Altri\GMI\wp-content\plugins\gik25-microdata
-STAMP=20251108-123150
-

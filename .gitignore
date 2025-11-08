@@ -7,3 +7,7 @@
 /obj/
 /.vs/
 /totaldesign-old.zip
+
+# Ignore local diff reports
+diff-reports-*
+
