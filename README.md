@@ -101,6 +101,19 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.16.6 _(2025-11-09)_
+* **Fix UI Health Check**: Ripristinato funzionamento tab dettagli e interazioni
+  * Script JavaScript completo per gestione tab Riepilogo/Dettagli
+  * Richiesta AJAX con nonce e stato caricamento
+  * Pulsante "Copia negli appunti" funzionante con feedback visivo
+  * Formattazione testo per clipboard migliorata
+  * File: `include/class/HealthCheck/HealthChecker.php`
+* **Migliorata Formattazione Log Parser**: Esempi più leggibili
+  * Esempi su più righe con elenco puntato per maggiore chiarezza
+  * Indicatore (+X altri) su nuova riga separata
+  * Formattazione HTML migliorata per visualizzazione dettagli
+  * File: `include/class/HealthCheck/CloudwaysLogParser.php`
+
 ##### 1.16.5 _(2025-11-09)_
 * **Miglioramenti Parser Log**: Sistema esempi migliorato per maggiore chiarezza
   * Aumentato numero esempi raccolti: errori PHP/Apache (10), Nginx 5xx (8), PHP slow (8), WP cron (5)
