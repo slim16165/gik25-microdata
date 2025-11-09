@@ -108,6 +108,10 @@ class SafeExecution
     ): void {
         // Proteggi anche la registrazione dell'action
         self::safe_execute(function() use ($hook_name, $callback, $priority, $accepted_args) {
+            // Verifica che add_action sia disponibile (potrebbe non esserlo durante l'inizializzazione precoce)
+            if (!function_exists('add_action')) {
+                return; // WordPress non è ancora completamente caricato, skip
+            }
             add_action($hook_name, function(...$args) use ($callback) {
                 self::safe_execute(function() use ($callback, $args) {
                     return call_user_func_array($callback, $args);
@@ -130,11 +134,18 @@ class SafeExecution
         int $priority = 10,
         int $accepted_args = 1
     ): void {
-        add_filter($filter_name, function($value, ...$args) use ($callback) {
-            return self::safe_execute(function() use ($callback, $value, $args) {
-                return call_user_func_array($callback, array_merge([$value], $args));
-            }, $value, true); // Ritorna valore originale in caso di errore
-        }, $priority, $accepted_args);
+        // Proteggi anche la registrazione del filter
+        self::safe_execute(function() use ($filter_name, $callback, $priority, $accepted_args) {
+            // Verifica che add_filter sia disponibile (potrebbe non esserlo durante l'inizializzazione precoce)
+            if (!function_exists('add_filter')) {
+                return; // WordPress non è ancora completamente caricato, skip
+            }
+            add_filter($filter_name, function($value, ...$args) use ($callback) {
+                return self::safe_execute(function() use ($callback, $value, $args) {
+                    return call_user_func_array($callback, array_merge([$value], $args));
+                }, $value, true); // Ritorna valore originale in caso di errore
+            }, $priority, $accepted_args);
+        }, null, true);
     }
     
     /**
@@ -201,23 +212,30 @@ class SafeExecution
         string $action,
         bool $require_login = true
     ): void {
-        add_action('wp_ajax_' . $action, function() use ($callback, $require_login) {
-            self::safe_execute(function() use ($callback, $require_login) {
-                if ($require_login && !is_user_logged_in()) {
-                    wp_send_json_error('Non autenticato');
-                    return;
-                }
-                
-                return $callback();
-            }, null, true);
-        });
-        
-        // Se supporta utenti non loggati
-        add_action('wp_ajax_nopriv_' . $action, function() use ($callback) {
-            self::safe_execute(function() use ($callback) {
-                return $callback();
-            }, null, true);
-        });
+        self::safe_execute(function() use ($callback, $action, $require_login) {
+            if (!function_exists('add_action')) {
+                return; // WordPress non è ancora completamente caricato
+            }
+            add_action('wp_ajax_' . $action, function() use ($callback, $require_login) {
+                self::safe_execute(function() use ($callback, $require_login) {
+                    if ($require_login && function_exists('is_user_logged_in') && !is_user_logged_in()) {
+                        if (function_exists('wp_send_json_error')) {
+                            wp_send_json_error('Non autenticato');
+                        }
+                        return;
+                    }
+                    
+                    return $callback();
+                }, null, true);
+            });
+            
+            // Se supporta utenti non loggati
+            add_action('wp_ajax_nopriv_' . $action, function() use ($callback) {
+                self::safe_execute(function() use ($callback) {
+                    return $callback();
+                }, null, true);
+            });
+        }, null, true);
     }
     
     /**
@@ -236,21 +254,29 @@ class SafeExecution
         string $methods = 'GET',
         ?callable $permission_callback = null
     ): void {
-        add_action('rest_api_init', function() use ($namespace, $route, $callback, $methods, $permission_callback) {
-            self::safe_execute(function() use ($namespace, $route, $callback, $methods, $permission_callback) {
-                register_rest_route($namespace, $route, [
-                    'methods' => $methods,
-                    'callback' => function(...$args) use ($callback) {
-                        return self::safe_execute(function() use ($callback, $args) {
-                            return call_user_func_array($callback, $args);
-                        }, new \WP_Error('execution_error', 'Errore durante l\'esecuzione'), true);
-                    },
-                    'permission_callback' => $permission_callback ?? function() {
-                        return true;
-                    },
-                ]);
-            }, null, true);
-        });
+        self::safe_execute(function() use ($namespace, $route, $callback, $methods, $permission_callback) {
+            if (!function_exists('add_action')) {
+                return; // WordPress non è ancora completamente caricato
+            }
+            add_action('rest_api_init', function() use ($namespace, $route, $callback, $methods, $permission_callback) {
+                self::safe_execute(function() use ($namespace, $route, $callback, $methods, $permission_callback) {
+                    if (!function_exists('register_rest_route')) {
+                        return; // REST API non disponibile
+                    }
+                    register_rest_route($namespace, $route, [
+                        'methods' => $methods,
+                        'callback' => function(...$args) use ($callback) {
+                            return self::safe_execute(function() use ($callback, $args) {
+                                return call_user_func_array($callback, $args);
+                            }, new \WP_Error('execution_error', 'Errore durante l\'esecuzione'), true);
+                        },
+                        'permission_callback' => $permission_callback ?? function() {
+                            return true;
+                        },
+                    ]);
+                }, null, true);
+            });
+        }, null, true);
     }
 }
 

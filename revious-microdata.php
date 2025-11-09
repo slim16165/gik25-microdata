@@ -25,6 +25,10 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+// Carica SafeExecution PRIMA di PluginBootstrap (necessario per protezione inizializzazione)
+// SafeExecution deve essere caricata manualmente perché viene usata prima dell'autoloader
+require_once __DIR__ . '/include/class/Utility/SafeExecution.php';
+
 // Carica la classe Bootstrap
 require_once __DIR__ . '/include/class/PluginBootstrap.php';
 
