@@ -27,7 +27,7 @@ class OptimizationHelper
          * QM::info( "is_singular post" . is_singular('post') );
          * QM::info( "is_a " . is_a($post, 'WP_Post') ); //returns true everywhere*/
 
-        if ( is_singular('post') )
+        if ( is_singular('post') && is_a($post, 'WP_Post') && !empty($post->post_content) && is_string($post->post_content))
         {
             //wp_enqueue_style('Footer_Links-style', get_stylesheet_directory_uri() . '/CSS_Components/Footer_Links.css?v=2.5', array( 'parent-style'));
             if (str_contains($post->post_content, '['))
@@ -53,14 +53,40 @@ class OptimizationHelper
 
             if($enabled_shortcode_found)
             {
-                //TODO: check if the conditional load is working
-                //enqueue css, js
-                wp_enqueue_style('css_for_enabled_shortcodes',  plugins_url() . '/gik25-microdata/assets/css/css-for-enabled-shortcodes.css');
-                wp_enqueue_script('css_for_enabled_shortcodes', plugins_url() . '/gik25-microdata/assets/js/js-for-enabled-shortcodes.js');
-
+                // Registra l'hook per caricare CSS e JS durante wp_enqueue_scripts
                 add_action('wp_enqueue_scripts', array(__CLASS__, 'load_css_js_on_posts_which_contain_enabled_shortcodes'), 1001);
             }
         }
+    }
+
+    /**
+     * Carica CSS e JS per i post che contengono shortcode abilitati.
+     * Questo metodo viene chiamato durante l'hook wp_enqueue_scripts.
+     */
+    public static function load_css_js_on_posts_which_contain_enabled_shortcodes(): void
+    {
+        // Verifica che siamo su un singolo post
+        if (!is_single())
+        {
+            return;
+        }
+
+        // Carica il CSS
+        wp_enqueue_style(
+            'css_for_enabled_shortcodes',
+            plugins_url() . '/gik25-microdata/assets/css/css-for-enabled-shortcodes.css',
+            array(),
+            '1.0.0'
+        );
+
+        // Carica il JS
+        wp_enqueue_script(
+            'css_for_enabled_shortcodes',
+            plugins_url() . '/gik25-microdata/assets/js/js-for-enabled-shortcodes.js',
+            array(),
+            '1.0.0',
+            true
+        );
     }
 
     //Inglobare nell'altra e poi cancellare
@@ -85,49 +111,101 @@ class OptimizationHelper
     protected static function IsAnyShortcodeEnabled(): bool
     {
         $enabledShortcodes = self::GetListOfEnabledShortcodesFromOptions();
-        if(!isset($enabledShortcodes))
-            $enabledShortcodes = true; //if I can't find any option I should suppose that a shordcode may be enabled (cautelative), instead if the list is simply populatew with few elemetns I have to check
+        // Se non ci sono shortcode configurati, assumiamo che possa essere presente uno shortcode (approccio cauto)
+        if(!isset($enabledShortcodes) || !is_array($enabledShortcodes))
+            return true; //if I can't find any option I should suppose that a shordcode may be enabled (cautelative), instead if the list is simply populatew with few elemetns I have to check
 
         return self::CheckIfShortcodeIsUsedInThisPost($enabledShortcodes);
     }
 
     private static function GetListOfEnabledShortcodesFromOptions(): ?array
     {
-        $shortcode_names_arr_2 = null;
-
         //Is the option present?
         $shortcode_names_arr = get_option('revious_microdata_option_name');
 
-        if (!empty($shortcode_names_arr))
+        // Verifica che l'opzione esista e sia un array
+        if (empty($shortcode_names_arr) || !is_array($shortcode_names_arr))
         {
-            $shortcode_names = $shortcode_names_arr['shortcode_names'];
-
-            if (!empty($shortcode_names))
-            {
-                $shortcode_names_arr_2 = explode(',', $shortcode_names);
-            }
+            return null;
         }
+
+        // Verifica che la chiave 'shortcode_names' esista
+        if (!isset($shortcode_names_arr['shortcode_names']) || empty($shortcode_names_arr['shortcode_names']))
+        {
+            return null;
+        }
+
+        $shortcode_names = $shortcode_names_arr['shortcode_names'];
+
+        // Verifica che sia una stringa
+        if (!is_string($shortcode_names))
+        {
+            return null;
+        }
+
+        // Estrai gli shortcode separati da virgola e pulisci l'array
+        $shortcode_names_arr_2 = explode(',', $shortcode_names);
+        
+        // Rimuovi spazi bianchi e elementi vuoti
+        $shortcode_names_arr_2 = array_map('trim', $shortcode_names_arr_2);
+        $shortcode_names_arr_2 = array_filter($shortcode_names_arr_2, function($value) {
+            return !empty($value) && is_string($value);
+        });
+
+        // Ri-indexa l'array e verifica che non sia vuoto
+        $shortcode_names_arr_2 = array_values($shortcode_names_arr_2);
+        
+        if (empty($shortcode_names_arr_2))
+        {
+            return null;
+        }
+
         return $shortcode_names_arr_2;
     }
 
     /**
-     * @param $shortcodes
-     * @return bool|void
+     * Verifica se uno degli shortcode specificati è presente nel contenuto del post corrente.
+     * 
+     * @param array $shortcodes Array di nomi di shortcode da verificare
+     * @return bool True se almeno uno shortcode è presente nel post, false altrimenti
      */
-    protected static function CheckIfShortcodeIsUsedInThisPost($shortcodes): bool
+    protected static function CheckIfShortcodeIsUsedInThisPost(array $shortcodes): bool
     {
         global $post;
 
-        if (!is_a($post, 'WP_Post')/* is this sufficient????? */)
+        // Verifica che il post globale sia valido
+        if (!is_a($post, 'WP_Post'))
+        {
             return false;
+        }
 
+        // Verifica che il contenuto del post sia disponibile
+        if (empty($post->post_content) || !is_string($post->post_content))
+        {
+            return false;
+        }
+
+        // Se l'array è vuoto, non ci sono shortcode da verificare
+        if (empty($shortcodes))
+        {
+            return false;
+        }
+
+        // Verifica ogni shortcode
         foreach ($shortcodes as $shortcode_name)
         {
+            // Assicuriamoci che $shortcode_name sia una stringa valida
+            if (empty($shortcode_name) || !is_string($shortcode_name))
+            {
+                continue;
+            }
+
             if (has_shortcode($post->post_content, $shortcode_name))
             {
-                return true; //$enabled_shortcode_found
+                return true; // $enabled_shortcode_found
             }
         }
+        
         return false;
     }
 

@@ -83,6 +83,29 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.16.3 _(2025-01-XX)_
+* **Fix Critici OptimizationHelper**: Corretti errori PHP fatali in `OptimizationHelper.php`
+  * Fix errore `foreach() argument must be of type array|object, bool given` quando shortcode non configurati
+  * Aggiunto controllo tipo array prima di foreach con validazione completa
+  * Creato metodo mancante `load_css_js_on_posts_which_contain_enabled_shortcodes()` per evitare errore callback
+  * Migliorata validazione opzioni shortcode con pulizia array (rimozione elementi vuoti)
+  * Aggiunta validazione contenuto post prima di accesso a `post_content`
+  * File: `include/class/Utility/OptimizationHelper.php`
+* **Fix Database Prefix**: Corretto uso prefisso tabelle hardcoded in `TagHelper.php`
+  * Sostituito prefisso hardcoded `wp_` con `$wpdb->prefix` dinamico per supportare qualsiasi prefisso
+  * Aggiunti prepared statements per prevenire SQL injection
+  * Corretto bug in `tagWithOnePostRedirect()` che passava `term_id` invece di `tag->name`
+  * Migliorata gestione errori con logging invece di exit
+  * File: `include/class/TagHelper.php`
+* **Miglioramenti Database**: Aggiornato commento SQL in `CarouselCollections.php`
+  * Rimosso riferimento a prefisso hardcoded nel commento SQL (solo documentazione)
+  * File: `include/class/Database/CarouselCollections.php`
+* **Tool Analisi Log**: Aggiunto script Python per analisi log Apache/WordPress
+  * Script `analyze_log.py` per analisi errori nei file di log
+  * Pattern matching per errori comuni (PHP Fatal, Warning, Database, etc.)
+  * Supporto file grandi (>2GB) con lettura efficiente ultime righe
+  * File: `analyze_log.py`
+
 ##### 1.15.1 _(2025-11-08)_
 * **Fix Dashboard MCP Status**: Corretto controllo stato MCP REST API
   * Rinominato da "MCP Server" a "MCP REST API" per chiarezza

@@ -59,11 +59,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 				// This tag has less than 10 posts, redirect visitor
 				if ($post_count == 1)
 				{
-                    $post_id = TagHelper::find_post_id_from_taxonomy($tag->term_id, 'post_tag');
-                    wp_redirect(
-                        get_permalink($post_id),
-                        '301' // The HTTP status, 301 = Moved
-                    );
+                    // La funzione si aspetta il nome del tag, non l'ID
+                    $post_ids = TagHelper::find_post_id_from_taxonomy($tag->name, 'post_tag');
+                    if (!empty($post_ids)) {
+                        $post_id = $post_ids[0]; // Prendi il primo (e unico) post
+                        wp_redirect(
+                            get_permalink($post_id),
+                            301 // The HTTP status, 301 = Moved
+                        );
+                        exit;
+                    }
                 }
             }
         }
@@ -73,22 +78,30 @@ if ( ! defined( 'ABSPATH' ) ) {
         {
             global $wpdb;
 
-            $sql = <<<TAG
-SELECT wp_terms.term_id, count(DISTINCT wp_posts.ID)
-FROM wp_posts
-INNER JOIN wp_term_relationships
-  ON wp_term_relationships.object_id = wp_posts.ID
-INNER JOIN wp_term_taxonomy
-  ON wp_term_taxonomy.term_taxonomy_id = wp_term_relationships.term_taxonomy_id
-    AND wp_term_taxonomy.taxonomy = 'post_tag' 
-INNER JOIN wp_terms
-  ON wp_terms.term_id = wp_term_taxonomy.term_id    
-WHERE wp_posts.post_type = 'post'
-  AND wp_posts.post_status = 'publish'
-  AND wp_posts.post_parent = 0
-GROUP by wp_terms.term_id
-HAVING count(DISTINCT wp_posts.ID) = 1
-TAG;
+            // Usa il prefisso dinamico delle tabelle WordPress
+            $prefix = $wpdb->prefix;
+            $posts_table = $prefix . 'posts';
+            $terms_table = $prefix . 'terms';
+            $term_taxonomy_table = $prefix . 'term_taxonomy';
+            $term_relationships_table = $prefix . 'term_relationships';
+
+            $sql = $wpdb->prepare(
+                "SELECT {$terms_table}.term_id, count(DISTINCT {$posts_table}.ID)
+                FROM {$posts_table}
+                INNER JOIN {$term_relationships_table}
+                  ON {$term_relationships_table}.object_id = {$posts_table}.ID
+                INNER JOIN {$term_taxonomy_table}
+                  ON {$term_taxonomy_table}.term_taxonomy_id = {$term_relationships_table}.term_taxonomy_id
+                    AND {$term_taxonomy_table}.taxonomy = %s 
+                INNER JOIN {$terms_table}
+                  ON {$terms_table}.term_id = {$term_taxonomy_table}.term_id    
+                WHERE {$posts_table}.post_type = 'post'
+                  AND {$posts_table}.post_status = 'publish'
+                  AND {$posts_table}.post_parent = 0
+                GROUP by {$terms_table}.term_id
+                HAVING count(DISTINCT {$posts_table}.ID) = 1",
+                'post_tag'
+            );
 
 			$result = $wpdb->get_results($sql);
 
@@ -103,42 +116,50 @@ TAG;
 
 
         /**
-         * @param $term_name
-         * The taxonomy value
-         * @param $taxonomy_type
-         * tag or category
-         * @return array|void
-         * Returns all the id of posts from a given tag or category
+         * @param string $term_name The taxonomy value (tag or category name)
+         * @param string $taxonomy_type tag or category ('post_tag' or 'post_category')
+         * @return array Returns all the id of posts from a given tag or category
          */
-        public static function find_post_id_from_taxonomy($term_name, $taxonomy_type): array
+        public static function find_post_id_from_taxonomy(string $term_name, string $taxonomy_type): array
         {
             #region Check errors
 
-            if ($taxonomy_type != 'post_tag' && $taxonomy_type != 'post_category')
+            if ($taxonomy_type != 'post_tag' && $taxonomy_type != 'category')
             {
-                echo "error: era atteso un tag o categoria";
-                exit;
+                // Log errore invece di fare exit
+                error_log("TagHelper::find_post_id_from_taxonomy: taxonomy_type deve essere 'post_tag' o 'category', ricevuto: " . $taxonomy_type);
+                return [];
             }
 
             global $wpdb;
 
 			#endregion
 
-			$sql = <<<TAG
-SELECT wp_posts.ID
-FROM wp_posts
-INNER JOIN wp_term_relationships
-  ON wp_term_relationships.object_id = wp_posts.ID
-INNER JOIN wp_term_taxonomy
-  ON wp_term_taxonomy.term_taxonomy_id = wp_term_relationships.term_taxonomy_id
-    AND wp_term_taxonomy.taxonomy = '{$taxonomy_type}'
-INNER JOIN wp_terms
-  ON wp_terms.term_id = wp_term_taxonomy.term_id
-    AND wp_terms.name = '{$term_name}'
-WHERE wp_posts.post_type = 'post'
-  AND wp_posts.post_status = 'publish'
-  AND wp_posts.post_parent = 0
-TAG;
+            // Usa il prefisso dinamico delle tabelle WordPress
+            $prefix = $wpdb->prefix;
+            $posts_table = $prefix . 'posts';
+            $terms_table = $prefix . 'terms';
+            $term_taxonomy_table = $prefix . 'term_taxonomy';
+            $term_relationships_table = $prefix . 'term_relationships';
+
+            // Prepara la query SQL con prepared statement per sicurezza (previene SQL injection)
+            $sql = $wpdb->prepare(
+                "SELECT {$posts_table}.ID
+                FROM {$posts_table}
+                INNER JOIN {$term_relationships_table}
+                  ON {$term_relationships_table}.object_id = {$posts_table}.ID
+                INNER JOIN {$term_taxonomy_table}
+                  ON {$term_taxonomy_table}.term_taxonomy_id = {$term_relationships_table}.term_taxonomy_id
+                    AND {$term_taxonomy_table}.taxonomy = %s
+                INNER JOIN {$terms_table}
+                  ON {$terms_table}.term_id = {$term_taxonomy_table}.term_id
+                    AND {$terms_table}.name = %s
+                WHERE {$posts_table}.post_type = 'post'
+                  AND {$posts_table}.post_status = 'publish'
+                  AND {$posts_table}.post_parent = 0",
+                $taxonomy_type,
+                $term_name
+            );
 
 			$result = $wpdb->get_results($sql);
 

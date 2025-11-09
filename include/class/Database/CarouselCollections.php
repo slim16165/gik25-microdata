@@ -63,7 +63,7 @@ class CarouselCollections
             collection_name varchar(255) NOT NULL COMMENT 'nome visualizzato (es: Colori, Architetti)',
             collection_description text COMMENT 'descrizione della collezione',
             display_type varchar(20) DEFAULT 'carousel' COMMENT 'carousel, list, grid',
-            template_id bigint(20) UNSIGNED COMMENT 'FK a wp_carousel_templates.id',
+            template_id bigint(20) UNSIGNED COMMENT 'FK a carousel_templates.id',
             template_config text COMMENT 'JSON con configurazione template (override variabili CSS, opzioni)',
             shortcode_tag varchar(50) COMMENT 'tag shortcode personalizzato (opzionale)',
             css_class varchar(255) COMMENT 'classi CSS personalizzate',
@@ -134,7 +134,7 @@ class CarouselCollections
         
         // Aggiungi template_id se mancante
         if (!in_array('template_id', $columns)) {
-            $result = $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_id bigint(20) UNSIGNED COMMENT 'FK a wp_carousel_templates.id' AFTER display_type");
+            $result = $wpdb->query("ALTER TABLE {$table_collections} ADD COLUMN template_id bigint(20) UNSIGNED COMMENT 'FK a carousel_templates.id' AFTER display_type");
             if ($result !== false) {
                 // Verifica se l'indice esiste già prima di aggiungerlo
                 $indexes = $wpdb->get_results("SHOW INDEX FROM {$table_collections} WHERE Key_name = 'template_id'");
