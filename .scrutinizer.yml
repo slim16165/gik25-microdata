@@ -1,21 +1,14 @@
 build:
-  nodes:
-    analysis:
-      environment:
-        php:
-          version: '8.1'
-      project_setup:
-        override: |
-          # Forza installazione Composer 2
-          composer self-update --2
-          composer --version
-          composer install --no-interaction --prefer-dist --no-scripts
-      tests:
-        override:
-          - command: composer install --no-interaction --prefer-dist
-            coverage:
-              file: phpunit-coverage.xml
-              format: php-clover
+  environment:
+    php:
+      version: '8.1'
+  dependencies:
+    before:
+      # Scrutinizer usa Composer 2 di default nelle nuove versioni
+      # Se fallisce, il problema è altrove (cache, rete, ecc.)
+      - composer --version
+    override:
+      - composer install --no-interaction --prefer-dist --no-scripts
 
 filter:
   excluded_paths:
@@ -24,10 +17,7 @@ filter:
     - node_modules/*
     - mcp-server/*
     - externals/*
-
-coding_standards:
-  php:
-    - { tool: 'phpcs', standard: 'PSR2' }
+    - assets/*
 
 tools:
   external_code_coverage:
@@ -47,3 +37,6 @@ tools:
   sensiolabs_security_checker:
     enabled: true
 
+coding_standards:
+  php:
+    - { tool: 'phpcs', standard: 'PSR2' }

@@ -1,28 +1,113 @@
-# Admin UI Remix Idea
+# Admin UI Enhancement Plan
 
-## Goals
-- Document what the plugin does and how it fits in TotalDesign.
-- Offer a single admin screen for shortcodes with toggles, descriptions, samples, and quick links.
-- Add a usage tab that reports precisely which posts/pages embed each shortcode.
-- Expand health/tools tabs with targeted checks and exports.
+## ✅ Completato
 
-## Phase 1 – Overview + Shortcodes
-1. Create a `ShortcodeRegistry` (e.g. `include/class/Shortcodes/Registry.php`) that maps slug ⇒ metadata (friendly title, description, example, default enabled, dependencies).
-2. Register shortcodes via `PluginBootstrap` using that registry; metadata feeds the UI.
-3. Build an admin tabbed menu (Overview + Shortcodes). The Overview tab shows summary, docs links, and quick actions; Shortcodes tab manages toggles, documentation, and a "Find usage" link.
-4. Persist enabled state in an option (e.g. `gik25_shortcodes_enabled`) and re-register only selected shortcodes.
+### Phase 1 – Overview + Shortcodes ✅
+- ✅ **ShortcodeRegistry**: Creato e funzionante (`include/class/Shortcodes/ShortcodeRegistry.php`)
+  - Registry con metadata (label, description, example, aliases)
+  - Gestione enable/disable via option `gik25_shortcodes_enabled`
+  - Filtro `pre_do_shortcode_tag` per disabilitare shortcode
+- ✅ **Admin Menu con Tab**: Dashboard unificata con tab (Dashboard/Impostazioni/Strumenti)
+  - Tab Dashboard: Overview, statistiche, link utili
+  - Tab Impostazioni: Settings page integrata
+  - Tab Strumenti: Tools page integrata
+- ✅ **Shortcodes Unified Page**: Pagina con tab Gestione/Utilizzo
+  - Tab Gestione: Toggle shortcode, documentazione, esempi
+  - Tab Utilizzo: Scanner usage, filtri, lista post/pagine con shortcode
 
-## Phase 2 – Usage Scanner
-- Introduce a "Usage" tab that executes a simple `$wpdb->prepare` query like `post_content LIKE '%[slug%'` and lists posts with counts, post type, date, status.
-- Allow filtering by shortcode, CPT, or date range.
-- Add a button to "Rebuild usage index" that optionally stores results in a helper table (`wp_gik25_shortcode_index`).
-- Provide a WP-CLI command (`wp gik25 shortcodes scan`) to regenerate the data from the command line.
+### Phase 2 – Usage Scanner ✅
+- ✅ **Usage Tab**: Implementato in `ShortcodesUsagePage.php`
+  - Query `$wpdb->prepare` per cercare shortcode in `post_content`
+  - Filtri per shortcode, post type, date range
+  - Lista post con conteggio occorrenze, tipo, data, status
+  - Funzione `countOccurrences()` per conteggio accurato
 
-## Phase 3 – Health & Tools
-- Extend `include/class/HealthCheck/HealthChecker.php` with checks for required options, missing assets, inactive cron events, and conflicting plugins (Yoast/RankMath hooks).
-- Tools tab exposes actions: export/import enabled shortcodes, clear shortcode index, rebuild CSS/JS caches.
-- Provide a help tab with explanations and links to `docs/` articles.
+### Phase 3 – Health & Tools (Parzialmente Completato)
+- ✅ **Health Check Esteso**: `HealthChecker.php` esteso con:
+  - Check required options
+  - Parser log Cloudways per errori server
+  - Check errori PHP, HTTP 500, slow queries
+  - REST API health check endpoints
+  - Visualizzazione errori PHP migliorata
+- ⚠️ **Tools Tab**: Parzialmente implementato
+  - ✅ Tools page esiste (`ToolsPage.php`)
+  - ❌ Export/import enabled shortcodes (da implementare)
+  - ❌ Clear shortcode index (da implementare)
+  - ❌ Rebuild CSS/JS caches (da implementare)
+- ❌ **Help Tab**: Non implementato
+  - Help tab con spiegazioni
+  - Link a documentazione `docs/`
 
-## Notes
-- Reuse existing helpers (`ListOfPostsHelper`) for UI consistency.
-- Keep new tabs in sync with the documentation under `docs/` so help links always match the latest behavior.
+## 📋 Task Rimanenti
+
+### Phase 3.1 – Tools Tab Enhancement (Media Priorità)
+
+#### Export/Import Shortcodes
+- [ ] Aggiungere pulsante "Export" in Tools tab
+  - Esporta configurazione shortcode abilitati in JSON
+  - Include metadata (version, date, site)
+- [ ] Aggiungere pulsante "Import" in Tools tab
+  - Importa configurazione da JSON
+  - Validazione formato, backup prima import
+  - Preview cambiamenti prima di applicare
+- [ ] Aggiungere WP-CLI command: `wp gik25 shortcodes export/import`
+
+#### Clear Shortcode Index
+- [ ] Aggiungere pulsante "Clear Usage Index" in Tools tab
+  - Pulisce cache usage (se implementata)
+  - Conferma prima di cancellare
+- [ ] Aggiungere WP-CLI command: `wp gik25 shortcodes clear-index`
+
+#### Rebuild CSS/JS Caches
+- [ ] Aggiungere pulsante "Rebuild Assets" in Tools tab
+  - Rigenera cache CSS/JS per shortcode abilitati
+  - Pulisce cache browser/CDN (se configurato)
+- [ ] Aggiungere WP-CLI command: `wp gik25 assets rebuild`
+
+### Phase 3.2 – Help Tab (Bassa Priorità)
+
+#### Help Tab Implementation
+- [ ] Creare classe `HelpTab.php` o integrare in `AdminMenu.php`
+- [ ] Aggiungere help tab con:
+  - Overview plugin e funzionalità
+  - Link a documentazione `docs/`
+  - FAQ comuni
+  - Changelog versione corrente
+  - Link supporto/contatti
+- [ ] Integrare help tab nel menu admin principale
+
+### Phase 4 – Miglioramenti Futuri (Bassa Priorità)
+
+#### Advanced Usage Scanner
+- [ ] Implementare cache usage index in tabella `wp_gik25_shortcode_index`
+- [ ] Aggiungere cron job per aggiornamento automatico index
+- [ ] Aggiungere filtri avanzati (author, category, tag)
+- [ ] Aggiungere export usage report (CSV/JSON)
+
+#### Advanced Health Check
+- [ ] Aggiungere check per plugin conflitti (Yoast/RankMath)
+- [ ] Aggiungere check per cron events inattivi
+- [ ] Aggiungere check per missing assets (CSS/JS files)
+- [ ] Aggiungere alerting (email/webhook) per errori critici
+
+#### UI/UX Improvements
+- [ ] Migliorare design tab con icone e colori
+- [ ] Aggiungere search/filter in tab Gestione shortcode
+- [ ] Aggiungere preview shortcode in admin
+- [ ] Aggiungere drag & drop per ordinamento shortcode
+
+## Note
+
+- Le funzionalità completate sono già in produzione
+- Tools tab ha base solida, serve solo aggiungere funzionalità avanzate
+- Help tab è opzionale ma migliorerebbe UX
+- Miglioramenti futuri sono nice-to-have, non critici
+
+## Riferimenti
+
+- `include/class/Shortcodes/ShortcodeRegistry.php`: Registry shortcode
+- `include/class/Admin/AdminMenu.php`: Menu admin principale
+- `include/class/Admin/ShortcodesUnifiedPage.php`: Pagina shortcode unificata
+- `include/class/Admin/ShortcodesUsagePage.php`: Usage scanner
+- `include/class/Admin/ToolsPage.php`: Tools page
+- `include/class/HealthCheck/HealthChecker.php`: Health check system
