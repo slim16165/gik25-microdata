@@ -281,11 +281,21 @@ jobs:
         run: |
           if [ -f phpunit.xml ] || [ -f phpunit.xml.dist ]; then
             echo "🧪 Running PHPUnit tests..."
-            vendor/bin/phpunit
+            vendor/bin/phpunit --coverage-clover=coverage.xml --log-junit=junit.xml
             echo "✅ Tests passed"
           else
             echo "⚠️ Test suite not configured (phpunit.xml not found)"
             echo "Skipping tests - this is not a failure"
           fi
         continue-on-error: false
+      
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+        continue-on-error: true
 

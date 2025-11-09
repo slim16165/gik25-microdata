@@ -11,3 +11,12 @@
 # Ignore local diff reports
 diff-reports-*
 
+# CI/CD cache directories
+.phpstan/
+.psalm/
+.php-cs-fixer.cache
+.phpunit.result.cache
+coverage/
+coverage.xml
+junit.xml
+

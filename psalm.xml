@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="3"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="false"
+    findUnusedCode="false"
+    cacheDirectory=".psalm"
+>
+    <projectFiles>
+        <directory name="include" />
+        <ignoreFiles>
+            <directory name="vendor" />
+            <directory name="node_modules" />
+            <directory name=".git" />
+            <directory name=".psalm" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <!-- Ignora errori comuni di WordPress (funzioni globali) -->
+        <UndefinedFunction>
+            <errorLevel type="suppress">
+                <directory name="include" />
+            </errorLevel>
+        </UndefinedFunction>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <directory name="include" />
+            </errorLevel>
+        </UndefinedClass>
+        <!-- WordPress spesso non ha return type hints -->
+        <MissingReturnType>
+            <errorLevel type="suppress">
+                <directory name="include" />
+            </errorLevel>
+        </MissingReturnType>
+        <!-- WordPress usa spesso proprietà nullable -->
+        <PossiblyNullPropertyFetch>
+            <errorLevel type="suppress">
+                <directory name="include" />
+            </errorLevel>
+        </PossiblyNullPropertyFetch>
+        <PossiblyNullArgument>
+            <errorLevel type="suppress">
+                <directory name="include" />
+            </errorLevel>
+        </PossiblyNullArgument>
+        <!-- WordPress hook system spesso usa mixed types -->
+        <MixedArgument>
+            <errorLevel type="suppress">
+                <directory name="include" />
+            </errorLevel>
+        </MixedArgument>
+        <MixedAssignment>
+            <errorLevel type="suppress">
+                <directory name="include" />
+            </errorLevel>
+        </MixedAssignment>
+    </issueHandlers>
+
+    <stubs>
+        <!-- WordPress stubs se disponibili -->
+        <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php" />
+    </stubs>
+    
+    <plugins>
+        <!-- Plugin per WordPress se disponibile -->
+    </plugins>
+</psalm>
+

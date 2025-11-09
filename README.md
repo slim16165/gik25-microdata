@@ -158,6 +158,36 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+## 2.3.0 (2025-11-09) - Setup Test Automatici e Miglioramenti Qualità Codice
+
+### 🧪 Test Automatici
+- ✅ **PHPUnit Setup**: Configurazione completa per test unitari e integrazione
+  - `phpunit.xml.dist` configurato per coverage e report
+  - `tests/bootstrap.php` per ambiente test WordPress
+  - Struttura test organizzata (Unit/Integration)
+- ✅ **Test Base**: Test iniziali per SafeExecution e ShortcodeRegistry
+  - Test unitari per gestione errori e sicurezza
+  - Test integrazione per shortcode registration
+  - Placeholder per test futuri
+- ✅ **Code Coverage**: Integrazione Codecov nel CI
+  - Report coverage automatico in GitHub Actions
+  - Target coverage: 60-70% (da incrementare gradualmente)
+- ✅ **Composer Scripts**: Nuovi script per test
+  - `composer test`: Esegue test suite
+  - `composer test-coverage`: Genera report coverage HTML
+
+### 🚀 CI/CD Miglioramenti
+- ✅ **Test in CI**: Test suite eseguita automaticamente in GitHub Actions
+- ✅ **Coverage Upload**: Upload automatico coverage a Codecov
+- ✅ **Workflow Ottimizzati**: CI si attiva solo su file rilevanti (PHP, composer, config)
+- ✅ **Update composer.lock**: Workflow manuale per aggiornamento dipendenze
+
+### 📚 Documentazione
+- ✅ **TESTING_STRATEGY.md**: Piano completo per miglioramenti test (già presente)
+- ✅ **.gitignore**: Aggiunti file coverage e cache test
+
+---
+
 ## 2.2.0 (2025-11-09) - Separazione Analisi Log e Ottimizzazioni
 
 ### 🔍 Separazione Analisi Log Cloudways
