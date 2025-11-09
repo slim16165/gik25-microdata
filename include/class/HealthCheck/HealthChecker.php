@@ -341,40 +341,113 @@ class HealthChecker
      */
     private static function render_checks_results(array $checks): void
     {
-        $total = count($checks);
-        $success = count(array_filter($checks, fn($c) => $c['status'] === 'success'));
-        $warnings = count(array_filter($checks, fn($c) => $c['status'] === 'warning'));
-        $errors = count(array_filter($checks, fn($c) => $c['status'] === 'error'));
+        // Separare i check dei log dagli altri health check
+        $log_check_name = 'Analisi Log Cloudways';
+        $log_check = null;
+        $health_checks = [];
+        
+        foreach ($checks as $check) {
+            if ($check['name'] === $log_check_name) {
+                $log_check = $check;
+            } else {
+                $health_checks[] = $check;
+            }
+        }
+        
+        // Calcola statistiche per health check
+        $health_total = count($health_checks);
+        $health_success = count(array_filter($health_checks, fn($c) => $c['status'] === 'success'));
+        $health_warnings = count(array_filter($health_checks, fn($c) => $c['status'] === 'warning'));
+        $health_errors = count(array_filter($health_checks, fn($c) => $c['status'] === 'error'));
+        
+        // Calcola statistiche per log check
+        $log_status = $log_check ? $log_check['status'] : 'unknown';
+        $log_php_errors_count = 0;
+        if ($log_check && !empty($log_check['php_errors'])) {
+            $log_php_errors_count = count($log_check['php_errors']);
+        }
 
         ?>
         <div class="health-check-section active" id="summary">
-            <div class="health-check-summary">
-                <h2><?php esc_html_e('Riepilogo', 'gik25-microdata'); ?></h2>
+            <!-- Riepilogo Health Check -->
+            <div class="health-check-summary" style="margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 4px;">
+                <h2><?php esc_html_e('Riepilogo Health Check', 'gik25-microdata'); ?></h2>
                 <p>
-                    <strong><?php esc_html_e('Totale:', 'gik25-microdata'); ?></strong> <?php echo $total; ?> |
-                    <span style="color:#46b450;"><?php esc_html_e('[OK] Successo:', 'gik25-microdata'); ?> <?php echo $success; ?></span> |
-                    <span style="color:#ffb900;"><?php esc_html_e('[WARN] Warning:', 'gik25-microdata'); ?> <?php echo $warnings; ?></span> |
-                    <span style="color:#dc3232;"><?php esc_html_e('[ERR] Errori:', 'gik25-microdata'); ?> <?php echo $errors; ?></span>
+                    <strong><?php esc_html_e('Totale:', 'gik25-microdata'); ?></strong> <?php echo $health_total; ?> |
+                    <span style="color:#46b450;"><?php esc_html_e('[OK] Successo:', 'gik25-microdata'); ?> <?php echo $health_success; ?></span> |
+                    <span style="color:#ffb900;"><?php esc_html_e('[WARN] Warning:', 'gik25-microdata'); ?> <?php echo $health_warnings; ?></span> |
+                    <span style="color:#dc3232;"><?php esc_html_e('[ERR] Errori:', 'gik25-microdata'); ?> <?php echo $health_errors; ?></span>
                 </p>
+                <p><small><?php esc_html_e('Ultimo check:', 'gik25-microdata'); ?> <?php echo current_time('mysql'); ?></small></p>
+            </div>
+            
+            <!-- Riepilogo Log Cloudways -->
+            <div class="health-check-summary" style="padding: 20px; background: #f0f8ff; border-radius: 4px; border-left: 4px solid #0073aa;">
+                <h2><?php esc_html_e('Riepilogo Analisi Log Cloudways', 'gik25-microdata'); ?></h2>
+                <?php if ($log_check): ?>
+                    <p>
+                        <strong><?php esc_html_e('Stato:', 'gik25-microdata'); ?></strong> 
+                        <span style="color:<?php 
+                            echo $log_status === 'error' ? '#dc3232' : ($log_status === 'warning' ? '#ffb900' : '#46b450'); 
+                        ?>; font-weight: bold;">
+                            <?php echo esc_html(strtoupper($log_status)); ?>
+                        </span>
+                    </p>
+                    <p><?php echo esc_html($log_check['message']); ?></p>
+                    <?php if ($log_php_errors_count > 0): ?>
+                        <p style="color: #dc3232; font-weight: bold;">
+                            ⚠️ <?php echo $log_php_errors_count; ?> errore/i PHP critico/i rilevato/i
+                        </p>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <p style="color: #666;">
+                        <?php esc_html_e('Analisi log non disponibile.', 'gik25-microdata'); ?>
+                    </p>
+                <?php endif; ?>
                 <p><small><?php esc_html_e('Ultimo check:', 'gik25-microdata'); ?> <?php echo current_time('mysql'); ?></small></p>
             </div>
         </div>
 
         <div class="health-check-section" id="details">
-            <?php foreach ($checks as $check): ?>
-                <?php 
-                // Controlla se questo check ha errori PHP separati
-                $has_php_errors = !empty($check['php_errors']);
-                $log_check_name = 'Analisi Log Cloudways';
-                ?>
-                <?php if ($check['name'] === $log_check_name): ?>
-                    <!-- Struttura unica per Analisi Log Cloudways -->
+            <!-- Sezione Health Check -->
+            <div style="margin-bottom: 40px;">
+                <h2 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">
+                    <?php esc_html_e('Dettagli Health Check', 'gik25-microdata'); ?>
+                </h2>
+                <?php foreach ($health_checks as $check): ?>
+                    <!-- Rendering standard per health check -->
                     <div class="health-check-item <?php echo esc_attr($check['status']); ?>">
                         <h3>
                             <span class="badge"><?php echo esc_html(strtoupper($check['status'])); ?></span>
                             <?php echo esc_html($check['name']); ?>
                         </h3>
-                        <p style="margin-bottom: 15px;"><?php echo esc_html($check['message']); ?></p>
+                        <p><?php echo esc_html($check['message']); ?></p>
+                        <?php if (!empty($check['details'])): ?>
+                            <div class="details">
+                                <pre><?php echo esc_html($check['details']); ?></pre>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <!-- Sezione Analisi Log Cloudways -->
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 3px solid #0073aa;">
+                <h2 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #0073aa; color: #0073aa;">
+                    <?php esc_html_e('Dettagli Analisi Log Cloudways', 'gik25-microdata'); ?>
+                </h2>
+                <?php if ($log_check): ?>
+                    <?php 
+                    // Controlla se questo check ha errori PHP separati
+                    $has_php_errors = !empty($log_check['php_errors']);
+                    ?>
+                    <!-- Struttura unica per Analisi Log Cloudways -->
+                    <div class="health-check-item <?php echo esc_attr($log_check['status']); ?>">
+                        <h3>
+                            <span class="badge"><?php echo esc_html(strtoupper($log_check['status'])); ?></span>
+                            <?php echo esc_html($log_check['name']); ?>
+                        </h3>
+                        <p style="margin-bottom: 15px;"><?php echo esc_html($log_check['message']); ?></p>
                         
                         <?php 
                         // Tail degli ultimi errori grezzi dai log
@@ -385,11 +458,11 @@ class HealthChecker
                         <?php if ($has_php_errors): ?>
                             <details style="margin: 15px 0; background: #fff5f5; border: 1px solid #dc3232; border-radius: 4px; padding: 10px;">
                                 <summary style="cursor: pointer; font-weight: 600; color: #dc3232; padding: 8px;">
-                                    ❌ Errori PHP Critici - <?php echo count($check['php_errors']); ?> errore/i rilevato/i
+                                    ❌ Errori PHP Critici - <?php echo count($log_check['php_errors']); ?> errore/i rilevato/i
                                 </summary>
                                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dc3232;">
                                     <div class="php-errors-list">
-                                        <?php foreach ($check['php_errors'] as $idx => $php_error): ?>
+                                        <?php foreach ($log_check['php_errors'] as $idx => $php_error): ?>
                                             <div class="php-error-item" style="border: 1px solid #dc3232; border-radius: 4px; padding: 15px; margin-bottom: 15px; background: #fff;">
                                                 <h4 style="margin-top: 0; color: #dc3232; display: flex; align-items: center; gap: 10px;">
                                                     <span style="font-size: 18px;">
@@ -593,33 +666,27 @@ class HealthChecker
                         <?php endif; ?>
                         
                         <!-- Dettagli completi (collapsed) -->
-                        <?php if (!empty($check['details'])): ?>
+                        <?php if (!empty($log_check['details'])): ?>
                             <details style="margin: 15px 0; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; padding: 10px;">
                                 <summary style="cursor: pointer; font-weight: 600; padding: 8px;">
                                     📄 Dettagli Completi (formato testo)
                                 </summary>
                                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ccc;">
-                                    <pre style="max-height: 500px; overflow-y: auto; background: #fff; padding: 15px; border-radius: 3px; font-size: 12px;"><?php echo esc_html($check['details']); ?></pre>
+                                    <pre style="max-height: 500px; overflow-y: auto; background: #fff; padding: 15px; border-radius: 3px; font-size: 12px;"><?php echo esc_html($log_check['details']); ?></pre>
                                 </div>
                             </details>
                         <?php endif; ?>
                     </div>
                 <?php else: ?>
-                    <!-- Rendering standard per altri check -->
-                    <div class="health-check-item <?php echo esc_attr($check['status']); ?>">
+                    <div class="health-check-item warning">
                         <h3>
-                            <span class="badge"><?php echo esc_html(strtoupper($check['status'])); ?></span>
-                            <?php echo esc_html($check['name']); ?>
+                            <span class="badge">WARNING</span>
+                            Analisi Log Cloudways
                         </h3>
-                        <p><?php echo esc_html($check['message']); ?></p>
-                        <?php if (!empty($check['details'])): ?>
-                            <div class="details">
-                                <pre><?php echo esc_html($check['details']); ?></pre>
-                            </div>
-                        <?php endif; ?>
+                        <p>Analisi log non disponibile.</p>
                     </div>
                 <?php endif; ?>
-            <?php endforeach; ?>
+            </div>
         </div>
         <?php
     }
