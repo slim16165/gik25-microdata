@@ -46,6 +46,30 @@ Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazi
 
 Aggiornare anche la versione del plugin su revious-microdata.php
 
+### Aggiornamento composer.lock
+
+Se `composer.lock` è desincronizzato con `composer.json` (errore GitHub Actions):
+
+**Sul server Cloudways (via SSH):**
+```bash
+cd /path/to/wp-content/plugins/gik25-microdata
+composer update --no-interaction --prefer-dist
+git add composer.lock
+git commit -m "Update composer.lock"
+git push
+```
+
+**Localmente (se hai PHP/Composer):**
+```bash
+# Linux/Mac
+bash scripts/update-composer-lock.sh
+
+# Windows
+powershell -ExecutionPolicy Bypass -File scripts/update-composer-lock.ps1
+```
+
+**Nota**: `composer.lock` deve essere committato e sincronizzato con `composer.json` per evitare errori in GitHub Actions.
+
 ### Validazione Sintassi PHP
 
 Prima di committare, valida la sintassi PHP:

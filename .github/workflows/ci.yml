@@ -1,0 +1,273 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  # Job per determinare quali file sono stati modificati
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      php: ${{ steps.filter.outputs.php }}
+      composer: ${{ steps.filter.outputs.composer }}
+      config: ${{ steps.filter.outputs.config }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            php:
+              - '**.php'
+            composer:
+              - 'composer.json'
+              - 'composer.lock'
+            config:
+              - 'phpstan.neon'
+              - 'psalm.xml'
+              - '.php-cs-fixer.dist.php'
+
+  # Validazione sintassi PHP (sempre eseguita se ci sono file PHP)
+  # Questo job è veloce e viene eseguito in parallelo con altri job
+  syntax:
+    needs: changes
+    if: needs.changes.outputs.php == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, curl, zip
+          coverage: none
+      
+      - name: Validate PHP syntax
+        run: |
+          echo "🔍 Validating PHP syntax..."
+          ERRORS=0
+          FILES_CHECKED=0
+          while IFS= read -r -d '' file; do
+            FILES_CHECKED=$((FILES_CHECKED + 1))
+            if ! php -l "$file" > /dev/null 2>&1; then
+              echo "❌ Syntax error in: $file"
+              php -l "$file" 2>&1 | head -3
+              ERRORS=$((ERRORS + 1))
+            fi
+          done < <(find . -type f -name "*.php" ! -path "*/vendor/*" ! -path "*/node_modules/*" ! -path "*/.git/*" -print0)
+          
+          if [ $ERRORS -gt 0 ]; then
+            echo "❌ PHP syntax validation failed! Found $ERRORS errors in $FILES_CHECKED files."
+            exit 1
+          fi
+          echo "✅ All PHP files have valid syntax ($FILES_CHECKED files checked)"
+
+  # Validazione Composer
+  composer:
+    needs: changes
+    if: needs.changes.outputs.composer == 'true' || needs.changes.outputs.php == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate composer.json
+        run: |
+          echo "🔍 Validating composer.json..."
+          composer validate --strict || {
+            echo "⚠️ composer.json validation failed or composer.lock is out of sync"
+            echo "Run 'composer update' locally or on the server to fix this"
+            exit 1
+          }
+      
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json', '**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      
+      - name: Install dependencies
+        run: |
+          echo "📦 Installing dependencies..."
+          composer install --prefer-dist --no-progress --no-interaction || {
+            echo "❌ composer install failed. This usually means composer.lock is out of sync with composer.json"
+            echo "🔧 Solution: Run 'composer update' on your server or locally, then commit composer.lock"
+            exit 1
+          }
+      
+      - name: Security Audit
+        run: |
+          if composer audit --no-interaction; then
+            echo "✅ Security audit passed"
+          else
+            echo "⚠️ Security audit found vulnerabilities - please review"
+            echo "This is a warning, not blocking the build"
+          fi
+        continue-on-error: true
+
+  # PHPStan Static Analysis
+  phpstan:
+    needs: [changes, composer]
+    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, curl, zip
+          coverage: none
+      
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      
+      - name: Cache PHPStan
+        uses: actions/cache@v4
+        with:
+          path: .phpstan
+          key: ${{ runner.os }}-phpstan-${{ hashFiles('phpstan.neon', '**/*.php') }}
+          restore-keys: |
+            ${{ runner.os }}-phpstan-
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+      
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=1G
+
+  # Psalm Static Analysis
+  psalm:
+    needs: [changes, composer]
+    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, curl, zip
+          coverage: none
+      
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      
+      - name: Cache Psalm
+        uses: actions/cache@v4
+        with:
+          path: .psalm
+          key: ${{ runner.os }}-psalm-${{ hashFiles('psalm.xml', '**/*.php') }}
+          restore-keys: |
+            ${{ runner.os }}-psalm-
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+      
+      - name: Run Psalm
+        run: vendor/bin/psalm
+
+  # PHP CS Fixer Code Style
+  cs-fixer:
+    needs: [changes, composer]
+    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, curl, zip
+          coverage: none
+      
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      
+      - name: Cache PHP CS Fixer
+        uses: actions/cache@v4
+        with:
+          path: .php-cs-fixer.cache
+          key: ${{ runner.os }}-cs-fixer-${{ hashFiles('.php-cs-fixer.dist.php', '**/*.php') }}
+          restore-keys: |
+            ${{ runner.os }}-cs-fixer-
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+      
+      - name: Run PHP CS Fixer (dry-run)
+        run: |
+          echo "🔍 Running PHP CS Fixer (dry-run)..."
+          vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --cache-file=.php-cs-fixer.cache
+          if [ $? -eq 0 ]; then
+            echo "✅ Code style check passed"
+          else
+            echo "❌ Code style issues found. Run 'composer cs-fix' to fix them automatically."
+            exit 1
+          fi
+
+  # Test Suite
+  test:
+    needs: [changes, composer]
+    if: needs.changes.outputs.php == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, curl, zip
+          coverage: none
+      
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+      
+      - name: Run test suite
+        run: |
+          if [ -f phpunit.xml ] || [ -f phpunit.xml.dist ]; then
+            echo "🧪 Running PHPUnit tests..."
+            vendor/bin/phpunit
+            echo "✅ Tests passed"
+          else
+            echo "⚠️ Test suite not configured (phpunit.xml not found)"
+            echo "Skipping tests - this is not a failure"
+          fi
+        continue-on-error: false
+
