@@ -98,26 +98,37 @@ jobs:
       - name: Validate composer.json structure
         run: |
           echo "🔍 Validating composer.json structure (ignoring lock file)..."
-          # Valida SOLO la struttura di composer.json, ignora composer.lock
-          composer validate --no-check-lock --strict || {
-            echo "❌ composer.json has structural errors"
-            echo "Fix composer.json syntax/structure errors before continuing"
+          # Valida SOLO la struttura di composer.json, ignora completamente composer.lock
+          # Questo step NON fallisce mai su problemi di composer.lock
+          set +e
+          VALIDATION_OUTPUT=$(composer validate --no-check-lock --strict 2>&1)
+          VALIDATION_EXIT=$?
+          set -e
+          
+          if [ $VALIDATION_EXIT -eq 0 ]; then
+            echo "✅ composer.json structure is valid"
+          else
+            echo "❌ composer.json has structural errors:"
+            echo "$VALIDATION_OUTPUT"
             exit 1
-          }
-          echo "✅ composer.json structure is valid"
+          fi
       
-      - name: Check composer.lock sync status
+      - name: Check composer.lock sync status (info only)
         run: |
-          echo "🔍 Checking composer.lock sync status..."
+          echo "🔍 Checking composer.lock sync status (informational only)..."
           # Verifica se composer.lock è desincronizzato (NON fallisce il build)
-          if composer validate --strict 2>&1 | grep -q "Lock file is not up to date"; then
-            echo "⚠️  WARNING: composer.lock is out of sync with composer.json"
-            echo "ℹ️  This is not blocking, but you should update composer.lock:"
-            echo "   1. Run the 'Update composer.lock' workflow manually, OR"
-            echo "   2. Run 'composer update' locally/server"
+          # Questo è solo informativo
+          set +e
+          LOCK_CHECK=$(composer validate --strict 2>&1 || true)
+          set -e
+          
+          if echo "$LOCK_CHECK" | grep -q "Lock file is not up to date"; then
+            echo "⚠️  INFO: composer.lock is out of sync with composer.json"
+            echo "ℹ️  This is normal and does not block the build"
+            echo "ℹ️  To fix: Run the 'Update composer.lock' workflow manually"
             echo ""
-            echo "📋 Missing/outdated packages:"
-            composer validate --strict 2>&1 | grep -A 20 "Lock file errors" || true
+            echo "📋 Details:"
+            echo "$LOCK_CHECK" | grep -A 15 "Lock file errors" || echo "$LOCK_CHECK" | tail -10
           else
             echo "✅ composer.lock is synchronized with composer.json"
           fi
