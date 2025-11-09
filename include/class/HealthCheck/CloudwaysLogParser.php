@@ -472,8 +472,13 @@ class CloudwaysLogParser
                         $error_counts[$error_key]['contexts'][] = $context_key;
                     }
                     
-                    if (count($error_counts[$error_key]['examples']) < 5) {
-                        $error_counts[$error_key]['examples'][] = self::truncate_line($line, 200);
+                    // Raccogli più esempi (fino a 10) per avere varietà
+                    if (count($error_counts[$error_key]['examples']) < 10) {
+                        $truncated = self::truncate_line($line, 200);
+                        // Evita duplicati esatti
+                        if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
+                            $error_counts[$error_key]['examples'][] = $truncated;
+                        }
                     }
                 }
             }
@@ -563,8 +568,13 @@ class CloudwaysLogParser
                         $error_counts[$error_key] = ['count' => 0, 'examples' => []];
                     }
                     $error_counts[$error_key]['count']++;
-                    if (count($error_counts[$error_key]['examples']) < 5) {
-                        $error_counts[$error_key]['examples'][] = self::truncate_line($line, 200);
+                    // Raccogli più esempi (fino a 10) per avere varietà
+                    if (count($error_counts[$error_key]['examples']) < 10) {
+                        $truncated = self::truncate_line($line, 200);
+                        // Evita duplicati esatti
+                        if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
+                            $error_counts[$error_key]['examples'][] = $truncated;
+                        }
                     }
                 }
             }
@@ -773,7 +783,21 @@ class CloudwaysLogParser
                     $details .= "   Script: " . $issue['context']['details']['script'] . "\n";
                 }
                 if (!empty($issue['examples'])) {
-                    $details .= "   Esempi: " . implode(', ', array_slice($issue['examples'], 0, 3)) . "\n";
+                    // Mostra più esempi in base al numero di occorrenze
+                    $example_count = 3; // Default
+                    if ($issue['count'] > 100) {
+                        $example_count = 5; // Molte occorrenze = più esempi
+                    } elseif ($issue['count'] > 50) {
+                        $example_count = 4;
+                    }
+                    // Rimuovi duplicati per mostrare varietà
+                    $unique_examples = array_unique($issue['examples']);
+                    $examples_to_show = array_slice($unique_examples, 0, $example_count);
+                    $details .= "   Esempi: " . implode(', ', $examples_to_show);
+                    if (count($unique_examples) > $example_count) {
+                        $details .= " (+" . (count($unique_examples) - $example_count) . " altri)";
+                    }
+                    $details .= "\n";
                 }
             }
         }
@@ -879,7 +903,7 @@ class CloudwaysLogParser
                     'severity' => 'error',
                     'message' => sprintf('%s: %d occorrenze nelle ultime 24 ore', $pattern_name, $count),
                     'count' => $count,
-                    'examples' => array_slice($critical_errors[$pattern], 0, 3),
+                    'examples' => array_slice($critical_errors[$pattern], 0, 5), // Mostra fino a 5 esempi
                 ];
             }
         }
@@ -891,7 +915,7 @@ class CloudwaysLogParser
                 'severity' => 'warning',
                 'message' => sprintf('Molti errori Nginx rilevati: %d nelle ultime 24 ore', count($recent_errors)),
                 'count' => count($recent_errors),
-                'examples' => array_slice($recent_errors, 0, 3),
+                'examples' => array_slice($recent_errors, 0, 5), // Mostra fino a 5 esempi
             ];
         }
         
@@ -931,8 +955,13 @@ class CloudwaysLogParser
                     }
                     $status_5xx[$status_key]['count']++;
                     
-                    if (count($status_5xx[$status_key]['examples']) < 3) {
-                        $status_5xx[$status_key]['examples'][] = self::truncate_line($line, 150);
+                    // Raccogli più esempi (fino a 8) per avere varietà
+                    if (count($status_5xx[$status_key]['examples']) < 8) {
+                        $truncated = self::truncate_line($line, 150);
+                        // Evita duplicati esatti
+                        if (!in_array($truncated, $status_5xx[$status_key]['examples'])) {
+                            $status_5xx[$status_key]['examples'][] = $truncated;
+                        }
                     }
                 }
             }
@@ -990,8 +1019,13 @@ class CloudwaysLogParser
                         $error_counts[$error_key] = ['count' => 0, 'examples' => []];
                     }
                     $error_counts[$error_key]['count']++;
-                    if (count($error_counts[$error_key]['examples']) < 3) {
-                        $error_counts[$error_key]['examples'][] = self::truncate_line($line, 150);
+                    // Raccogli più esempi (fino a 8) per avere varietà
+                    if (count($error_counts[$error_key]['examples']) < 8) {
+                        $truncated = self::truncate_line($line, 150);
+                        // Evita duplicati esatti
+                        if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
+                            $error_counts[$error_key]['examples'][] = $truncated;
+                        }
                     }
                 }
             }
@@ -1147,8 +1181,32 @@ class CloudwaysLogParser
                 $scripts[$script] = ['count' => 0, 'examples' => []];
             }
             $scripts[$script]['count']++;
-            if (count($scripts[$script]['examples']) < 3 && !empty($request['script_full'])) {
-                $scripts[$script]['examples'][] = $request['script_full'];
+            // Raccogli più esempi per script diversi (fino a 8 per script per avere varietà)
+            // Mostra varietà: diversi timestamp, eventuali informazioni dallo stack
+            if (count($scripts[$script]['examples']) < 8 && !empty($request['script_full'])) {
+                // Crea esempio più informativo
+                $example_parts = [basename($request['script_full'])];
+                
+                // Aggiungi timestamp se disponibile
+                if (!empty($request['timestamp'])) {
+                    $example_parts[] = date('H:i:s', $request['timestamp']);
+                }
+                
+                // Aggiungi prima riga dello stack se disponibile (può indicare il problema)
+                if (!empty($request['stack']) && is_array($request['stack']) && count($request['stack']) > 0) {
+                    $first_stack = $request['stack'][0];
+                    // Estrai funzione/file dalla prima riga dello stack
+                    if (preg_match('/([^\/]+\/[^:]+:\d+)/', $first_stack, $stack_matches)) {
+                        $example_parts[] = $stack_matches[1];
+                    }
+                }
+                
+                $example = implode(' | ', $example_parts);
+                
+                // Evita duplicati esatti (ma permetti varietà con timestamp/stack diversi)
+                if (!in_array($example, $scripts[$script]['examples'])) {
+                    $scripts[$script]['examples'][] = $example;
+                }
             }
         }
         
@@ -1160,7 +1218,7 @@ class CloudwaysLogParser
                     'severity' => 'warning',
                     'message' => sprintf('Script lento: %s (%d occorrenze nelle ultime 24 ore)', $script, $data['count']),
                     'count' => $data['count'],
-                    'examples' => array_slice($data['examples'], 0, 3),
+                    'examples' => array_slice($data['examples'], 0, 5), // Mostra fino a 5 esempi per script
                 ];
             }
         }
@@ -1246,8 +1304,13 @@ class CloudwaysLogParser
                         $error_counts[$error_key]['contexts'][] = $context_key;
                     }
                     
-                    if (count($error_counts[$error_key]['examples']) < 3) {
-                        $error_counts[$error_key]['examples'][] = self::truncate_line($line, 150);
+                    // Raccogli più esempi (fino a 8) per avere varietà
+                    if (count($error_counts[$error_key]['examples']) < 8) {
+                        $truncated = self::truncate_line($line, 150);
+                        // Evita duplicati esatti
+                        if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
+                            $error_counts[$error_key]['examples'][] = $truncated;
+                        }
                     }
                 }
             }
@@ -1333,7 +1396,7 @@ class CloudwaysLogParser
                 'severity' => 'warning',
                 'message' => sprintf('Errori WordPress cron: %d occorrenze', count($failed_crons)),
                 'count' => count($failed_crons),
-                'examples' => array_slice($failed_crons, 0, 3),
+                'examples' => array_slice($failed_crons, 0, 5), // Mostra fino a 5 esempi per cron errors
             ];
         }
         
