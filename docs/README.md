@@ -1,32 +1,20 @@
-# Documentazione Plugin Revious Microdata
+# Documentazione Plugin
 
-Questa cartella contiene tutta la documentazione tecnica del plugin.
+## Documenti Essenziali
 
-## 📚 Indice Documentazione
+### Widget e Funzionalità
+- **[TOTALDESIGN_WIDGETS.md](TOTALDESIGN_WIDGETS.md)** - Widget TotalDesign (18 widget)
+- **[GENERIC_CAROUSEL.md](GENERIC_CAROUSEL.md)** - Sistema caroselli/liste configurabile
+- **[HEALTH_CHECK.md](HEALTH_CHECK.md)** - Health check per verifica funzionalità
 
-### 🎨 Widget e Funzionalità
-- **[TOTALDESIGN_WIDGETS.md](TOTALDESIGN_WIDGETS.md)** - Elenco completo widget TotalDesign (18 widget)
-- **[GENERIC_CAROUSEL.md](GENERIC_CAROUSEL.md)** - Sistema generico caroselli/liste configurabile via database
-- **[HEALTH_CHECK.md](HEALTH_CHECK.md)** - Sistema health check per verifica funzionalità dopo deploy
+### MCP Server
+- **[MCP.md](MCP.md)** - Documentazione completa MCP server (setup, endpoints, troubleshooting)
 
-### 🤖 MCP Server (Model Context Protocol)
-- **[MCP_ARCHITECTURE.md](MCP_ARCHITECTURE.md)** - Architettura e funzionamento MCP server
-- **[MCP_SETUP.md](MCP_SETUP.md)** - Guida setup e configurazione MCP server
-- **[DEPLOY_MCP.md](DEPLOY_MCP.md)** - Guida deploy MCP server su produzione
-- **[TEST_MCP.md](TEST_MCP.md)** - Guida test MCP server e REST API
-- **[MCP_SERVER_README.md](MCP_SERVER_README.md)** - Documentazione server Node.js MCP
+### Piani di Sviluppo
+- **[ADMIN_UI_ENHANCEMENT.md](ADMIN_UI_ENHANCEMENT.md)** - Piano miglioramenti admin UI
+- **[TESTING_STRATEGY.md](TESTING_STRATEGY.md)** - Strategia testing
+- **[CAROUSEL_GENERALIZATION_PLAN.md](CAROUSEL_GENERALIZATION_PLAN.md)** - Piano generalizzazione caroselli
 
-### 🔧 Altro
-- **[QUERY_SQL_NAVIGATOR.md](QUERY_SQL_NAVIGATOR.md)** - Query SQL per navigator widget
+## Documentazione Principale
 
-## 📖 Documentazione Principale
-
-La documentazione principale del plugin si trova nel file **[../README.md](../README.md)** alla root del progetto.
-
-## 🎯 Quick Links
-
-- **Sistema Caroselli**: [GENERIC_CAROUSEL.md](GENERIC_CAROUSEL.md)
-- **Health Check**: [HEALTH_CHECK.md](HEALTH_CHECK.md)
-- **MCP Server**: [MCP_ARCHITECTURE.md](MCP_ARCHITECTURE.md)
-- **Widget TotalDesign**: [TOTALDESIGN_WIDGETS.md](TOTALDESIGN_WIDGETS.md)
-
+Documentazione principale: **[../README.md](../README.md)**

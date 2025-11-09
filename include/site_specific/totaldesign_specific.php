@@ -50,7 +50,7 @@ if (class_exists('\\gik25microdata\\Widgets\\ContextualWidgets')) {
     ContextualWidgets::init();
 }
 
-// Attiva Kitchen Finder shortcode - il file kitchenfinder.php si auto-istanzia alla fine
+// Attiva Kitchen Finder shortcode - il file KitchenFinder.php si auto-istanzia alla fine
 // La classe viene caricata dall'autoloader quando necessario, e l'istanziazione alla fine del file
 // ($kitchen_finder = new KitchenFinder()) registra automaticamente lo shortcode
 

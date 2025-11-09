@@ -120,7 +120,7 @@ Verifica hook registrati:
 ### File Critici
 Controlla esistenza:
 - `include/class/PluginBootstrap.php`
-- `include/class/Shortcodes/kitchenfinder.php`
+- `include/class/Shortcodes/KitchenFinder.php`
 - `assets/css/kitchen-finder.css`
 - `assets/js/kitchen-finder.js`
 - ecc.

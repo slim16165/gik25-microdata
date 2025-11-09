@@ -5,7 +5,7 @@
 ### 1. **Kitchen Finder** 🏠
 **Shortcode**: `[kitchen_finder]`  
 **Classe**: `gik25microdata\Shortcodes\KitchenFinder`  
-**File**: `include/class/Shortcodes/kitchenfinder.php`  
+**File**: `include/class/Shortcodes/KitchenFinder.php`  
 **Descrizione**: Wizard 4-step per trovare la cucina perfetta (layout, misure, stile, budget)  
 **Features**:
 - Wizard interattivo con 4 step
@@ -17,7 +17,7 @@
 ### 2. **App Navigator** 🧭
 **Shortcode**: `[app_nav]`  
 **Classe**: `gik25microdata\Shortcodes\AppNav`  
-**File**: `include/class/Shortcodes/appnav.php`  
+**File**: `include/class/Shortcodes/AppNav.php`  
 **Descrizione**: Navigazione app-like multi-livello con varianti mobile/desktop  
 **Features**:
 - Navigazione multi-livello (sezioni → sottosezioni)

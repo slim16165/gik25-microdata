@@ -943,8 +943,8 @@ class HealthChecker
         
         // Shortcode opzionali (dipendono da configurazione sito o file site_specific)
         $optional_shortcodes = [
-            'kitchen_finder', // Solo se kitchenfinder.php è caricato e istanziato
-            'app_nav', // Solo se appnav.php è caricato e istanziato
+            'kitchen_finder', // Solo se KitchenFinder.php è caricato e istanziato
+            'app_nav', // Solo se AppNav.php è caricato e istanziato
             'carousel', 'list', 'grid', // Solo se GenericCarousel è istanziato
             'link_colori', 'grafica3d', 'archistar', // Solo se totaldesign_specific.php è caricato
         ];
@@ -1161,8 +1161,8 @@ class HealthChecker
 
         $critical_files = [
             'include/class/PluginBootstrap.php',
-            'include/class/Shortcodes/kitchenfinder.php',
-            'include/class/Shortcodes/appnav.php',
+            'include/class/Shortcodes/KitchenFinder.php',
+            'include/class/Shortcodes/AppNav.php',
             'assets/css/kitchen-finder.css',
             'assets/js/kitchen-finder.js',
             'assets/css/app-nav.css',

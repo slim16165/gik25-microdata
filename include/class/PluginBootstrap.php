@@ -194,7 +194,7 @@ class PluginBootstrap
                 // in modo che gli hook wp_ajax_* siano registrati
                 self::loadShortcodeFiles();
                 // Contesto AJAX: gli endpoint AJAX vengono registrati nel costruttore delle classi 
-                // (es. KitchenFinder in include/class/Shortcodes/kitchenfinder.php)
+                // (es. KitchenFinder in include/class/Shortcodes/KitchenFinder.php)
                 // Queste classi vengono automaticamente caricate dall'autoloader di Composer quando 
                 // WordPress cerca i callback degli endpoint. L'istanziazione alla fine dei file 
                 // (es. $kitchen_finder = new KitchenFinder()) registra gli hook add_action 

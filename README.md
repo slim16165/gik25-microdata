@@ -60,7 +60,14 @@ composer validate-syntax
 composer validate-syntax-windows
 ```
 
-Vedi `docs/VALIDATION.md` per dettagli e pre-commit hooks.
+**Git Pre-commit Hook:**
+```bash
+# Linux/Mac
+cp .git/hooks/pre-commit.example .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+Il workflow `.github/workflows/php.yml` include automaticamente la validazione della sintassi PHP su ogni push o pull request.
 
 ## USAGE
 
@@ -100,6 +107,18 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - Contextual Widgets: inserimento automatico basato su keywords articoli
 
 # Changelog
+
+## 2.1.0 (2025-11-09) - Documentazione Snellita
+
+### 📚 Pulizia Documentazione
+- ✅ **Rimossi File Duplicati**: Eliminati 6 file documentazione MCP duplicati (MCP_ARCHITECTURE.md, MCP_SETUP.md, DEPLOY_MCP.md, TEST_MCP.md, MCP_SERVER_README.md, QUERY_SQL_NAVIGATOR.md)
+- ✅ **MCP.md Consolidato**: Documentazione MCP unificata in un solo file snello (~141 righe, -40%)
+- ✅ **Piani Snelliti**: ADMIN_UI_ENHANCEMENT.md (-70%), TESTING_STRATEGY.md (-70%), CAROUSEL_GENERALIZATION_PLAN.md (-67%)
+- ✅ **VALIDATION.md Integrato**: Contenuto integrato nel README principale, file separato rimosso
+- ✅ **docs/README.md Aggiornato**: Struttura snella con solo link essenziali
+- ✅ **Riferimenti Aggiornati**: Tutti i riferimenti a file eliminati rimossi da README.md e mcp-server/README.md
+
+**Risultato**: Documentazione ridotta da ~2000+ righe a ~800 righe (-60%), più utile e fruibile per umani e AI.
 
 ## 2.0.1 (2025-11-09) - Bug Fixes
 
@@ -242,7 +261,6 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * Composer scripts: validate-syntax e validate-syntax-windows
   * Git pre-commit hook opzionale
   * Validazione automatica in GitHub Actions
-  * Documentazione: `docs/VALIDATION.md`
   * File: `scripts/validate-php-syntax.sh`, `scripts/validate-php-syntax.ps1`, `.github/workflows/php.yml`
 
 ##### 1.16.4 _(2025-11-08)_
@@ -305,7 +323,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * File: `include/class/Admin/AdminMenu.php`
 * **Documentazione MCP**: Chiarito architettura e flusso
   * Documentazione aggiornata per chiarire differenza tra REST API (Cloudways) e server Node.js (locale)
-  * File: `docs/MCP_ARCHITECTURE.md`
+  * File: `docs/MCP.md`
 
 ##### 1.16.2 _(2025-11-08)_
 * **Miglioramento Messaggi Errore**: Messaggi di errore dettagliati per creazione collezione di test
@@ -410,7 +428,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * Abilitazione semplice: `add_filter('wp_mcp_enable_extended_routes', '__return_true')`
   * Sistema più semplice: niente database, solo codice PHP
   * Namespace generico: `wp-mcp/v1` (funziona su qualsiasi WordPress)
-  * Documentazione aggiornata: `docs/MCP_SETUP.md`, `docs/MCP_ARCHITECTURE.md`
+  * Documentazione: `docs/MCP.md`
 
 ##### 1.10.0 _(2025-11-07)_
 * **MCP Server**: Integrazione Model Context Protocol per interrogazione WordPress da Cursor/AI
@@ -422,7 +440,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
   * Route estese opzionali per siti specifici (TotalDesign: colors, ikea, rooms, pantone)
   * Query vault opzionale per ricerca in file markdown locali (Obsidian)
   * File: `include/class/REST/MCPApi.php`, `mcp-server/server.js`, `mcp-server/package.json`
-  * Documentazione: `docs/MCP_ARCHITECTURE.md`, `docs/DEPLOY_MCP.md`
+  * Documentazione: `docs/MCP.md`
 
 ##### 1.9.0 _(2025-11-06)_
 * App-like Navigator: nuovo shortcode `[app_nav]` con tabs (Scopri, Colori, IKEA, Stanze, Trend) e card responsive
