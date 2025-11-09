@@ -31,22 +31,34 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
       
-      - name: Validate composer.json (structure only)
+      - name: Validate composer.json structure
         run: |
           echo "🔍 Validating composer.json structure..."
           composer validate --no-check-lock --strict || {
             echo "❌ composer.json has structural errors"
+            echo "Fix composer.json before updating composer.lock"
             exit 1
           }
           echo "✅ composer.json structure is valid"
+      
+      - name: Install dependencies (for update)
+        run: |
+          echo "📦 Installing dependencies (required for update)..."
+          composer install --no-interaction --prefer-dist --no-scripts --no-dev || {
+            echo "⚠️ Warning: composer install failed, but continuing with update..."
+          }
       
       - name: Update composer.lock
         run: |
           echo "🔄 Updating composer.lock..."
           echo "📦 This may take a few minutes..."
+          echo ""
+          echo "Current composer.json requirements:"
+          composer show --direct --format=json | jq -r '.installed[] | "\(.name): \(.version)"' || true
+          echo ""
           
-          # Aggiorna composer.lock
-          composer update --no-interaction --prefer-dist --no-scripts --with-all-dependencies
+          # Aggiorna composer.lock con tutte le dipendenze
+          composer update --no-interaction --prefer-dist --no-scripts --with-all-dependencies 2>&1 | tee update.log
           
           # Verifica se composer.lock è cambiato
           if git diff --quiet composer.lock; then
@@ -54,16 +66,26 @@ jobs:
             exit 0
           fi
           
+          echo ""
           echo "📝 composer.lock has been updated"
           echo "📋 Summary of changes:"
-          git diff --stat composer.lock | head -20
+          git diff --stat composer.lock | head -30
           
-          # Valida che composer.lock sia sincronizzato
+      - name: Validate updated composer.lock
+        run: |
           echo "✅ Validating updated composer.lock..."
-          composer validate --strict || {
-            echo "⚠️ Warning: composer.lock validation still has issues"
-            echo "This might be due to package conflicts - review the changes"
-          }
+          if composer validate --strict; then
+            echo "✅ composer.lock is now synchronized with composer.json"
+          else
+            echo "⚠️  WARNING: composer.lock validation still has issues"
+            echo "This might be due to:"
+            echo "  - Package conflicts"
+            echo "  - Unavailable package versions"
+            echo "  - Minimum stability constraints"
+            echo ""
+            echo "Review the composer.lock changes and fix any issues manually"
+            # Non facciamo exit 1 perché vogliamo comunque committare il lock file aggiornato
+          fi
           
       - name: Commit and push
         run: |

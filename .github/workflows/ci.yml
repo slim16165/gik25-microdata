@@ -95,22 +95,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Validate composer.json
+      - name: Validate composer.json structure
         run: |
-          echo "🔍 Validating composer.json..."
-          # Valida composer.json (ignora warning su composer.lock desincronizzato)
-          composer validate --strict --no-check-lock || {
-            echo "❌ composer.json validation failed"
-            echo "Fix composer.json errors before continuing"
+          echo "🔍 Validating composer.json structure (ignoring lock file)..."
+          # Valida SOLO la struttura di composer.json, ignora composer.lock
+          composer validate --no-check-lock --strict || {
+            echo "❌ composer.json has structural errors"
+            echo "Fix composer.json syntax/structure errors before continuing"
             exit 1
           }
-          
-          # Verifica separatamente se composer.lock è desincronizzato
-          if ! composer validate --strict 2>&1 | grep -q "Lock file is not up to date"; then
-            echo "⚠️ composer.lock might be out of sync"
-            echo "ℹ️  Run the 'Update composer.lock' workflow to fix this"
-            echo "ℹ️  Or run 'composer update' locally/server"
+          echo "✅ composer.json structure is valid"
+      
+      - name: Check composer.lock sync status
+        run: |
+          echo "🔍 Checking composer.lock sync status..."
+          # Verifica se composer.lock è desincronizzato (NON fallisce il build)
+          if composer validate --strict 2>&1 | grep -q "Lock file is not up to date"; then
+            echo "⚠️  WARNING: composer.lock is out of sync with composer.json"
+            echo "ℹ️  This is not blocking, but you should update composer.lock:"
+            echo "   1. Run the 'Update composer.lock' workflow manually, OR"
+            echo "   2. Run 'composer update' locally/server"
+            echo ""
+            echo "📋 Missing/outdated packages:"
+            composer validate --strict 2>&1 | grep -A 20 "Lock file errors" || true
+          else
+            echo "✅ composer.lock is synchronized with composer.json"
           fi
+        continue-on-error: true
       
       - name: Cache Composer packages
         id: composer-cache
