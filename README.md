@@ -108,6 +108,25 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+## 2.1.1 (2025-11-09) - Miglioramenti Parser Log Cloudways
+
+### 🔍 Parser Log Cloudways Migliorato
+- ✅ **Supporto File Rotati (.gz)**: Aggiunto supporto per file log compressi e ruotati
+  - Metodi `collect_log_files()` e `tail_from_files()` per gestire file plain e `.gz`
+  - Pattern glob estesi per file ruotati (`*.log.*.gz`, `*.log.*`)
+  - Lettura efficiente da file compressi con `gzopen()`/`gzgets()`
+- ✅ **Correzione Mappatura File**: `php_error` ora punta correttamente a `php-app.error.log` (non più `php-app.access.log`)
+  - `php-access.log` separato e usato solo per HTTP 5xx (access log)
+  - Mappatura corretta per tutti i tipi di log Cloudways
+- ✅ **Unificazione Access Log**: HTTP 5xx ora include nginx, apache e php access log
+  - Sezione "HTTP 5xx (Nginx/Apache/PHP Access)" unificata
+  - Pattern robusto per catturare status code da tutti i formati
+- ✅ **Pattern Migliorati**: Aggiornati pattern per tutti i tipi di log
+  - Access log: pattern `/"\s+(\d{3})\s+/` per status code HTTP
+  - PHP slow: mostra tutte le righe non vuote (blocchi con `script_filename` e stack)
+  - WP-Cron: filtra per `WordPress database error|error|warn|Executed the cron event`
+- ✅ **Ottimizzazioni Performance**: Limite dimensione file (50MB), lettura efficiente (ultimi 5MB per file grandi), gestione memoria ottimizzata
+
 ## 2.1.0 (2025-11-09) - Documentazione Snellita
 
 ### 📚 Pulizia Documentazione

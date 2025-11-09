@@ -265,6 +265,8 @@ class CloudwaysLogParser
             ],
             'php_error' => [
                 'php-app.error.log',
+            ],
+            'php_access' => [
                 'php-app.access.log',
             ],
             'wp_cron' => [
@@ -308,7 +310,141 @@ class CloudwaysLogParser
             }
         }
         
+        // Aggiungi pattern glob per file ruotati (.gz)
+        if (!empty($paths['base'])) {
+            $base = $paths['base'];
+            
+            // Pattern glob per file ruotati (supporta sia *.log.*.gz che *.log.1.gz, *.log.2.gz, ecc.)
+            $paths['php_error_glob'] = $base . '{php-app.error.log.*.gz,php-app.error.log.*}';
+            $paths['nginx_err_glob'] = $base . '{nginx*.error.log.*.gz,nginx*.error.log.*}';
+            $paths['nginx_acc_glob'] = $base . '{nginx*.access.log.*.gz,nginx*.access.log.*}';
+            $paths['apache_err_glob'] = $base . '{apache*.error.log.*.gz,apache*.error.log.*}';
+            $paths['apache_acc_glob'] = $base . '{apache*.access.log.*.gz,apache*.access.log.*}';
+            $paths['php_acc_glob'] = $base . '{php-app.access.log.*.gz,php-app.access.log.*}';
+            $paths['php_slow_glob'] = $base . '{php-app.slow.log.*.gz,php-app.slow.log.*}';
+            $paths['wp_cron_glob'] = $base . '{wp-cron.log.*.gz,wp-cron.log.*}';
+        }
+        
         return $paths;
+    }
+    
+    /**
+     * Raccoglie file reali (esclude .gz di default) dai pattern e li ordina per mtime (desc)
+     * 
+     * @param array $globs Array di pattern glob (es. ['/path/*.log', '/path/*.log.*.gz'])
+     * @param bool $include_gz Se true, include anche file .gz (default: false)
+     * @return array Array di percorsi file ordinati per mtime (più recenti prima)
+     */
+    private static function collect_log_files(array $globs, bool $include_gz = false): array
+    {
+        $files = [];
+        
+        foreach ($globs as $g) {
+            if (empty($g)) {
+                continue;
+            }
+            
+            // Supporta sia pattern glob che file singoli
+            if (strpos($g, '*') !== false || strpos($g, '?') !== false || strpos($g, '{') !== false) {
+                // Pattern glob (con o senza brace expansion)
+                $glob_results = glob($g, GLOB_BRACE);
+                if ($glob_results === false) {
+                    // Se GLOB_BRACE fallisce, prova senza
+                    $glob_results = glob($g);
+                }
+                
+                foreach ($glob_results ?: [] as $f) {
+                    if (is_readable($f) && is_file($f)) {
+                        // Ignora directory
+                        // Di default esclude file .gz (troppo pesanti)
+                        if (!$include_gz && substr($f, -3) === '.gz') {
+                            continue;
+                        }
+                        $files[$f] = @filemtime($f) ?: 0;
+                    }
+                }
+            } else {
+                // File singolo
+                if (is_readable($g) && is_file($g)) {
+                    // Di default esclude file .gz
+                    if (!$include_gz && substr($g, -3) === '.gz') {
+                        continue;
+                    }
+                    $files[$g] = @filemtime($g) ?: 0;
+                }
+            }
+        }
+        
+        // Ordina per mtime (più recenti prima)
+        arsort($files);
+        
+        return array_keys($files);
+    }
+    
+    /**
+     * Legge la coda (ultime ~K righe) da più file (plain + gz)
+     * 
+     * @param array $files Array di percorsi file (già ordinati per mtime)
+     * @param int $max_lines Numero massimo di righe da restituire
+     * @param callable $accept Callback per filtrare righe (return true per accettare)
+     * @return array Array di righe (ultime N che matchano il filtro)
+     */
+    private static function tail_from_files(array $files, int $max_lines, callable $accept): array
+    {
+        $ring = [];
+        
+        foreach ($files as $file) {
+            // Skip file .gz (non dovrebbero esserci se collect_log_files esclude .gz, ma controllo di sicurezza)
+            if (substr($file, -3) === '.gz') {
+                continue;
+            }
+            
+            try {
+                $fh = @fopen($file, 'rb');
+                
+                if (!$fh) {
+                    continue;
+                }
+                
+                $file_size = @filesize($file);
+                
+                // Per file grandi, leggi solo la coda (ultimi 2MB) - così leggiamo sempre gli errori più recenti
+                // Anche se il file è gigante, leggiamo solo gli ultimi 2MB (dove ci sono gli errori più recenti)
+                if ($file_size && $file_size > 2 * 1024 * 1024) {
+                    @fseek($fh, -min(2 * 1024 * 1024, $file_size), SEEK_END);
+                }
+                
+                while (($line = @fgets($fh)) !== false) {
+                    $line = rtrim($line, "\r\n");
+                    
+                    if ($accept($line)) {
+                        $ring[] = mb_substr($line, 0, 300);
+                        
+                        // Mantieni solo le ultime N*12 righe in memoria (per avere abbastanza materiale)
+                        if (count($ring) > $max_lines * 12) {
+                            array_splice($ring, 0, count($ring) - $max_lines * 12);
+                        }
+                    }
+                }
+                
+                @fclose($fh);
+                
+                // Se abbiamo già abbastanza righe, fermati
+                if (count($ring) >= $max_lines) {
+                    break;
+                }
+                
+            } catch (\Throwable $e) {
+                // Silenzioso: continua con il prossimo file
+                if (isset($fh) && $fh) {
+                    @fclose($fh);
+                }
+                continue;
+            }
+        }
+        
+        // Ritorna solo le ultime N righe utili
+        return array_slice($ring, -$max_lines);
     }
     
     /**
@@ -1839,6 +1975,164 @@ class CloudwaysLogParser
         $normalized = preg_replace('/\/[imsxADSUXu]*$/', '', $pattern);
         
         return $names[$pattern] ?? $names[$normalized] ?? $pattern;
+    }
+    
+    /**
+     * Tail degli ultimi errori grezzi per ogni log
+     * 
+     * Restituisce gli ultimi N errori significativi per ogni tipo di log,
+     * filtrati per severità e timestamp (ultime X ore).
+     * 
+     * @param int $per_file Numero di righe per file (default: 30)
+     * @param int $hours Numero di ore da analizzare (default: 24)
+     * @return array{paths: array, tails: array} Paths dei log e tails filtrati
+     */
+    public static function recent_errors_tail(int $per_file = 30, int $hours = 24): array
+    {
+        // NON loggare nulla durante la lettura
+        $old_error_reporting = error_reporting(0);
+        $old_display_errors  = ini_get('display_errors');
+        $old_log_errors      = ini_get('log_errors');
+        ini_set('display_errors', '0');
+        ini_set('log_errors', '0');
+        
+        try {
+            $paths = self::get_log_paths();
+            
+            if (empty($paths['base'])) {
+                return ['paths' => [], 'tails' => []];
+            }
+            
+            $tails = [];
+            $cutoff = time() - ($hours * 3600);
+            
+            // ACCESS 5xx: unifica nginx, apache e php access log (esclude .gz di default)
+            $accFiles = self::collect_log_files([
+                $paths['nginx_access'] ?? '',
+                $paths['nginx_acc_glob'] ?? '',
+                $paths['apache_access'] ?? '',
+                $paths['apache_acc_glob'] ?? '',
+                $paths['php_access'] ?? '',
+                $paths['php_acc_glob'] ?? '',
+            ], false); // false = non include file .gz
+            
+            $tails['access_5xx'] = [
+                'file'    => 'nginx/apache/php access (rotati)',
+                'entries' => self::tail_from_files($accFiles, $per_file, function(string $line) use ($cutoff): bool {
+                    // Pattern Cloudways: "GET /index.php" 500 ... (pattern più robusto)
+                    // Supporta sia "/" 500 " che " " 500 "
+                    if (preg_match('/"\s+(\d{3})\s+/', $line, $m) || preg_match('/"\s(\d{3})\s/', $line, $m)) {
+                        $status = (int)$m[1];
+                        if ($status >= 500) {
+                            // Verifica timestamp se presente (nginx/apache access log)
+                            $ts = self::parse_nginx_access_timestamp($line);
+                            if ($ts && $ts < $cutoff) {
+                                return false;
+                            }
+                            return true;
+                        }
+                    }
+                    return false;
+                }),
+            ];
+            
+            // NGINX error (esclude .gz di default)
+            $nginxErrFiles = self::collect_log_files([
+                $paths['nginx_error'] ?? '',
+                $paths['nginx_err_glob'] ?? '',
+            ], false);
+            
+            $tails['nginx_error'] = [
+                'file'    => 'nginx-app.error.log*',
+                'entries' => self::tail_from_files($nginxErrFiles, $per_file, function(string $line) use ($cutoff): bool {
+                    // 2025/11/08 04:13:03
+                    $ts = self::parse_nginx_timestamp($line);
+                    if ($ts && $ts < $cutoff) {
+                        return false;
+                    }
+                    return stripos($line, '[error]') !== false || stripos($line, '[crit]') !== false;
+                }),
+            ];
+            
+            // APACHE error (esclude .gz di default)
+            $apacheErrFiles = self::collect_log_files([
+                $paths['apache_error'] ?? '',
+                $paths['apache_err_glob'] ?? '',
+            ], false);
+            
+            $tails['apache_error'] = [
+                'file'    => 'apache*.error.log*',
+                'entries' => self::tail_from_files($apacheErrFiles, $per_file, function(string $line) use ($cutoff): bool {
+                    $ts = self::parse_apache_timestamp($line);
+                    if ($ts && $ts < $cutoff) {
+                        return false;
+                    }
+                    return stripos($line, '[error]') !== false
+                        || stripos($line, 'PHP Fatal') !== false
+                        || stripos($line, 'Uncaught') !== false;
+                }),
+            ];
+            
+            // PHP error (CORRETTO: solo php-app.error.log, esclude .gz di default)
+            $phpErrFiles = self::collect_log_files([
+                $paths['php_error'] ?? '',
+                $paths['php_error_glob'] ?? '',
+            ], false);
+            
+            $tails['php_error'] = [
+                'file'    => 'php-app.error.log*',
+                'entries' => self::tail_from_files($phpErrFiles, $per_file, function(string $line): bool {
+                    // i log PHP spesso non hanno timestamp standard: filtro solo per severità
+                    return (bool) preg_match('/PHP (Fatal|Parse|Warning|Notice|Deprecated)|Uncaught (Exception|Error)/i', $line);
+                }),
+            ];
+            
+            // PHP slow (esclude .gz di default)
+            $slowFiles = self::collect_log_files([
+                $paths['php_slow'] ?? '',
+                $paths['php_slow_glob'] ?? '',
+            ], false);
+            
+            $tails['php_slow'] = [
+                'file'    => 'php-app.slow.log*',
+                'entries' => self::tail_from_files($slowFiles, $per_file, function(string $line): bool {
+                    // Mostra tutte le righe non vuote (i blocchi slow hanno righe "script_filename" e stack)
+                    return trim($line) !== '';
+                }),
+            ];
+            
+            // WP cron (esclude .gz di default)
+            $cronFiles = self::collect_log_files([
+                $paths['wp_cron'] ?? '',
+                $paths['wp_cron_glob'] ?? '',
+            ], false);
+            
+            $tails['wp_cron'] = [
+                'file'    => 'wp-cron.log*',
+                'entries' => self::tail_from_files($cronFiles, $per_file, function(string $line): bool {
+                    return stripos($line, 'WordPress database error') !== false
+                        || stripos($line, 'error') !== false
+                        || stripos($line, 'warn') !== false
+                        || stripos($line, 'Executed the cron event') !== false;
+                }),
+            ];
+            
+            // Rimuovo chiavi vuote
+            foreach ($tails as $k => $v) {
+                if (empty($v['entries'])) {
+                    unset($tails[$k]);
+                }
+            }
+            
+            return ['paths' => $paths, 'tails' => $tails];
+            
+        } catch (\Throwable $e) {
+            return ['paths' => [], 'tails' => []];
+        } finally {
+            error_reporting($old_error_reporting ?? E_ALL);
+            ini_set('display_errors', $old_display_errors ?? '1');
+            ini_set('log_errors', $old_log_errors ?? '1');
+        }
     }
 }
 

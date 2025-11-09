@@ -367,192 +367,241 @@ class HealthChecker
                 $has_php_errors = !empty($check['php_errors']);
                 $log_check_name = 'Analisi Log Cloudways';
                 ?>
-                <?php if ($has_php_errors && $check['name'] === $log_check_name): ?>
-                    <!-- Sezione Errori PHP -->
-                    <div class="health-check-item error php-errors-section" style="border-left: 4px solid #dc3232; background: #fff5f5; margin-bottom: 20px;">
-                        <h3 style="color: #dc3232;">
-                            <span class="badge" style="background: #dc3232;">ERROR</span>
-                            ⚠️ Errori PHP Critici - <?php echo count($check['php_errors']); ?> errore/i rilevato/i
-                        </h3>
-                        <p style="font-weight: bold; color: #721c24;">
-                            <?php echo esc_html($check['message']); ?>
-                        </p>
-                        
-                        <div class="php-errors-list" style="margin-top: 15px;">
-                            <?php foreach ($check['php_errors'] as $idx => $php_error): ?>
-                                <div class="php-error-item" style="border: 1px solid #dc3232; border-radius: 4px; padding: 15px; margin-bottom: 15px; background: #fff;">
-                                    <h4 style="margin-top: 0; color: #dc3232; display: flex; align-items: center; gap: 10px;">
-                                        <span style="font-size: 18px;">
-                                            <?php echo $php_error['severity'] === 'error' ? '❌' : '⚠️'; ?>
-                                        </span>
-                                        <span>
-                                            <?php 
-                                            $error_type_labels = [
-                                                'fatal' => 'Fatal Error',
-                                                'parse' => 'Parse Error',
-                                                'error' => 'Uncaught Error',
-                                                'exception' => 'Uncaught Exception',
-                                                'warning' => 'PHP Warning',
-                                                'database' => 'Database Error',
-                                            ];
-                                            $error_type = $php_error['error_type'] ?? 'unknown';
-                                            echo esc_html($error_type_labels[$error_type] ?? ucfirst($error_type));
-                                            ?>
-                                        </span>
-                                        <span style="font-size: 14px; font-weight: normal; color: #666;">
-                                            (<?php echo esc_html($php_error['count']); ?> occorrenze)
-                                        </span>
-                                    </h4>
-                                    
-                                    <div style="margin: 10px 0;">
-                                        <strong>Messaggio:</strong> <?php echo esc_html($php_error['message']); ?>
-                                    </div>
-                                    
-                                    <?php if (!empty($php_error['files'])): ?>
-                                        <div style="margin: 10px 0;">
-                                            <strong>File:</strong> 
-                                            <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">
-                                                <?php echo esc_html(implode(', ', array_slice($php_error['files'], 0, 3))); ?>
-                                                <?php if (count($php_error['files']) > 3): ?>
-                                                    <span style="color: #666;">(+<?php echo count($php_error['files']) - 3; ?> altri)</span>
-                                                <?php endif; ?>
-                                            </code>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <?php if (!empty($php_error['lines'])): ?>
-                                        <div style="margin: 10px 0;">
-                                            <strong>Righe:</strong> 
-                                            <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">
-                                                <?php echo esc_html(implode(', ', array_slice($php_error['lines'], 0, 5))); ?>
-                                                <?php if (count($php_error['lines']) > 5): ?>
-                                                    <span style="color: #666;">(+<?php echo count($php_error['lines']) - 5; ?> altri)</span>
-                                                <?php endif; ?>
-                                            </code>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <?php if (!empty($php_error['contexts'])): ?>
-                                        <div style="margin: 10px 0;">
-                                            <strong>Contesto:</strong> 
-                                            <?php 
-                                            $context_labels = [
-                                                'wp_cli' => 'WP-CLI',
-                                                'ajax' => 'AJAX',
-                                                'wp_cron' => 'WP-CRON',
-                                                'frontend' => 'Frontend',
-                                                'backend' => 'Backend',
-                                                'rest_api' => 'REST API',
-                                                'unknown' => 'Unknown',
-                                            ];
-                                            $contexts_display = array_map(function($ctx) use ($context_labels) {
-                                                return $context_labels[$ctx] ?? $ctx;
-                                            }, $php_error['contexts']);
-                                            echo esc_html(implode(', ', $contexts_display));
-                                            ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <?php if (!empty($php_error['examples'])): ?>
-                                        <div style="margin: 15px 0;">
-                                            <strong>Esempi (<?php echo count($php_error['examples']); ?>):</strong>
-                                            <div style="margin-top: 10px;">
-                                                <?php foreach (array_slice($php_error['examples'], 0, 2) as $example_idx => $example): ?>
-                                                    <?php if (is_array($example)): ?>
-                                                        <details style="margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">
-                                                            <summary style="cursor: pointer; font-weight: bold; color: #0073aa;">
-                                                                Esempio <?php echo $example_idx + 1; ?>
-                                                                <?php if (!empty($example['file'])): ?>
-                                                                    - <?php echo esc_html(basename($example['file'])); ?>
-                                                                    <?php if (!empty($example['line'])): ?>
-                                                                        :<?php echo esc_html($example['line']); ?>
-                                                                    <?php endif; ?>
-                                                                <?php endif; ?>
-                                                            </summary>
-                                                            <div style="margin-top: 10px; padding-left: 15px;">
-                                                                <?php if (!empty($example['message'])): ?>
-                                                                    <div style="margin-bottom: 8px;">
-                                                                        <strong>Messaggio:</strong><br>
-                                                                        <code style="background: #f5f5f5; padding: 5px; display: block; border-radius: 3px; word-break: break-all;">
-                                                                            <?php echo esc_html($example['message']); ?>
-                                                                        </code>
-                                                                    </div>
-                                                                <?php endif; ?>
-                                                                
-                                                                <?php if (!empty($example['file'])): ?>
-                                                                    <div style="margin-bottom: 8px;">
-                                                                        <strong>File:</strong> 
-                                                                        <code><?php echo esc_html($example['file']); ?></code>
-                                                                        <?php if (!empty($example['line'])): ?>
-                                                                            <strong>Riga:</strong> 
-                                                                            <code><?php echo esc_html($example['line']); ?></code>
-                                                                        <?php endif; ?>
-                                                                    </div>
-                                                                <?php endif; ?>
-                                                                
-                                                                <?php if (!empty($example['stack_trace'])): ?>
-                                                                    <div style="margin-bottom: 8px;">
-                                                                        <strong>Stack Trace:</strong>
-                                                                        <pre style="background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px; max-height: 300px; overflow-y: auto;"><?php 
-                                                                            echo esc_html(implode("\n", array_slice($example['stack_trace'], 0, 15)));
-                                                                            if (count($example['stack_trace']) > 15) {
-                                                                                echo "\n... (" . (count($example['stack_trace']) - 15) . " altre righe)";
-                                                                            }
-                                                                        ?></pre>
-                                                                    </div>
-                                                                <?php endif; ?>
-                                                                
-                                                                <?php if (!empty($example['context'])): ?>
-                                                                    <div style="margin-bottom: 8px;">
-                                                                        <strong>Contesto:</strong> 
-                                                                        <?php 
-                                                                        $context_labels = [
-                                                                            'wp_cli' => 'WP-CLI',
-                                                                            'ajax' => 'AJAX',
-                                                                            'wp_cron' => 'WP-CRON',
-                                                                            'frontend' => 'Frontend',
-                                                                            'backend' => 'Backend',
-                                                                            'rest_api' => 'REST API',
-                                                                            'unknown' => 'Unknown',
-                                                                        ];
-                                                                        $ctx_label = $context_labels[$example['context']] ?? $example['context'];
-                                                                        echo esc_html($ctx_label);
-                                                                        ?>
-                                                                    </div>
-                                                                <?php endif; ?>
-                                                            </div>
-                                                        </details>
-                                                    <?php else: ?>
-                                                        <div style="margin-bottom: 8px; padding: 8px; background: #f5f5f5; border-radius: 3px;">
-                                                            <code style="word-break: break-all;"><?php echo esc_html($example); ?></code>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                                
-                                                <?php if (count($php_error['examples']) > 2): ?>
-                                                    <p style="color: #666; font-style: italic;">
-                                                        ... e altri <?php echo count($php_error['examples']) - 2; ?> esempi (vedi dettagli completi sotto)
-                                                    </p>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    
-                    <!-- Dettagli completi (formato testo) -->
+                <?php if ($check['name'] === $log_check_name): ?>
+                    <!-- Struttura unica per Analisi Log Cloudways -->
                     <div class="health-check-item <?php echo esc_attr($check['status']); ?>">
                         <h3>
                             <span class="badge"><?php echo esc_html(strtoupper($check['status'])); ?></span>
-                            <?php echo esc_html($check['name']); ?> - Dettagli Completi
+                            <?php echo esc_html($check['name']); ?>
                         </h3>
-                        <p><?php echo esc_html($check['message']); ?></p>
+                        <p style="margin-bottom: 15px;"><?php echo esc_html($check['message']); ?></p>
+                        
+                        <?php 
+                        // Tail degli ultimi errori grezzi dai log
+                        $tail = \gik25microdata\HealthCheck\CloudwaysLogParser::recent_errors_tail(30, 24); 
+                        ?>
+                        
+                        <!-- Errori PHP Critici (collapsed) -->
+                        <?php if ($has_php_errors): ?>
+                            <details style="margin: 15px 0; background: #fff5f5; border: 1px solid #dc3232; border-radius: 4px; padding: 10px;">
+                                <summary style="cursor: pointer; font-weight: 600; color: #dc3232; padding: 8px;">
+                                    ❌ Errori PHP Critici - <?php echo count($check['php_errors']); ?> errore/i rilevato/i
+                                </summary>
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dc3232;">
+                                    <div class="php-errors-list">
+                                        <?php foreach ($check['php_errors'] as $idx => $php_error): ?>
+                                            <div class="php-error-item" style="border: 1px solid #dc3232; border-radius: 4px; padding: 15px; margin-bottom: 15px; background: #fff;">
+                                                <h4 style="margin-top: 0; color: #dc3232; display: flex; align-items: center; gap: 10px;">
+                                                    <span style="font-size: 18px;">
+                                                        <?php echo $php_error['severity'] === 'error' ? '❌' : '⚠️'; ?>
+                                                    </span>
+                                                    <span>
+                                                        <?php 
+                                                        $error_type_labels = [
+                                                            'fatal' => 'Fatal Error',
+                                                            'parse' => 'Parse Error',
+                                                            'error' => 'Uncaught Error',
+                                                            'exception' => 'Uncaught Exception',
+                                                            'warning' => 'PHP Warning',
+                                                            'database' => 'Database Error',
+                                                        ];
+                                                        $error_type = $php_error['error_type'] ?? 'unknown';
+                                                        echo esc_html($error_type_labels[$error_type] ?? ucfirst($error_type));
+                                                        ?>
+                                                    </span>
+                                                    <span style="font-size: 14px; font-weight: normal; color: #666;">
+                                                        (<?php echo esc_html($php_error['count']); ?> occorrenze)
+                                                    </span>
+                                                </h4>
+                                                
+                                                <div style="margin: 10px 0;">
+                                                    <strong>Messaggio:</strong> <?php echo esc_html($php_error['message']); ?>
+                                                </div>
+                                                
+                                                <?php if (!empty($php_error['files'])): ?>
+                                                    <div style="margin: 10px 0;">
+                                                        <strong>File:</strong> 
+                                                        <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">
+                                                            <?php echo esc_html(implode(', ', array_slice($php_error['files'], 0, 3))); ?>
+                                                            <?php if (count($php_error['files']) > 3): ?>
+                                                                <span style="color: #666;">(+<?php echo count($php_error['files']) - 3; ?> altri)</span>
+                                                            <?php endif; ?>
+                                                        </code>
+                                                    </div>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (!empty($php_error['lines'])): ?>
+                                                    <div style="margin: 10px 0;">
+                                                        <strong>Righe:</strong> 
+                                                        <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">
+                                                            <?php echo esc_html(implode(', ', array_slice($php_error['lines'], 0, 5))); ?>
+                                                            <?php if (count($php_error['lines']) > 5): ?>
+                                                                <span style="color: #666;">(+<?php echo count($php_error['lines']) - 5; ?> altri)</span>
+                                                            <?php endif; ?>
+                                                        </code>
+                                                    </div>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (!empty($php_error['contexts'])): ?>
+                                                    <div style="margin: 10px 0;">
+                                                        <strong>Contesto:</strong> 
+                                                        <?php 
+                                                        $context_labels = [
+                                                            'wp_cli' => 'WP-CLI',
+                                                            'ajax' => 'AJAX',
+                                                            'wp_cron' => 'WP-CRON',
+                                                            'frontend' => 'Frontend',
+                                                            'backend' => 'Backend',
+                                                            'rest_api' => 'REST API',
+                                                            'unknown' => 'Unknown',
+                                                        ];
+                                                        $contexts_display = array_map(function($ctx) use ($context_labels) {
+                                                            return $context_labels[$ctx] ?? $ctx;
+                                                        }, $php_error['contexts']);
+                                                        echo esc_html(implode(', ', $contexts_display));
+                                                        ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                                
+                                                <?php if (!empty($php_error['examples'])): ?>
+                                                    <div style="margin: 15px 0;">
+                                                        <strong>Esempi (<?php echo count($php_error['examples']); ?>):</strong>
+                                                        <div style="margin-top: 10px;">
+                                                            <?php foreach (array_slice($php_error['examples'], 0, 2) as $example_idx => $example): ?>
+                                                                <?php if (is_array($example)): ?>
+                                                                    <details style="margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">
+                                                                        <summary style="cursor: pointer; font-weight: bold; color: #0073aa;">
+                                                                            Esempio <?php echo $example_idx + 1; ?>
+                                                                            <?php if (!empty($example['file'])): ?>
+                                                                                - <?php echo esc_html(basename($example['file'])); ?>
+                                                                                <?php if (!empty($example['line'])): ?>
+                                                                                    :<?php echo esc_html($example['line']); ?>
+                                                                                <?php endif; ?>
+                                                                            <?php endif; ?>
+                                                                        </summary>
+                                                                        <div style="margin-top: 10px; padding-left: 15px;">
+                                                                            <?php if (!empty($example['message'])): ?>
+                                                                                <div style="margin-bottom: 8px;">
+                                                                                    <strong>Messaggio:</strong><br>
+                                                                                    <code style="background: #f5f5f5; padding: 5px; display: block; border-radius: 3px; word-break: break-all;">
+                                                                                        <?php echo esc_html($example['message']); ?>
+                                                                                    </code>
+                                                                                </div>
+                                                                            <?php endif; ?>
+                                                                            
+                                                                            <?php if (!empty($example['file'])): ?>
+                                                                                <div style="margin-bottom: 8px;">
+                                                                                    <strong>File:</strong> 
+                                                                                    <code><?php echo esc_html($example['file']); ?></code>
+                                                                                    <?php if (!empty($example['line'])): ?>
+                                                                                        <strong>Riga:</strong> 
+                                                                                        <code><?php echo esc_html($example['line']); ?></code>
+                                                                                    <?php endif; ?>
+                                                                                </div>
+                                                                            <?php endif; ?>
+                                                                            
+                                                                            <?php if (!empty($example['stack_trace'])): ?>
+                                                                                <div style="margin-bottom: 8px;">
+                                                                                    <strong>Stack Trace:</strong>
+                                                                                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px; max-height: 300px; overflow-y: auto;"><?php 
+                                                                                        echo esc_html(implode("\n", array_slice($example['stack_trace'], 0, 15)));
+                                                                                        if (count($example['stack_trace']) > 15) {
+                                                                                            echo "\n... (" . (count($example['stack_trace']) - 15) . " altre righe)";
+                                                                                        }
+                                                                                    ?></pre>
+                                                                                </div>
+                                                                            <?php endif; ?>
+                                                                            
+                                                                            <?php if (!empty($example['context'])): ?>
+                                                                                <div style="margin-bottom: 8px;">
+                                                                                    <strong>Contesto:</strong> 
+                                                                                    <?php 
+                                                                                    $context_labels = [
+                                                                                        'wp_cli' => 'WP-CLI',
+                                                                                        'ajax' => 'AJAX',
+                                                                                        'wp_cron' => 'WP-CRON',
+                                                                                        'frontend' => 'Frontend',
+                                                                                        'backend' => 'Backend',
+                                                                                        'rest_api' => 'REST API',
+                                                                                        'unknown' => 'Unknown',
+                                                                                    ];
+                                                                                    $ctx_label = $context_labels[$example['context']] ?? $example['context'];
+                                                                                    echo esc_html($ctx_label);
+                                                                                    ?>
+                                                                                </div>
+                                                                            <?php endif; ?>
+                                                                        </div>
+                                                                    </details>
+                                                                <?php else: ?>
+                                                                    <div style="margin-bottom: 8px; padding: 8px; background: #f5f5f5; border-radius: 3px;">
+                                                                        <code style="word-break: break-all;"><?php echo esc_html($example); ?></code>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            <?php endforeach; ?>
+                                                            
+                                                            <?php if (count($php_error['examples']) > 2): ?>
+                                                                <p style="color: #666; font-style: italic;">
+                                                                    ... e altri <?php echo count($php_error['examples']) - 2; ?> esempi
+                                                                </p>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </details>
+                        <?php endif; ?>
+                        
+                        <!-- Ultimi errori dai log (tail, collapsed) -->
+                        <?php if (!empty($tail['tails'])): ?>
+                            <details style="margin: 15px 0; background: #fffbf0; border: 1px solid #ffb900; border-radius: 4px; padding: 10px;">
+                                <summary style="cursor: pointer; font-weight: 600; color: #856404; padding: 8px;">
+                                    📋 Ultimi errori dai log (tail, 24h)
+                                    <?php if (!empty($tail['paths']['base'])): ?>
+                                        <span style="font-size: 12px; font-weight: normal; color: #666; margin-left: 10px;">
+                                            (<?php echo esc_html($tail['paths']['base']); ?>)
+                                        </span>
+                                    <?php endif; ?>
+                                </summary>
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ffb900;">
+                                    <?php foreach ($tail['tails'] as $key => $bundle): ?>
+                                        <details style="margin:10px 0; background:#fff; border-radius:4px; padding:10px; border: 1px solid #ddd;">
+                                            <summary style="cursor:pointer; font-weight:600;">
+                                                <?php 
+                                                    $labels = [
+                                                        'access_5xx' => 'HTTP 5xx (Nginx/Apache/PHP Access)',
+                                                        'nginx_error'      => 'Nginx Error',
+                                                        'apache_error'     => 'Apache Error',
+                                                        'php_error'        => 'PHP Error',
+                                                        'php_slow'         => 'PHP Slow',
+                                                        'wp_cron'          => 'WP-Cron',
+                                                    ];
+                                                    echo esc_html(($labels[$key] ?? ucfirst($key)) . 
+                                                        (!empty($bundle['file']) ? ' · ' . $bundle['file'] : '') . 
+                                                        ' (' . count($bundle['entries']) . ' righe)');
+                                                ?>
+                                            </summary>
+                                            <pre class="details" style="margin-top:10px; white-space:pre-wrap; font-family:monospace; font-size:12px; background: #f5f5f5; padding: 10px; border-radius: 3px; max-height: 400px; overflow-y: auto;">
+<?php echo esc_html(implode("\n", $bundle['entries'])); ?>
+                                            </pre>
+                                        </details>
+                                    <?php endforeach; ?>
+                                </div>
+                            </details>
+                        <?php endif; ?>
+                        
+                        <!-- Dettagli completi (collapsed) -->
                         <?php if (!empty($check['details'])): ?>
-                            <div class="details">
-                                <pre style="max-height: 500px; overflow-y: auto;"><?php echo esc_html($check['details']); ?></pre>
-                            </div>
+                            <details style="margin: 15px 0; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; padding: 10px;">
+                                <summary style="cursor: pointer; font-weight: 600; padding: 8px;">
+                                    📄 Dettagli Completi (formato testo)
+                                </summary>
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ccc;">
+                                    <pre style="max-height: 500px; overflow-y: auto; background: #fff; padding: 15px; border-radius: 3px; font-size: 12px;"><?php echo esc_html($check['details']); ?></pre>
+                                </div>
+                            </details>
                         <?php endif; ?>
                     </div>
                 <?php else: ?>
