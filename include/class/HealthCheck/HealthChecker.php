@@ -169,14 +169,23 @@ class HealthChecker
 
         <script>
         jQuery(document).ready(function($) {
-            function bindHealthCheckUI() {
-                $('.nav-tab-wrapper a').off('click').on('click', function(e) {
+            var healthCheckNonce = '<?php echo esc_js(wp_create_nonce('gik25_health_check')); ?>';
+            var $resultsContainer = $('#health-check-results');
+            var copyFeedbackTimeout = null;
+
+            function bindHealthCheckUI(activeTab) {
+                var $tabs = $('.nav-tab-wrapper a');
+                var targetTab = activeTab || $tabs.filter('.nav-tab-active').data('tab') || 'summary';
+
+                $tabs.removeClass('nav-tab-active');
+                $tabs.filter('[data-tab="' + targetTab + '"]').addClass('nav-tab-active');
+
+                $('.health-check-section').removeClass('active');
+                $('#' + targetTab).addClass('active');
+
+                $tabs.off('click').on('click', function(e) {
                     e.preventDefault();
-                    var tab = $(this).data('tab');
-                    $('.nav-tab-wrapper a').removeClass('nav-tab-active');
-                    $(this).addClass('nav-tab-active');
-                    $('.health-check-section').removeClass('active');
-                    $('#' + tab).addClass('active');
+                    bindHealthCheckUI($(this).data('tab'));
                 });
 
                 $('#filter-status').off('change').on('change', function() {
@@ -187,16 +196,145 @@ class HealthChecker
                     }
                 }).trigger('change');
             }
-@@
-            $('#copy-results').on('click', function() {
-@@
-            function formatHealthCheckResults() {
-@@
+
+            function setRunningState(isRunning) {
+                var $button = $('#run-health-check');
+                if (isRunning) {
+                    $button.data('original-html', $button.html());
+                    $button.prop('disabled', true).html('⏳ <?php echo esc_js(__('In esecuzione...', 'gik25-microdata')); ?>');
+                } else {
+                    var original = $button.data('original-html');
+                    if (original) {
+                        $button.html(original);
+                    }
+                    $button.prop('disabled', false);
+                }
             }
-+
-+            bindHealthCheckUI();
-         });
-         </script>
+
+            function renderResults(html, activeTab) {
+                $resultsContainer.html(html);
+                bindHealthCheckUI(activeTab);
+            }
+
+            $('#run-health-check').off('click').on('click', function() {
+                setRunningState(true);
+                var activeTab = $('.nav-tab-wrapper a.nav-tab-active').data('tab') || 'summary';
+
+                $.ajax({
+                    url: ajaxurl,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'gik25_health_check',
+                        nonce: healthCheckNonce
+                    }
+                }).done(function(response) {
+                    if (response && response.success && response.data && response.data.html) {
+                        renderResults(response.data.html, activeTab);
+                    } else {
+                        var message = (response && response.data && response.data.message) ? response.data.message : 'Errore sconosciuto.';
+                        window.alert('Health Check fallito: ' + message);
+                    }
+                }).fail(function(xhr) {
+                    console.error('Health Check AJAX error', xhr);
+                    window.alert('Errore durante l\'esecuzione degli health check. Controlla la console per dettagli.');
+                }).always(function() {
+                    setRunningState(false);
+                });
+            });
+
+            $('#copy-results').off('click').on('click', function() {
+                var $button = $(this);
+                var originalHtml = $button.html();
+
+                function restoreButton() {
+                    if (copyFeedbackTimeout) {
+                        clearTimeout(copyFeedbackTimeout);
+                    }
+                    copyFeedbackTimeout = setTimeout(function() {
+                        $button.html(originalHtml);
+                    }, 2000);
+                }
+
+                var text = formatHealthCheckResults();
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        $button.html('✅ <?php echo esc_js(__('Copiato!', 'gik25-microdata')); ?>');
+                        restoreButton();
+                    }).catch(function() {
+                        fallbackCopy(text, $button, originalHtml, restoreButton);
+                    });
+                } else {
+                    fallbackCopy(text, $button, originalHtml, restoreButton);
+                }
+            });
+
+            function fallbackCopy(text, $button, originalHtml, restoreButton) {
+                var $textarea = $('<textarea>', {
+                    text: text,
+                    css: { position: 'absolute', left: '-9999px', top: '0' }
+                }).appendTo('body');
+
+                $textarea.trigger('focus').trigger('select');
+                try {
+                    document.execCommand('copy');
+                    $button.html('✅ <?php echo esc_js(__('Copiato!', 'gik25-microdata')); ?>');
+                } catch (err) {
+                    console.error('Clipboard fallback failed', err);
+                    window.alert('Impossibile copiare automaticamente. Copia manualmente i risultati.');
+                }
+                $textarea.remove();
+                restoreButton();
+            }
+
+            function formatHealthCheckResults() {
+                var lines = [];
+                lines.push('=== Health Check - Revious Microdata ===');
+
+                var summaryText = $resultsContainer.find('.health-check-summary').text().replace(/\s+/g, ' ').trim();
+                if (summaryText) {
+                    lines.push(summaryText);
+                }
+
+                $resultsContainer.find('.health-check-item').each(function() {
+                    var $item = $(this);
+                    var status = 'INFO';
+                    if ($item.hasClass('error')) {
+                        status = 'ERROR';
+                    } else if ($item.hasClass('warning')) {
+                        status = 'WARNING';
+                    } else if ($item.hasClass('success')) {
+                        status = 'SUCCESS';
+                    }
+
+                    var title = $.trim($item.find('h3').text());
+                    var message = $.trim($item.find('p').first().text());
+
+                    lines.push('');
+                    lines.push('[' + status + '] ' + title);
+                    if (message) {
+                        lines.push('   ' + message);
+                    }
+
+                    var detailsText = $.trim($item.find('.details').text());
+                    if (detailsText) {
+                        lines.push('   Dettagli:');
+                        detailsText.split(/\n/).forEach(function(line) {
+                            var trimmed = $.trim(line);
+                            if (trimmed.length) {
+                                lines.push('      ' + trimmed);
+                            }
+                        });
+                    }
+                });
+
+                return lines.join('\n');
+            }
+
+            bindHealthCheckUI('summary');
+        });
+        </script>
          <?php
      }    /**
      * Render risultati check

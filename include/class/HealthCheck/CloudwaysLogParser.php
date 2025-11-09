@@ -785,19 +785,24 @@ class CloudwaysLogParser
                 if (!empty($issue['examples'])) {
                     // Mostra più esempi in base al numero di occorrenze
                     $example_count = 3; // Default
-                    if ($issue['count'] > 100) {
+                    if (($issue['count'] ?? 0) > 100) {
                         $example_count = 5; // Molte occorrenze = più esempi
-                    } elseif ($issue['count'] > 50) {
+                    } elseif (($issue['count'] ?? 0) > 50) {
                         $example_count = 4;
                     }
                     // Rimuovi duplicati per mostrare varietà
-                    $unique_examples = array_unique($issue['examples']);
+                    $unique_examples = array_values(array_unique($issue['examples']));
                     $examples_to_show = array_slice($unique_examples, 0, $example_count);
-                    $details .= "   Esempi: " . implode(', ', $examples_to_show);
-                    if (count($unique_examples) > $example_count) {
-                        $details .= " (+" . (count($unique_examples) - $example_count) . " altri)";
+                    
+                    $details .= "   Esempi:\n";
+                    foreach ($examples_to_show as $example_line) {
+                        $details .= "      - " . $example_line . "\n";
                     }
-                    $details .= "\n";
+                    if (count($unique_examples) > $example_count) {
+                        $details .= "      (+"
+                            . (count($unique_examples) - $example_count)
+                            . " altri)\n";
+                    }
                 }
             }
         }
