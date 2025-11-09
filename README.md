@@ -46,6 +46,22 @@ Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazi
 
 Aggiornare anche la versione del plugin su revious-microdata.php
 
+### Validazione Sintassi PHP
+
+Prima di committare, valida la sintassi PHP:
+
+**Linux/Mac:**
+```bash
+composer validate-syntax
+```
+
+**Windows:**
+```bash
+composer validate-syntax-windows
+```
+
+Vedi `docs/VALIDATION.md` per dettagli e pre-commit hooks.
+
 ## USAGE
 
 ### Kitchen Finder Widget

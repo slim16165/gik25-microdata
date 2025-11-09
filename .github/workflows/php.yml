@@ -39,6 +39,24 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-interaction
 
+    - name: Validate PHP syntax
+      run: |
+        echo "🔍 Validating PHP syntax..."
+        ERRORS=0
+        while IFS= read -r -d '' file; do
+          if ! php -l "$file" > /dev/null 2>&1; then
+            echo "❌ Syntax error in: $file"
+            php -l "$file" 2>&1 | head -3
+            ERRORS=$((ERRORS + 1))
+          fi
+        done < <(find . -type f -name "*.php" ! -path "*/vendor/*" ! -path "*/node_modules/*" ! -path "*/.git/*" -print0)
+        
+        if [ $ERRORS -gt 0 ]; then
+          echo "❌ PHP syntax validation failed! Found $ERRORS errors."
+          exit 1
+        fi
+        echo "✅ All PHP files have valid syntax"
+
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 

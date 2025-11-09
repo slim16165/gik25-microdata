@@ -29,5 +29,13 @@
     "phpstan/extension-installer": "^1.2.0",
     "szepeviktor/phpstan-wordpress": "dev-master",
     "vimeo/psalm": "^4.0"
+  },
+  "scripts": {
+    "validate-syntax": [
+      "bash scripts/validate-php-syntax.sh"
+    ],
+    "validate-syntax-windows": [
+      "powershell -ExecutionPolicy Bypass -File scripts/validate-php-syntax.ps1"
+    ]
   }
 }

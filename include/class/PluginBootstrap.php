@@ -383,7 +383,7 @@ class PluginBootstrap
                 }
                 
                 do_action('qm/debug', $debug_message);
-            }
+            });
         }, 999); // Priorità alta per eseguire dopo tutte le registrazioni
     }
 
