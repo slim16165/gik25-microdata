@@ -188,6 +188,13 @@ class PluginBootstrap
             // Hook sempre attivi (XML-RPC, etc.) - eseguiti in tutti i contesti (protetto)
             SafeExecution::safe_add_filter('xmlrpc_methods', [self::class, 'removeXmlrpcMethods']);
 
+            // REST API endpoints (devono essere registrati sempre, non solo in admin)
+            SafeExecution::safe_execute(function() {
+                if (class_exists('\gik25microdata\LogViewer\LogViewerAPI')) {
+                    \gik25microdata\LogViewer\LogViewerAPI::init();
+                }
+            }, null, true);
+            
             // Inizializzazione condizionale per contesto
             if (defined('DOING_AJAX') && DOING_AJAX) {
                 // Assicurati che gli shortcode vengano caricati anche in contesto AJAX

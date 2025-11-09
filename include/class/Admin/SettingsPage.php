@@ -413,6 +413,14 @@ class SettingsPage
             'revious-microdata-setting-admin', 
             'setting_section_id'
         );
+        
+        add_settings_field(
+            'logrocket_enabled', 
+            'Abilita LogRocket (Session Replay e Debug)', 
+            array( $this, 'logrocket_enabled_callback' ), 
+            'revious-microdata-setting-admin', 
+            'setting_section_id'
+        );
     }
 
     /**
@@ -854,6 +862,21 @@ class SettingsPage
             '<input type="checkbox" id="wnd_default_image_settings_enabled" name="revious_microdata_option_name[wnd_default_image_settings_enabled]"' . $option_checked . ' />',
             isset( $this->options['wnd_default_image_settings_enabled'] ) ? esc_attr( $this->options['wnd_default_image_settings_enabled']) : ''
         );
+        echo '<p class="description">Se abilitato, applica impostazioni predefinite (larghezza, altezza) alle immagini inserite nell\'editor WordPress.</p>';
+    }
+    
+    public function logrocket_enabled_callback(): void
+    {
+        // Di default disabilitato (non selezionato)
+        $option_checked = '';
+        if (isset( $this->options['logrocket_enabled'] ) && $this->options['logrocket_enabled'] == '1') {
+            $option_checked = ' checked="checked" ';
+        }
+        printf(
+            '<input type="checkbox" id="logrocket_enabled" name="revious_microdata_option_name[logrocket_enabled]" value="1"' . $option_checked . ' />',
+            isset( $this->options['logrocket_enabled'] ) ? esc_attr( $this->options['logrocket_enabled']) : ''
+        );
+        echo '<p class="description">Se abilitato, carica LogRocket per session replay e debug nelle pagine admin (solo per utenti loggati). <strong>Disabilitato di default</strong> per privacy e performance.</p>';
     }
 
     // public function revious_microdata_after_setup_theme() {

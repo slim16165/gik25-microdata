@@ -164,6 +164,32 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+## 2.3.1 (2025-11-09) - LogRocket Configurabile e Log Viewer Avanzato
+
+### 🔧 LogRocket Configurabile
+- ✅ **LogRocket Disabilitato di Default**: LogRocket ora disabilitato di default per privacy e performance
+- ✅ **Opzione Impostazioni**: Aggiunta opzione "Abilita LogRocket" nelle impostazioni plugin (Dashboard → Impostazioni)
+- ✅ **Controllo Opzione**: `HeaderHelper` controlla l'opzione prima di caricare LogRocket
+- ✅ **Privacy by Default**: Nessun tracking di default, attivabile manualmente se necessario
+
+### 📊 Log Viewer Avanzato
+- ✅ **UI Reattiva**: Aggiornamento automatico quando si modificano i filtri (debounce 500ms)
+- ✅ **Filtri in Tempo Reale**: Modifiche ai filtri (severity, file, contesto) aggiornano immediatamente la tabella
+- ✅ **REST API Endpoint**: Endpoint `/wp-json/gik25/v1/logs/errors` per recupero errori PHP con filtri
+- ✅ **Export CSV/JSON**: Esportazione errori filtrati in formato CSV o JSON
+- ✅ **Grid.js Integration**: Tabella avanzata con ordinamento, ricerca, paginazione
+- ✅ **Dettagli Espandibili**: Stack trace, contesto, file/linea espandibili per ogni errore
+- ✅ **Warning in Summary**: Ora vengono mostrati anche i warning PHP in summary (non solo critici)
+- ✅ **LogFormatter Utility**: Classe utility condivisa per formattazione log (`LogFormatter`)
+- ✅ **Titolo Aggiornato**: Tab "Log Viewer - PHP Errors" per chiarezza
+
+### 🐛 Bug Fixes
+- ✅ **Fix Endpoint REST**: Endpoint REST registrato sempre (non solo in admin) per disponibilità completa
+- ✅ **Fix UI Statica**: Grid.js inizializzato correttamente quando il tab diventa attivo
+- ✅ **Gestione Errori Migliorata**: Messaggi di errore più chiari con istruzioni di troubleshooting
+
+---
+
 ## 2.3.0 (2025-11-09) - Setup Test Automatici e Miglioramenti Qualità Codice
 
 ### 🧪 Test Automatici

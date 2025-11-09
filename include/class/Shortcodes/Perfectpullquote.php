@@ -7,11 +7,11 @@ class Perfectpullquote extends ShortcodeBase
 {
     public function __construct()
     {
-        add_shortcode('md_perfectpullquote', array($this, 'shortcode'));
-        add_shortcode('perfectpullquote', array($this, 'shortcode'));
-
         $this->shortcode = 'md_perfectpullquote';
         parent::__construct();
+        
+        // Registra alias dello shortcode dopo parent::__construct()
+        add_shortcode('perfectpullquote', array($this, 'ShortcodeHandler'));
     }
     public function ShortcodeHandler($atts, $content = null) {
         $a = shortcode_atts(array(

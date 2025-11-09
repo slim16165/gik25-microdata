@@ -80,6 +80,7 @@ class HealthChecker
             <nav class="nav-tab-wrapper" style="margin-bottom:15px;">
                 <a href="#summary" class="nav-tab nav-tab-active" data-tab="summary"><?php esc_html_e('Riepilogo', 'gik25-microdata'); ?></a>
                 <a href="#details" class="nav-tab" data-tab="details"><?php esc_html_e('Dettagli', 'gik25-microdata'); ?></a>
+                <a href="#log-viewer" class="nav-tab" data-tab="log-viewer"><?php esc_html_e('Log Viewer - PHP Errors', 'gik25-microdata'); ?></a>
             </nav>
 
             <div class="health-check-toolbar">
@@ -336,7 +337,29 @@ class HealthChecker
         });
         </script>
          <?php
-     }    /**
+     }
+     
+    /**
+     * Formatta una riga di log per anteprima (DEPRECATO: usa LogFormatter)
+     * 
+     * @deprecated Usa \gik25microdata\LogViewer\LogFormatter::format_preview()
+     */
+    private static function format_log_line_preview(string $line): string
+    {
+        return \gik25microdata\LogViewer\LogFormatter::format_preview($line);
+    }
+    
+    /**
+     * Formatta una riga di log con colori (DEPRECATO: usa LogFormatter)
+     * 
+     * @deprecated Usa \gik25microdata\LogViewer\LogFormatter::format_line()
+     */
+    private static function format_log_line(string $line): array
+    {
+        return \gik25microdata\LogViewer\LogFormatter::format_line($line);
+    }
+    
+    /**
      * Render risultati check
      */
     private static function render_checks_results(array $checks): void
@@ -399,6 +422,82 @@ class HealthChecker
                             ⚠️ <?php echo $log_php_errors_count; ?> errore/i PHP critico/i rilevato/i
                         </p>
                     <?php endif; ?>
+                    
+                    <?php 
+                    // Mostra ultimi errori PHP (critici + warning) in anteprima
+                    $tail = \gik25microdata\HealthCheck\CloudwaysLogParser::recent_errors_tail(15, 24);
+                    if (!empty($tail['tails']['php_error']['entries'])) {
+                        // Filtra per severity: mostra fatal, error, exception, warning
+                        $php_errors_preview = [];
+                        $critical_count = 0;
+                        $warning_count = 0;
+                        
+                        foreach ($tail['tails']['php_error']['entries'] as $error_line) {
+                            $severity = \gik25microdata\LogViewer\LogFormatter::extract_severity($error_line);
+                            
+                            if (in_array($severity, ['fatal', 'parse', 'error', 'exception'])) {
+                                $critical_count++;
+                                if (count($php_errors_preview) < 8) {
+                                    $php_errors_preview[] = ['line' => $error_line, 'severity' => $severity];
+                                }
+                            } elseif ($severity === 'warning') {
+                                $warning_count++;
+                                if (count($php_errors_preview) < 8 && $critical_count < 5) {
+                                    $php_errors_preview[] = ['line' => $error_line, 'severity' => $severity];
+                                }
+                            }
+                        }
+                        
+                        $php_error_warning = $tail['tails']['php_error']['timestamp_warning'] ?? null;
+                        $php_error_timezone = $tail['tails']['php_error']['timezone'] ?? null;
+                    ?>
+                        <div style="margin-top: 15px; padding: 10px; background: #fff5f5; border-left: 3px solid #dc3232; border-radius: 3px;">
+                            <strong style="color: #dc3232;">📋 Ultimi errori PHP (anteprima):</strong>
+                            <?php if ($critical_count > 0 || $warning_count > 0): ?>
+                                <p style="font-size: 11px; color: #666; margin: 5px 0;">
+                                    <?php if ($critical_count > 0): ?>
+                                        <span style="color: #dc3232; font-weight: bold;">⚠️ <?php echo $critical_count; ?> critico/i</span>
+                                    <?php endif; ?>
+                                    <?php if ($warning_count > 0): ?>
+                                        <?php if ($critical_count > 0): ?> | <?php endif; ?>
+                                        <span style="color: #ffb900; font-weight: bold;">⚠️ <?php echo $warning_count; ?> warning</span>
+                                    <?php endif; ?>
+                                </p>
+                            <?php endif; ?>
+                            <?php if ($php_error_timezone): ?>
+                                <p style="font-size: 11px; color: #666; margin: 5px 0;">
+                                    Timezone server: <?php echo esc_html($php_error_timezone['timezone']); ?> (<?php echo esc_html($php_error_timezone['formatted']); ?>)
+                                </p>
+                            <?php endif; ?>
+                            <?php if ($php_error_warning && !empty($php_error_warning['message'])): ?>
+                                <p style="font-size: 11px; color: <?php echo $php_error_warning['is_stale'] ? '#dc3232' : '#666'; ?>; margin: 5px 0; font-weight: <?php echo $php_error_warning['is_stale'] ? 'bold' : 'normal'; ?>;">
+                                    ⚠️ <?php echo esc_html($php_error_warning['message']); ?>
+                                </p>
+                            <?php endif; ?>
+                            <ul style="margin: 10px 0; padding-left: 20px; font-size: 12px;">
+                                <?php foreach ($php_errors_preview as $error_data): ?>
+                                    <?php 
+                                    $error_line = $error_data['line'];
+                                    $error_severity = $error_data['severity'];
+                                    $severity_color = in_array($error_severity, ['fatal', 'parse', 'error', 'exception']) ? '#dc3232' : '#ffb900';
+                                    ?>
+                                    <li style="margin: 5px 0; color: #333;">
+                                        <span style="color: <?php echo esc_attr($severity_color); ?>; font-weight: bold; font-size: 10px; margin-right: 5px;">
+                                            <?php echo strtoupper($error_severity); ?>
+                                        </span>
+                                        <code style="background: #f5f5f5; padding: 2px 4px; border-radius: 2px; font-size: 11px; word-break: break-all;">
+                                            <?php echo esc_html(\gik25microdata\LogViewer\LogFormatter::format_preview($error_line)); ?>
+                                        </code>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php if (count($tail['tails']['php_error']['entries']) > count($php_errors_preview)): ?>
+                                <p style="font-size: 11px; color: #666; margin-top: 5px;">
+                                    ... e altri <?php echo count($tail['tails']['php_error']['entries']) - count($php_errors_preview); ?> errori (vedi Log Viewer)
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    <?php } ?>
                 <?php else: ?>
                     <p style="color: #666;">
                         <?php esc_html_e('Analisi log non disponibile.', 'gik25-microdata'); ?>
@@ -656,9 +755,40 @@ class HealthChecker
                                                         ' (' . count($bundle['entries']) . ' righe)');
                                                 ?>
                                             </summary>
-                                            <pre class="details" style="margin-top:10px; white-space:pre-wrap; font-family:monospace; font-size:12px; background: #f5f5f5; padding: 10px; border-radius: 3px; max-height: 400px; overflow-y: auto;">
-<?php echo esc_html(implode("\n", $bundle['entries'])); ?>
-                                            </pre>
+                                            <?php 
+                                            // Mostra informazioni timezone e warning se disponibili (solo per PHP error)
+                                            if ($key === 'php_error') {
+                                                $php_timezone = $bundle['timezone'] ?? null;
+                                                $php_warning = $bundle['timestamp_warning'] ?? null;
+                                                
+                                                if ($php_timezone || $php_warning):
+                                            ?>
+                                                <div style="margin: 10px 0; padding: 8px; background: #f0f8ff; border-radius: 3px; border-left: 3px solid #0073aa;">
+                                                    <?php if ($php_timezone): ?>
+                                                        <p style="margin: 0; font-size: 11px; color: #666;">
+                                                            <strong>Timezone server:</strong> <?php echo esc_html($php_timezone['timezone']); ?> (<?php echo esc_html($php_timezone['formatted']); ?>)
+                                                        </p>
+                                                    <?php endif; ?>
+                                                    <?php if ($php_warning && !empty($php_warning['message'])): ?>
+                                                        <p style="margin: 5px 0 0 0; font-size: 11px; color: <?php echo $php_warning['is_stale'] ? '#dc3232' : '#666'; ?>; font-weight: <?php echo $php_warning['is_stale'] ? 'bold' : 'normal'; ?>;">
+                                                            ⚠️ <?php echo esc_html($php_warning['message']); ?>
+                                                        </p>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php 
+                                                endif;
+                                            }
+                                            ?>
+                                            <div style="margin-top:10px; font-family:monospace; font-size:12px; max-height: 400px; overflow-y: auto;">
+                                                <?php foreach ($bundle['entries'] as $entry_line): ?>
+                                                    <?php 
+                                                    $formatted = \gik25microdata\LogViewer\LogFormatter::format_line($entry_line);
+                                                    ?>
+                                                    <div class="<?php echo esc_attr($formatted['class']); ?>" style="padding: 4px 8px; margin: 2px 0; background: <?php echo esc_attr($formatted['bg_color']); ?>; border-left: 3px solid <?php echo esc_attr($formatted['color']); ?>; border-radius: 2px; white-space: pre-wrap; word-break: break-all;">
+                                                        <?php echo $formatted['html']; ?>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
                                         </details>
                                     <?php endforeach; ?>
                                 </div>
@@ -687,6 +817,20 @@ class HealthChecker
                     </div>
                 <?php endif; ?>
             </div>
+        </div>
+        
+        <div class="health-check-section" id="log-viewer">
+            <?php
+            // Render Log Viewer tab
+            if (class_exists('\gik25microdata\LogViewer\LogViewer')) {
+                \gik25microdata\LogViewer\LogViewer::render_page();
+            } else {
+                echo '<div class="health-check-item warning">';
+                echo '<h3><span class="badge">WARNING</span>Log Viewer</h3>';
+                echo '<p>Log Viewer non disponibile. Classe LogViewer non trovata.</p>';
+                echo '</div>';
+            }
+            ?>
         </div>
         <?php
     }

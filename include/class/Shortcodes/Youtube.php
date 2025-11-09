@@ -11,10 +11,11 @@ class Youtube extends ShortcodeBase
 
     public function __construct()
     {
-        add_shortcode('md_youtube', array($this, 'shortcode'));
-        add_shortcode('youtube', array($this, 'shortcode'));
         $this->shortcode = 'md_youtube';
         parent::__construct();
+        
+        // Registra alias dello shortcode dopo parent::__construct()
+        add_shortcode('youtube', array($this, 'ShortcodeHandler'));
     }
 
     public function ShortcodeHandler($atts, $content = null)

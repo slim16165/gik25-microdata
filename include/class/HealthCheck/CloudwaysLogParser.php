@@ -418,7 +418,8 @@ class CloudwaysLogParser
                     $line = rtrim($line, "\r\n");
                     
                     if ($accept($line)) {
-                        $ring[] = mb_substr($line, 0, 300);
+                        // Non troncare le righe - mantieni intero contenuto (max 5000 caratteri per sicurezza)
+                        $ring[] = mb_strlen($line) > 5000 ? mb_substr($line, 0, 5000) . '... [troncato]' : $line;
                         
                         // Mantieni solo le ultime N*12 righe in memoria (per avere abbastanza materiale)
                         if (count($ring) > $max_lines * 12) {
@@ -1872,8 +1873,63 @@ class CloudwaysLogParser
      */
     private static function parse_apache_timestamp(string $line): ?int
     {
+        // Prova prima formato Apache error log: [Sun Nov 09 12:36:55.838882 2025]
+        $php_timestamp = self::parse_php_error_timestamp($line);
+        if ($php_timestamp !== null) {
+            return $php_timestamp;
+        }
+        
         // Formato simile a Nginx access
         return self::parse_nginx_access_timestamp($line);
+    }
+    
+    /**
+     * Estrae timestamp da riga log PHP error (formato Apache error log)
+     * Formato: [Sun Nov 09 12:36:55.838882 2025] [proxy_fcgi:error] ...
+     * 
+     * @param string $line Riga di log
+     * @return int|null Timestamp Unix o null se non trovato
+     */
+    private static function parse_php_error_timestamp(string $line): ?int
+    {
+        // Pattern: [Sun Nov 09 12:36:55.838882 2025]
+        // Esempio: [Sun Nov 09 12:36:55.838882 2025] [proxy_fcgi:error] [pid 1688106:tid 1688194] [client 65.109.35.209:0] AH01071: Got error 'PHP message: ...
+        if (preg_match('/\[(\w{3})\s+(\w{3})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})\.\d+\s+(\d{4})\]/', $line, $matches)) {
+            $day_name = $matches[1];   // Sun
+            $month_name = $matches[2]; // Nov
+            $day = $matches[3];        // 09
+            $hour = $matches[4];       // 12
+            $minute = $matches[5];     // 36
+            $second = $matches[6];     // 55
+            $year = $matches[7];       // 2025
+            
+            // Converti nome mese in numero
+            $months = [
+                'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
+                'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
+                'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12',
+            ];
+            
+            if (!isset($months[$month_name])) {
+                return null;
+            }
+            
+            $month = $months[$month_name];
+            
+            // Crea stringa data nel formato standard
+            $date_str = sprintf('%s-%s-%02d %s:%s:%s', $year, $month, $day, $hour, $minute, $second);
+            
+            // Converte in timestamp Unix (considera timezone server)
+            $timestamp = strtotime($date_str);
+            
+            if ($timestamp === false) {
+                return null;
+            }
+            
+            return $timestamp;
+        }
+        
+        return null;
     }
     
     /**
@@ -1934,9 +1990,99 @@ class CloudwaysLogParser
     }
     
     /**
+     * Rileva timezone del server
+     * 
+     * @return array{timezone: string, offset: int, formatted: string} Informazioni timezone
+     */
+    private static function get_server_timezone(): array
+    {
+        // Prova a ottenere timezone da PHP
+        $timezone = date_default_timezone_get();
+        
+        // Se non disponibile, prova da WordPress
+        if (function_exists('wp_timezone_string')) {
+            $wp_tz = wp_timezone_string();
+            if (!empty($wp_tz)) {
+                $timezone = $wp_tz;
+            }
+        }
+        
+        // Calcola offset in secondi
+        try {
+            $dt = new \DateTime('now', new \DateTimeZone($timezone));
+            $offset = $dt->getOffset();
+        } catch (\Exception $e) {
+            $offset = 0;
+        }
+        
+        // Formatta offset come +02:00
+        $hours = (int)floor(abs($offset) / 3600);
+        $minutes = (int)((abs($offset) % 3600) / 60);
+        $sign = $offset >= 0 ? '+' : '-';
+        $offset_formatted = sprintf('%s%02d:%02d', $sign, $hours, $minutes);
+        
+        return [
+            'timezone' => $timezone,
+            'offset' => $offset,
+            'formatted' => $offset_formatted,
+        ];
+    }
+    
+    /**
+     * Verifica se i log sono indietro/vecchi e restituisce avviso
+     * 
+     * @param int|null $reference_timestamp Timestamp ultimo errore o ultima modifica file log
+     * @param int $cutoff_timestamp Timestamp di cutoff (ultime X ore)
+     * @return array{is_stale: bool, message: string, last_error_age: int|null} Informazioni su stato log
+     */
+    private static function check_log_timestamp_warning(?int $reference_timestamp, int $cutoff_timestamp): array
+    {
+        $current_time = time();
+        
+        if ($reference_timestamp === null) {
+            return [
+                'is_stale' => false,
+                'message' => 'Nessun timestamp disponibile',
+                'last_error_age' => null,
+            ];
+        }
+        
+        // Calcola età ultimo errore (differenza tra ora e timestamp riferimento)
+        $last_error_age = $current_time - $reference_timestamp;
+        
+        // Se ultimo errore è più vecchio di 1 ora, i log potrebbero essere indietro
+        $one_hour = 3600;
+        $is_stale = $last_error_age > $one_hour;
+        
+        $message = '';
+        if ($is_stale) {
+            $hours_ago = round($last_error_age / 3600, 1);
+            if ($hours_ago < 24) {
+                $message = sprintf('Ultimo errore rilevato ~%.1f ore fa. I log potrebbero essere indietro o non ci sono stati errori recenti.', $hours_ago);
+            } else {
+                $days_ago = round($hours_ago / 24, 1);
+                $message = sprintf('Ultimo errore rilevato ~%.1f giorni fa. I log potrebbero essere vecchi o non ci sono stati errori recenti.', $days_ago);
+            }
+        } else {
+            $minutes_ago = round($last_error_age / 60, 1);
+            if ($minutes_ago > 5) {
+                $message = sprintf('Ultimo errore rilevato ~%.0f minuti fa.', $minutes_ago);
+            } else {
+                $message = sprintf('Ultimo errore rilevato ~%.0f minuti fa (recente).', max(1, $minutes_ago));
+            }
+        }
+        
+        return [
+            'is_stale' => $is_stale,
+            'message' => $message,
+            'last_error_age' => $last_error_age,
+        ];
+    }
+    
+    /**
      * Tronca una riga a una lunghezza massima
      */
-    private static function truncate_line(string $line, int $max_length = 150): string
+    private static function truncate_line(string $line, int $max_length = 1000): string
     {
         $line = trim($line);
         if (strlen($line) <= $max_length) {
@@ -2005,6 +2151,9 @@ class CloudwaysLogParser
             
             $tails = [];
             $cutoff = time() - ($hours * 3600);
+            
+            // Rileva timezone server una sola volta (usato per tutti i log)
+            $server_timezone = self::get_server_timezone();
             
             // ACCESS 5xx: unifica nginx, apache e php access log (esclude .gz di default)
             $accFiles = self::collect_log_files([
@@ -2079,12 +2228,38 @@ class CloudwaysLogParser
                 $paths['php_error_glob'] ?? '',
             ], false);
             
+            // Ottieni timestamp ultima modifica file
+            $log_file_mtime = !empty($phpErrFiles) ? @filemtime(reset($phpErrFiles)) : null;
+            
+            // Estrai ultimo timestamp dai log PHP per verificare se sono indietro
+            $last_php_error_timestamp = null;
+            $php_entries = self::tail_from_files($phpErrFiles, $per_file * 2, function(string $line) use (&$last_php_error_timestamp): bool {
+                // Estrai timestamp se presente (prima di filtrare)
+                $ts = self::parse_php_error_timestamp($line);
+                if ($ts === null) {
+                    $ts = self::parse_apache_timestamp($line);
+                }
+                if ($ts !== null && ($last_php_error_timestamp === null || $ts > $last_php_error_timestamp)) {
+                    $last_php_error_timestamp = $ts;
+                }
+                
+                // Filtra solo errori critici e importanti
+                return (bool) preg_match('/PHP (Fatal|Parse|Warning|Notice|Deprecated)|Uncaught (Exception|Error)/i', $line);
+            });
+            
+            // Limita a per_file righe
+            $php_entries = array_slice($php_entries, 0, $per_file);
+            
+            // Usa timestamp estratto dai log se disponibile, altrimenti filemtime
+            $reference_timestamp = $last_php_error_timestamp ?? $log_file_mtime;
+            
             $tails['php_error'] = [
                 'file'    => 'php-app.error.log*',
-                'entries' => self::tail_from_files($phpErrFiles, $per_file, function(string $line): bool {
-                    // i log PHP spesso non hanno timestamp standard: filtro solo per severità
-                    return (bool) preg_match('/PHP (Fatal|Parse|Warning|Notice|Deprecated)|Uncaught (Exception|Error)/i', $line);
-                }),
+                'entries' => $php_entries,
+                'timezone' => $server_timezone,
+                'last_modified' => $log_file_mtime,
+                'last_error_timestamp' => $last_php_error_timestamp,
+                'timestamp_warning' => self::check_log_timestamp_warning($reference_timestamp, $cutoff),
             ];
             
             // PHP slow (esclude .gz di default)
@@ -2124,10 +2299,166 @@ class CloudwaysLogParser
                 }
             }
             
-            return ['paths' => $paths, 'tails' => $tails];
+            // Aggiungi informazioni timezone e timestamp warning al risultato
+            return [
+                'paths' => $paths, 
+                'tails' => $tails,
+                'timezone' => $server_timezone,
+            ];
             
         } catch (\Throwable $e) {
             return ['paths' => [], 'tails' => []];
+        } finally {
+            error_reporting($old_error_reporting ?? E_ALL);
+            ini_set('display_errors', $old_display_errors ?? '1');
+            ini_set('log_errors', $old_log_errors ?? '1');
+        }
+    }
+    
+    /**
+     * Estrae errori PHP in formato strutturato per API/UI avanzata
+     * 
+     * @param array $filters Filtri: severity, file, since, until, context, limit, offset
+     * @return array{total: int, errors: array, limit: int, offset: int} Errori strutturati
+     */
+    public static function get_php_errors_structured(array $filters = []): array
+    {
+        // Salva stato originale
+        $old_error_reporting = error_reporting(0);
+        $old_display_errors = ini_get('display_errors');
+        $old_log_errors = ini_get('log_errors');
+        ini_set('display_errors', '0');
+        ini_set('log_errors', '0');
+        
+        try {
+            $paths = self::get_log_paths();
+            
+            if (empty($paths['php_error'])) {
+                return [
+                    'total' => 0,
+                    'errors' => [],
+                    'limit' => $filters['limit'] ?? 1000,
+                    'offset' => $filters['offset'] ?? 0,
+                ];
+            }
+            
+            // Analizza errori PHP
+            $php_issues = self::analyze_php_errors($paths['php_error']);
+            
+            // Applica filtri
+            $filtered_errors = [];
+            $severity_filter = !empty($filters['severity']) ? explode(',', $filters['severity']) : [];
+            $file_filter = $filters['file'] ?? null;
+            $since = !empty($filters['since']) ? (int)$filters['since'] : null;
+            $until = !empty($filters['until']) ? (int)$filters['until'] : null;
+            $context_filter = !empty($filters['context']) ? explode(',', $filters['context']) : [];
+            
+            foreach ($php_issues as $issue) {
+                // Filtro severity
+                if (!empty($severity_filter)) {
+                    $issue_severity = $issue['severity'] ?? 'warning';
+                    if (!in_array($issue_severity, $severity_filter)) {
+                        continue;
+                    }
+                }
+                
+                // Filtro file
+                if ($file_filter && !empty($issue['files'])) {
+                    $matched = false;
+                    foreach ($issue['files'] as $file) {
+                        if (stripos($file, $file_filter) !== false) {
+                            $matched = true;
+                            break;
+                        }
+                    }
+                    if (!$matched) {
+                        continue;
+                    }
+                }
+                
+                // Filtro data
+                if ($since && (!empty($issue['first_seen']) && $issue['first_seen'] < $since)) {
+                    continue;
+                }
+                if ($until && (!empty($issue['last_seen']) && $issue['last_seen'] > $until)) {
+                    continue;
+                }
+                
+                // Filtro contesto
+                if (!empty($context_filter) && !empty($issue['contexts'])) {
+                    $matched = false;
+                    foreach ($issue['contexts'] as $ctx) {
+                        if (in_array($ctx, $context_filter)) {
+                            $matched = true;
+                            break;
+                        }
+                    }
+                    if (!$matched) {
+                        continue;
+                    }
+                }
+                
+                // Converti in formato strutturato per API
+                $error_id = 'err_' . md5($issue['message'] . ($issue['files'][0] ?? '') . ($issue['lines'][0] ?? ''));
+                
+                $error_data = [
+                    'id' => $error_id,
+                    'timestamp' => $issue['last_seen'] ?? time(),
+                    'severity' => $issue['severity'] ?? 'warning',
+                    'error_type' => $issue['error_type'] ?? 'unknown',
+                    'message' => $issue['message'] ?? '',
+                    'file' => !empty($issue['files']) ? $issue['files'][0] : null,
+                    'files' => $issue['files'] ?? [],
+                    'line' => !empty($issue['lines']) ? (int)$issue['lines'][0] : null,
+                    'lines' => array_map('intval', $issue['lines'] ?? []),
+                    'count' => $issue['count'] ?? 0,
+                    'contexts' => $issue['contexts'] ?? [],
+                    'first_seen' => $issue['first_seen'] ?? time(),
+                    'last_seen' => $issue['last_seen'] ?? time(),
+                ];
+                
+                // Aggiungi stack trace e dettagli dal primo esempio
+                if (!empty($issue['examples']) && is_array($issue['examples'][0])) {
+                    $example = $issue['examples'][0];
+                    $error_data['stack_trace'] = $example['stack_trace'] ?? [];
+                    $error_data['context'] = $example['context'] ?? 'unknown';
+                    if (!empty($example['file'])) {
+                        $error_data['file'] = $example['file'];
+                    }
+                    if (!empty($example['line'])) {
+                        $error_data['line'] = (int)$example['line'];
+                    }
+                }
+                
+                $filtered_errors[] = $error_data;
+            }
+            
+            // Ordina per timestamp (più recenti prima)
+            usort($filtered_errors, function($a, $b) {
+                return ($b['timestamp'] ?? 0) - ($a['timestamp'] ?? 0);
+            });
+            
+            // Applica limit e offset
+            $total = count($filtered_errors);
+            $limit = (int)($filters['limit'] ?? 1000);
+            $offset = (int)($filters['offset'] ?? 0);
+            $filtered_errors = array_slice($filtered_errors, $offset, $limit);
+            
+            return [
+                'total' => $total,
+                'errors' => $filtered_errors,
+                'limit' => $limit,
+                'offset' => $offset,
+            ];
+            
+        } catch (\Throwable $e) {
+            return [
+                'total' => 0,
+                'errors' => [],
+                'limit' => $filters['limit'] ?? 1000,
+                'offset' => $filters['offset'] ?? 0,
+                'error' => $e->getMessage(),
+            ];
         } finally {
             error_reporting($old_error_reporting ?? E_ALL);
             ini_set('display_errors', $old_display_errors ?? '1');

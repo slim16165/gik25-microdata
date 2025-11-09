@@ -22,10 +22,17 @@ class HeaderHelper
         if (!is_user_logged_in()) {
             return;
         }
+        
+        // Verifica che LogRocket sia abilitato nelle impostazioni (di default disabilitato)
+        $options = get_option('revious_microdata_option_name', []);
+        $logrocket_enabled = isset($options['logrocket_enabled']) && $options['logrocket_enabled'] == '1';
+        
+        if (!$logrocket_enabled) {
+            return; // LogRocket disabilitato di default
+        }
 
         $domain = ServerHelper::getSecondLevelDomainOnly();
         //$domain = getSecondLevelDomain();
-
 
         $user = wp_get_current_user();
         echo /** @lang javascript */
