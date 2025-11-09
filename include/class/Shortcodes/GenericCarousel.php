@@ -2,7 +2,7 @@
 namespace gik25microdata\Shortcodes;
 
 use gik25microdata\Database\CarouselCollections;
-use gik25microdata\ColorWidget;
+use gik25microdata\Widgets\ColorWidget;
 use gik25microdata\Carousel\CarouselTemplateEngine;
 
 if (!defined('ABSPATH')) {

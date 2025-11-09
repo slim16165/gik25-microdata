@@ -1,5 +1,5 @@
 <?php
- namespace gik25microdata;
+namespace gik25microdata\Widgets;
 
 use gik25microdata\ListOfPosts\WPPostsHelper;
 

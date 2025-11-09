@@ -1,8 +1,8 @@
 <?php
 namespace gik25microdata\site_specific;
 
-use gik25microdata\ColorWidget;
-use gik25microdata\TagHelper;
+use gik25microdata\Widgets\ColorWidget;
+use gik25microdata\Utility\TagHelper;
 use gik25microdata\site_specific\Totaldesign\ProgrammaticHub;
 use gik25microdata\Widgets\ContextualWidgets;
 use gik25microdata\REST\MCPApi;

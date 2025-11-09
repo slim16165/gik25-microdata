@@ -17,6 +17,7 @@ Il sistema verifica automaticamente:
 - ✅ **Tabelle Database**: Verifica presenza tabelle (opzionali)
 - ✅ **Assets (CSS/JS)**: Verifica che CSS/JS siano accessibili via URL
 - ✅ **Classi PHP**: Verifica che le classi siano caricate correttamente
+- ✅ **Analisi Log Cloudways**: Analizza log Nginx, Apache, PHP e WordPress per rilevare errori
 
 ### 2. **Pagina Admin WordPress**
 
@@ -141,6 +142,33 @@ Verifica classi caricate:
 - `gik25microdata\Shortcodes\KitchenFinder`
 - `gik25microdata\REST\MCPApi`
 - ecc.
+
+### Analisi Log Cloudways
+Analizza log del server per rilevare problemi:
+- **Errori PHP**: Fatal errors, Parse errors, Warnings, Database errors
+- **Errori HTTP**: Errori 5xx (500, 502, 503, 504)
+- **PHP Slow Requests**: Script che impiegano troppo tempo
+- **WordPress Cron Errors**: Errori nei task cron
+- **Raggruppamento Intelligente**: Errori simili raggruppati per file/riga
+- **Stack Trace Completo**: Stack trace completo per ogni errore PHP
+- **Contesto Esecuzione**: Identifica se l'errore è avvenuto in AJAX, WP-CRON, frontend, backend, etc.
+- **Prioritizzazione**: Errori critici (Fatal, Parse) evidenziati per primi
+
+**File analizzati:**
+- `nginx-app.error.log` - Errori Nginx
+- `nginx*.access.log` - Access log Nginx (per errori 5xx)
+- `apache*.error.log` - Errori Apache
+- `php-app.error.log` - Errori PHP
+- `php-app.slow.log` - Script PHP lenti
+- `wp-cron.log` - Errori WordPress cron
+
+**Visualizzazione Errori PHP:**
+- Sezione dedicata con evidenza visiva (colori distintivi)
+- Stack trace espandibile per ogni errore
+- File e riga evidenziati
+- Contesto di esecuzione (AJAX, WP-CRON, etc.)
+- Raggruppamento per tipo/file/riga
+- Filtri per severity (Fatal, Warning, etc.)
 
 ## 🚨 Troubleshooting
 

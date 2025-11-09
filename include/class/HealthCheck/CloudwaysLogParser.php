@@ -783,25 +783,76 @@ class CloudwaysLogParser
                     $details .= "   Script: " . $issue['context']['details']['script'] . "\n";
                 }
                 if (!empty($issue['examples'])) {
-                    // Mostra più esempi in base al numero di occorrenze
-                    $example_count = 3; // Default
-                    if (($issue['count'] ?? 0) > 100) {
-                        $example_count = 5; // Molte occorrenze = più esempi
-                    } elseif (($issue['count'] ?? 0) > 50) {
-                        $example_count = 4;
-                    }
-                    // Rimuovi duplicati per mostrare varietà
-                    $unique_examples = array_values(array_unique($issue['examples']));
-                    $examples_to_show = array_slice($unique_examples, 0, $example_count);
-                    
-                    $details .= "   Esempi:\n";
-                    foreach ($examples_to_show as $example_line) {
-                        $details .= "      - " . $example_line . "\n";
-                    }
-                    if (count($unique_examples) > $example_count) {
-                        $details .= "      (+"
-                            . (count($unique_examples) - $example_count)
-                            . " altri)\n";
+                    // Per errori PHP, mostra stack trace completo
+                    if ($issue['type'] === 'PHP Error' && isset($issue['examples'][0]['stack_trace'])) {
+                        $details .= "   Esempi:\n";
+                        foreach (array_slice($issue['examples'], 0, 3) as $example) {
+                            if (is_array($example)) {
+                                $details .= "      Messaggio: " . ($example['message'] ?? 'N/A') . "\n";
+                                if (!empty($example['file'])) {
+                                    $details .= "      File: " . $example['file'];
+                                    if (!empty($example['line'])) {
+                                        $details .= ":" . $example['line'];
+                                    }
+                                    $details .= "\n";
+                                }
+                                if (!empty($example['context'])) {
+                                    $context_labels = [
+                                        'wp_cli' => 'WP-CLI',
+                                        'ajax' => 'AJAX',
+                                        'wp_cron' => 'WP-CRON',
+                                        'frontend' => 'Frontend',
+                                        'backend' => 'Backend',
+                                        'rest_api' => 'REST API',
+                                        'unknown' => 'Unknown',
+                                    ];
+                                    $context_label = $context_labels[$example['context']] ?? $example['context'];
+                                    $details .= "      Contesto: " . $context_label . "\n";
+                                }
+                                if (!empty($example['stack_trace'])) {
+                                    $details .= "      Stack Trace:\n";
+                                    foreach (array_slice($example['stack_trace'], 0, 10) as $trace_line) {
+                                        $details .= "         " . $trace_line . "\n";
+                                    }
+                                    if (count($example['stack_trace']) > 10) {
+                                        $details .= "         ... (" . (count($example['stack_trace']) - 10) . " altre righe)\n";
+                                    }
+                                }
+                                $details .= "\n";
+                            } else {
+                                // Fallback per formato vecchio (stringa)
+                                $details .= "      - " . $example . "\n";
+                            }
+                        }
+                        if (count($issue['examples']) > 3) {
+                            $details .= "      (+" . (count($issue['examples']) - 3) . " altri esempi)\n";
+                        }
+                    } else {
+                        // Formato standard per altri tipi di errori
+                        // Mostra più esempi in base al numero di occorrenze
+                        $example_count = 3; // Default
+                        if (($issue['count'] ?? 0) > 100) {
+                            $example_count = 5; // Molte occorrenze = più esempi
+                        } elseif (($issue['count'] ?? 0) > 50) {
+                            $example_count = 4;
+                        }
+                        // Rimuovi duplicati per mostrare varietà
+                        $unique_examples = array_values(array_unique($issue['examples']));
+                        $examples_to_show = array_slice($unique_examples, 0, $example_count);
+                        
+                        $details .= "   Esempi:\n";
+                        foreach ($examples_to_show as $example_line) {
+                            if (is_string($example_line)) {
+                                $details .= "      - " . $example_line . "\n";
+                            } else {
+                                $details .= "      - " . print_r($example_line, true) . "\n";
+                            }
+                        }
+                        if (count($unique_examples) > $example_count) {
+                            $details .= "      (+"
+                                . (count($unique_examples) - $example_count)
+                                . " altri)\n";
+                        }
                     }
                 }
             }
@@ -1243,32 +1294,39 @@ class CloudwaysLogParser
     }
     
     /**
-     * Analizza PHP error log
+     * Analizza PHP error log con estrazione stack trace completo e raggruppamento intelligente
      */
     private static function analyze_php_errors(string $log_path): array
     {
         $issues = [];
-        $lines = self::read_log_tail($log_path, 1000);
+        $lines = self::read_log_tail($log_path, 5000); // Leggi più righe per stack trace completi
         
         if (empty($lines)) {
             return $issues;
         }
         
-        $error_counts = [];
+        $error_groups = [];
         $cutoff_time = time() - (24 * 60 * 60);
         
         $critical_patterns = [
-            '/PHP Fatal error/i',
-            '/PHP Parse error/i',
-            '/PHP Warning/i',
-            '/WordPress database error/i',
-            '/Premature end of script headers/i',
-            '/Maximum execution time/i',
+            '/PHP Fatal error/i' => 'fatal',
+            '/PHP Parse error/i' => 'parse',
+            '/Uncaught Error/i' => 'error',
+            '/Uncaught Exception/i' => 'exception',
+            '/PHP Warning/i' => 'warning',
+            '/WordPress database error/i' => 'database',
+            '/Premature end of script headers/i' => 'headers',
+            '/Maximum execution time/i' => 'timeout',
         ];
         
-        foreach ($lines as $line) {
+        $i = 0;
+        while ($i < count($lines)) {
+            $line = $lines[$i];
             $timestamp = self::parse_apache_timestamp($line);
+            
+            // Salta righe vecchie
             if ($timestamp && $timestamp < $cutoff_time) {
+                $i++;
                 continue;
             }
             
@@ -1278,63 +1336,134 @@ class CloudwaysLogParser
             // Verifica se l'errore dovrebbe essere ignorato
             $ignore_check = self::should_ignore_error($line, $execution_context);
             if ($ignore_check['ignore']) {
-                continue; // Salta completamente
+                $i++;
+                continue;
             }
             
             // Verifica se ignorare per contesto
             if (self::should_ignore_by_context($execution_context)) {
+                $i++;
                 continue;
             }
             
-            foreach ($critical_patterns as $pattern) {
+            // Cerca pattern di errore
+            $matched_pattern = null;
+            $error_type = null;
+            foreach ($critical_patterns as $pattern => $type) {
                 if (preg_match($pattern, $line)) {
-                    $error_key = $pattern;
-                    
-                    // Raggruppa anche per contesto se necessario
-                    $context_key = $execution_context['context'];
-                    $error_key = $pattern . '_' . $context_key;
-                    
-                    if (!isset($error_counts[$error_key])) {
-                        $error_counts[$error_key] = [
-                            'count' => 0, 
-                            'examples' => [], 
-                            'context' => $execution_context,
-                            'contexts' => []
-                        ];
-                    }
-                    $error_counts[$error_key]['count']++;
-                    
-                    // Traccia i contesti
-                    if (!in_array($context_key, $error_counts[$error_key]['contexts'])) {
-                        $error_counts[$error_key]['contexts'][] = $context_key;
-                    }
-                    
-                    // Raccogli più esempi (fino a 8) per avere varietà
-                    if (count($error_counts[$error_key]['examples']) < 8) {
-                        $truncated = self::truncate_line($line, 150);
-                        // Evita duplicati esatti
-                        if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
-                            $error_counts[$error_key]['examples'][] = $truncated;
-                        }
-                    }
+                    $matched_pattern = $pattern;
+                    $error_type = $type;
+                    break;
                 }
             }
+            
+            if ($matched_pattern) {
+                // Estrai informazioni errore (file, riga, messaggio)
+                $error_info = self::extract_php_error_info($line, $lines, $i);
+                
+                // Crea chiave di raggruppamento: tipo + file + riga (se disponibile)
+                $group_key = $error_type;
+                if (!empty($error_info['file'])) {
+                    $group_key .= '|' . basename($error_info['file']);
+                    if (!empty($error_info['line'])) {
+                        $group_key .= ':' . $error_info['line'];
+                    }
+                } else {
+                    // Se non abbiamo file, usa il messaggio (troncato)
+                    $message_key = substr($error_info['message'], 0, 100);
+                    $group_key .= '|' . md5($message_key);
+                }
+                
+                // Inizializza gruppo se non esiste
+                if (!isset($error_groups[$group_key])) {
+                    $error_groups[$group_key] = [
+                        'type' => $error_type,
+                        'pattern' => $matched_pattern,
+                        'count' => 0,
+                        'examples' => [],
+                        'stack_traces' => [],
+                        'files' => [],
+                        'lines' => [],
+                        'contexts' => [],
+                        'first_seen' => $timestamp ?: time(),
+                        'last_seen' => $timestamp ?: time(),
+                    ];
+                }
+                
+                $error_groups[$group_key]['count']++;
+                $error_groups[$group_key]['last_seen'] = max($error_groups[$group_key]['last_seen'], $timestamp ?: time());
+                
+                // Aggiungi contesto
+                $context_key = $execution_context['context'];
+                if (!in_array($context_key, $error_groups[$group_key]['contexts'])) {
+                    $error_groups[$group_key]['contexts'][] = $context_key;
+                }
+                
+                // Aggiungi file e riga
+                if (!empty($error_info['file'])) {
+                    $file_basename = basename($error_info['file']);
+                    if (!in_array($file_basename, $error_groups[$group_key]['files'])) {
+                        $error_groups[$group_key]['files'][] = $file_basename;
+                    }
+                    if (!empty($error_info['line']) && !in_array($error_info['line'], $error_groups[$group_key]['lines'])) {
+                        $error_groups[$group_key]['lines'][] = $error_info['line'];
+                    }
+                }
+                
+                // Raccogli esempio completo con stack trace
+                if (count($error_groups[$group_key]['examples']) < 5) {
+                    $example = [
+                        'message' => $error_info['message'],
+                        'file' => $error_info['file'],
+                        'line' => $error_info['line'],
+                        'stack_trace' => $error_info['stack_trace'],
+                        'context' => $context_key,
+                        'timestamp' => $timestamp,
+                    ];
+                    $error_groups[$group_key]['examples'][] = $example;
+                }
+                
+                // Salta righe dello stack trace (già processate in extract_php_error_info)
+                if (!empty($error_info['stack_trace_lines'])) {
+                    $i += $error_info['stack_trace_lines'];
+                }
+            }
+            
+            $i++;
         }
         
-        foreach ($error_counts as $pattern => $data) {
-            // Soglia standard
-            $threshold = 3;
+        // Converti gruppi in issues
+        foreach ($error_groups as $group_key => $data) {
+            // Soglia: fatal/parse/error sempre, warning/database se >= 3
+            $threshold = in_array($data['type'], ['fatal', 'parse', 'error', 'exception']) ? 1 : 3;
             
             if ($data['count'] >= $threshold) {
-                // Estrai pattern pulito (rimuovi suffisso contesto)
-                $clean_pattern = preg_replace('/_\w+$/', '', $pattern);
-                $pattern_name = self::get_pattern_name($clean_pattern);
+                $pattern_name = self::get_pattern_name($data['pattern']);
                 
                 // Determina severity
-                $base_severity = $clean_pattern === '/PHP Fatal error/i' || $clean_pattern === '/PHP Parse error/i' ? 'error' : 'warning';
+                $severity = in_array($data['type'], ['fatal', 'parse', 'error', 'exception']) ? 'error' : 'warning';
                 
-                // Aggiungi informazioni sul contesto
-                $context_info = '';
+                // Costruisci messaggio
+                $message_parts = [$pattern_name . ': ' . $data['count'] . ' occorrenze'];
+                
+                // Aggiungi file/riga se disponibili
+                if (!empty($data['files'])) {
+                    $file_info = implode(', ', array_slice($data['files'], 0, 3));
+                    if (count($data['files']) > 3) {
+                        $file_info .= ' (+' . (count($data['files']) - 3) . ' altri)';
+                    }
+                    $message_parts[] = 'File: ' . $file_info;
+                }
+                
+                if (!empty($data['lines'])) {
+                    $lines_info = implode(', ', array_slice($data['lines'], 0, 5));
+                    if (count($data['lines']) > 5) {
+                        $lines_info .= ' (+' . (count($data['lines']) - 5) . ' altri)';
+                    }
+                    $message_parts[] = 'Righe: ' . $lines_info;
+                }
+                
+                // Aggiungi contesto
                 if (!empty($data['contexts'])) {
                     $context_labels = [
                         'wp_cli' => 'WP-CLI',
@@ -1348,24 +1477,115 @@ class CloudwaysLogParser
                     $contexts_labeled = array_map(function($ctx) use ($context_labels) {
                         return $context_labels[$ctx] ?? $ctx;
                     }, $data['contexts']);
-                    $context_info = ' [' . implode(', ', $contexts_labeled) . ']';
+                    $message_parts[] = 'Contesto: ' . implode(', ', $contexts_labeled);
                 }
                 
-                $message = sprintf('%s: %d occorrenze%s', $pattern_name, $data['count'], $context_info);
+                $message = implode(' | ', $message_parts);
                 
                 $issues[] = [
                     'type' => 'PHP Error',
-                    'severity' => $base_severity,
+                    'severity' => $severity,
                     'message' => $message,
                     'count' => $data['count'],
                     'examples' => $data['examples'],
-                    'context' => $data['context'] ?? null,
-                    'contexts' => $data['contexts'] ?? [],
+                    'files' => $data['files'],
+                    'lines' => $data['lines'],
+                    'contexts' => $data['contexts'],
+                    'first_seen' => $data['first_seen'],
+                    'last_seen' => $data['last_seen'],
+                    'error_type' => $data['type'],
                 ];
             }
         }
         
+        // Ordina per severity e count (errori prima, poi per count decrescente)
+        usort($issues, function($a, $b) {
+            if ($a['severity'] !== $b['severity']) {
+                return $a['severity'] === 'error' ? -1 : 1;
+            }
+            return $b['count'] - $a['count'];
+        });
+        
         return $issues;
+    }
+    
+    /**
+     * Estrae informazioni dettagliate da un errore PHP (file, riga, messaggio, stack trace)
+     */
+    private static function extract_php_error_info(string $error_line, array $all_lines, int $current_index): array
+    {
+        $info = [
+            'message' => trim($error_line),
+            'file' => null,
+            'line' => null,
+            'stack_trace' => [],
+            'stack_trace_lines' => 0,
+        ];
+        
+        // Estrai file e riga dal messaggio di errore
+        // Pattern: "in /path/to/file.php on line 123"
+        if (preg_match('/in\s+([^\s]+\.php)\s+on\s+line\s+(\d+)/i', $error_line, $matches)) {
+            $info['file'] = $matches[1];
+            $info['line'] = (int)$matches[2];
+        }
+        // Pattern: "/path/to/file.php(123): ..."
+        elseif (preg_match('/([^\s\(]+\.php)\((\d+)\)/', $error_line, $matches)) {
+            $info['file'] = $matches[1];
+            $info['line'] = (int)$matches[2];
+        }
+        
+        // Estrai stack trace dalle righe successive
+        $stack_trace = [];
+        $i = $current_index + 1;
+        $max_stack_lines = 20; // Limita stack trace a 20 righe
+        $stack_depth = 0;
+        
+        while ($i < count($all_lines) && $stack_depth < $max_stack_lines) {
+            $line = $all_lines[$i];
+            
+            // Stack trace tipicamente inizia con "#0" o "Stack trace:" o contiene "called in"
+            if (preg_match('/^(#\d+|Stack trace:)/', $line) || 
+                preg_match('/called in/i', $line) ||
+                preg_match('/\s+in\s+[^\s]+\.php\s+on\s+line\s+\d+/i', $line) ||
+                preg_match('/\[internal function\]:/i', $line)) {
+                
+                $stack_trace[] = trim($line);
+                $stack_depth++;
+                
+                // Estrai file e riga anche dallo stack trace
+                if (preg_match('/([^\s\(]+\.php)\((\d+)\)/', $line, $matches)) {
+                    if (empty($info['file'])) {
+                        $info['file'] = $matches[1];
+                        $info['line'] = (int)$matches[2];
+                    }
+                }
+            } else {
+                // Se la riga non sembra parte dello stack trace, fermati
+                // (ma controlla se è una riga vuota o un nuovo errore)
+                $trimmed = trim($line);
+                if (empty($trimmed)) {
+                    $i++;
+                    continue;
+                }
+                
+                // Se inizia con un nuovo timestamp o pattern di errore, fermati
+                if (self::parse_apache_timestamp($line) || 
+                    preg_match('/^(PHP |WordPress |Uncaught )/i', $line)) {
+                    break;
+                }
+                
+                // Altrimenti potrebbe essere parte del messaggio o stack trace
+                $stack_trace[] = $trimmed;
+                $stack_depth++;
+            }
+            
+            $i++;
+        }
+        
+        $info['stack_trace'] = $stack_trace;
+        $info['stack_trace_lines'] = $stack_depth;
+        
+        return $info;
     }
     
     /**
@@ -1615,7 +1835,10 @@ class CloudwaysLogParser
             '/AH01071/i' => 'Apache Error AH01071',
         ];
         
-        return $names[$pattern] ?? $pattern;
+        // Normalizza pattern per matching (rimuovi flag regex)
+        $normalized = preg_replace('/\/[imsxADSUXu]*$/', '', $pattern);
+        
+        return $names[$pattern] ?? $names[$normalized] ?? $pattern;
     }
 }
 

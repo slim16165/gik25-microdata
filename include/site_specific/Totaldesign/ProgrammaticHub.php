@@ -1,7 +1,7 @@
 <?php
 namespace gik25microdata\site_specific\Totaldesign;
 
-use gik25microdata\TagHelper;
+use gik25microdata\Utility\TagHelper;
 use WP_Post;
 
 if (!defined('ABSPATH')) {

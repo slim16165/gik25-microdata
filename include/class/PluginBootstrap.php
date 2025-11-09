@@ -337,7 +337,10 @@ class PluginBootstrap
         
         // ColorWidget (protetto)
         SafeExecution::safe_execute(function() {
-            if (class_exists('\gik25microdata\ColorWidget')) {
+            if (class_exists('\gik25microdata\Widgets\ColorWidget')) {
+                \gik25microdata\Widgets\ColorWidget::Initialize();
+            } elseif (class_exists('\gik25microdata\ColorWidget')) {
+                // Backward compatibility
                 \gik25microdata\ColorWidget::Initialize();
             }
         }, null, true);

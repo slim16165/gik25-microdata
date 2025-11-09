@@ -101,6 +101,37 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+## 1.16.8 (2025-11-09)
+
+### Miglioramenti Errori PHP
+- ✅ **Visualizzazione Errori PHP Migliorata**: Sezione dedicata con evidenza visiva, stack trace completo espandibile, file e riga evidenziati
+- ✅ **Parser Log Avanzato**: Estrazione stack trace completo (fino a 20 righe), raggruppamento intelligente per file/riga, prioritizzazione errori critici
+- ✅ **REST API Health Check**: Nuovi endpoint `/wp-json/wp-mcp/v1/health/errors` e `/wp-json/wp-mcp/v1/health/errors/critical` per interrogare errori via MCP
+- ✅ **Toggle Debug Mode**: Endpoint REST `/wp-json/wp-mcp/v1/health/debug` per abilitare/disabilitare debug mode
+- ✅ **Raggruppamento Intelligente**: Errori simili raggruppati per tipo/file/riga con conteggio occorrenze
+- ✅ **Contesto Esecuzione**: Identificazione contesto (AJAX, WP-CRON, frontend, backend, REST API) per ogni errore
+
+### Riorganizzazione Codebase
+- ✅ **File Analyze-Log Spostati**: Script debug spostati in `scripts/debug/` per migliore organizzazione
+- ✅ **Riorganizzazione Directory Fase 1**: `ColorWidget.php` spostato in `Widgets/`, `TagHelper.php` spostato in `Utility/`
+- ✅ **Namespace Aggiornati**: Aggiornati tutti i riferimenti per usare nuovi namespace (`gik25microdata\Widgets\ColorWidget`, `gik25microdata\Utility\TagHelper`)
+- ✅ **Retrocompatibilità**: Mantenuta retrocompatibilità per ColorWidget durante transizione
+
+### Documentazione
+- ✅ **HEALTH_CHECK.md Aggiornato**: Aggiunta documentazione completa per parser log e visualizzazione errori PHP
+- ✅ **MCP.md Consolidato**: Creato file consolidato `docs/MCP.md` con tutta la documentazione MCP
+- ✅ **Script Debug Documentati**: Aggiornati commenti in `scripts/debug/analyze-log-page.php` con nuove istruzioni
+
+### Composer e Dependencies
+- ✅ **Versioni Aggiornate**: `yiisoft/html` aggiornato a `^3.0`, `illuminate/collections` a `^10.0`
+- ✅ **Monolog Aggiunto**: Aggiunto `monolog/monolog ^3.0` per logging strutturato
+- ✅ **Dev Dependencies**: Aggiunti `phpunit/phpunit ^10.0`, `rector/rector ^0.19`, `friendsofphp/php-cs-fixer ^3.0`
+- ✅ **Scripts Composer**: Aggiunti script per `phpstan`, `psalm`, `cs-fix`, `rector`, `test`
+
+### GitHub Actions
+- ✅ **Test Estesi**: Aggiunti step per PHPStan, Psalm, PHP CS Fixer, Security Audit, PHPUnit
+- ✅ **Validazione Migliorata**: Test suite configurabile con fallback graceful se non configurata
+
 ##### 1.16.7 _(2025-11-09)_
 * **Riorganizzazione Menu Admin**: Dashboard, Impostazioni e Strumenti unificati in una pagina con tab. Shortcodes e Utilizzo Shortcode unificati in una pagina con tab. Menu più pulito e organizzato.
 * **Fix TinyMCE Buttons**: Corretto errore `array_push(): Argument #1 ($array) must be of type array, null given` in tutti gli shortcode che registrano bottoni TinyMCE (boxinfo, flipbox, blinkingbutton, prezzo, telefono, slidingbox, youtube, perfectpullquote). Aggiunto controllo per verificare che il parametro sia un array prima di usare `array_push()`.

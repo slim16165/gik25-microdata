@@ -1,5 +1,5 @@
 <?php
-namespace gik25microdata;
+namespace gik25microdata\Utility;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         public static function wpseo_exclude_from_sitemap_1postTags($alreadyExcluded): array
         {
-            $excludeTagId = array_merge($alreadyExcluded, TagHelper::find_tags_with_only_one_post());
+            $excludeTagId = array_merge($alreadyExcluded, self::find_tags_with_only_one_post());
             return $excludeTagId;
         }
 
@@ -60,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				if ($post_count == 1)
 				{
                     // La funzione si aspetta il nome del tag, non l'ID
-                    $post_ids = TagHelper::find_post_id_from_taxonomy($tag->name, 'post_tag');
+                    $post_ids = self::find_post_id_from_taxonomy($tag->name, 'post_tag');
                     if (!empty($post_ids)) {
                         $post_id = $post_ids[0]; // Prendi il primo (e unico) post
                         wp_redirect(
@@ -127,7 +127,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             if ($taxonomy_type != 'post_tag' && $taxonomy_type != 'category')
             {
                 // Log errore invece di fare exit
-                error_log("TagHelper::find_post_id_from_taxonomy: taxonomy_type deve essere 'post_tag' o 'category', ricevuto: " . $taxonomy_type);
+                error_log("gik25microdata\Utility\TagHelper::find_post_id_from_taxonomy: taxonomy_type deve essere 'post_tag' o 'category', ricevuto: " . $taxonomy_type);
                 return [];
             }
 

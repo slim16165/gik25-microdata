@@ -47,7 +47,7 @@ class ExcludePostFrom
      */
     function exclude_posts_from_everywhere($query): void
     {
-        $ids = TagHelper::find_post_id_from_taxonomy("OT", 'post_tag');
+        $ids = \gik25microdata\Utility\TagHelper::find_post_id_from_taxonomy("OT", 'post_tag');
 
         if ($query->is_home() || $query->is_feed() || $query->is_archive())
         {

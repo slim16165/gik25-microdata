@@ -273,6 +273,52 @@ class MCPApi
                 ],
             ],
         ]);
+
+        // Health Check / Log Analysis endpoints
+        register_rest_route(self::NAMESPACE, '/health/errors', [
+            'methods' => 'GET',
+            'callback' => [self::class, 'get_recent_errors'],
+            'permission_callback' => '__return_true',
+            'args' => [
+                'hours' => [
+                    'default' => 24,
+                    'type' => 'integer',
+                    'sanitize_callback' => 'absint',
+                ],
+                'severity' => [
+                    'default' => 'error',
+                    'type' => 'string',
+                    'enum' => ['error', 'warning', 'all'],
+                ],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/health/errors/critical', [
+            'methods' => 'GET',
+            'callback' => [self::class, 'get_critical_errors'],
+            'permission_callback' => '__return_true',
+            'args' => [
+                'since' => [
+                    'default' => null,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/health/debug', [
+            'methods' => 'POST',
+            'callback' => [self::class, 'toggle_debug'],
+            'permission_callback' => function() {
+                return current_user_can('manage_options');
+            },
+            'args' => [
+                'enabled' => [
+                    'required' => true,
+                    'type' => 'boolean',
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -908,6 +954,147 @@ class MCPApi
                 'comment_count' => (int) $post->comment_count,
             ];
         }, $posts);
+    }
+
+    /**
+     * Ottieni errori recenti dai log
+     * Endpoint per MCP: ci sono stati errori dopo un deploy?
+     */
+    public static function get_recent_errors(\WP_REST_Request $request): \WP_REST_Response
+    {
+        if (!class_exists('\gik25microdata\HealthCheck\CloudwaysLogParser')) {
+            return new \WP_REST_Response(['error' => 'Log parser not available'], 503);
+        }
+
+        $hours = $request->get_param('hours');
+        $severity = $request->get_param('severity');
+
+        try {
+            $analysis = \gik25microdata\HealthCheck\CloudwaysLogParser::analyze_logs();
+            
+            // Filtra errori per severity e tempo
+            $cutoff_time = time() - ($hours * 60 * 60);
+            $filtered_issues = [];
+            
+            foreach ($analysis['issues'] ?? [] as $issue) {
+                // Filtra per severity
+                if ($severity !== 'all' && $issue['severity'] !== $severity) {
+                    continue;
+                }
+                
+                // Filtra solo errori critici PHP (fatal, parse, error, exception)
+                if ($severity === 'error' && $issue['type'] === 'PHP Error') {
+                    $error_type = $issue['error_type'] ?? '';
+                    if (!in_array($error_type, ['fatal', 'parse', 'error', 'exception'])) {
+                        continue;
+                    }
+                }
+                
+                $filtered_issues[] = $issue;
+            }
+            
+            return new \WP_REST_Response([
+                'total_errors' => count(array_filter($filtered_issues, fn($i) => $i['severity'] === 'error')),
+                'total_warnings' => count(array_filter($filtered_issues, fn($i) => $i['severity'] === 'warning')),
+                'issues' => array_slice($filtered_issues, 0, 20), // Limita a 20 per performance
+                'hours' => $hours,
+                'timestamp' => current_time('mysql'),
+            ], 200);
+            
+        } catch (\Throwable $e) {
+            return new \WP_REST_Response([
+                'error' => 'Error analyzing logs',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Ottieni solo errori critici (fatal, parse, uncaught)
+     * Utile per verificare se ci sono stati errori gravi dopo un deploy
+     */
+    public static function get_critical_errors(\WP_REST_Request $request): \WP_REST_Response
+    {
+        if (!class_exists('\gik25microdata\HealthCheck\CloudwaysLogParser')) {
+            return new \WP_REST_Response(['error' => 'Log parser not available'], 503);
+        }
+
+        $since = $request->get_param('since'); // Timestamp o data ISO
+        $since_timestamp = null;
+        
+        if ($since) {
+            $since_timestamp = is_numeric($since) ? (int)$since : strtotime($since);
+        } else {
+            // Default: ultime 24 ore
+            $since_timestamp = time() - (24 * 60 * 60);
+        }
+
+        try {
+            $analysis = \gik25microdata\HealthCheck\CloudwaysLogParser::analyze_logs();
+            
+            // Filtra solo errori critici PHP
+            $critical_errors = [];
+            foreach ($analysis['issues'] ?? [] as $issue) {
+                if ($issue['type'] === 'PHP Error' && $issue['severity'] === 'error') {
+                    $error_type = $issue['error_type'] ?? '';
+                    if (in_array($error_type, ['fatal', 'parse', 'error', 'exception'])) {
+                        // Verifica timestamp se disponibile
+                        if ($since_timestamp && isset($issue['last_seen'])) {
+                            if ($issue['last_seen'] < $since_timestamp) {
+                                continue;
+                            }
+                        }
+                        $critical_errors[] = $issue;
+                    }
+                }
+            }
+            
+            return new \WP_REST_Response([
+                'critical_errors_count' => count($critical_errors),
+                'critical_errors' => array_slice($critical_errors, 0, 10),
+                'since' => $since_timestamp ? date('Y-m-d H:i:s', $since_timestamp) : '24 hours ago',
+                'timestamp' => current_time('mysql'),
+            ], 200);
+            
+        } catch (\Throwable $e) {
+            return new \WP_REST_Response([
+                'error' => 'Error analyzing logs',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Abilita/disabilita debug mode
+     * Endpoint per MCP: toggle debug per troubleshooting
+     */
+    public static function toggle_debug(\WP_REST_Request $request): \WP_REST_Response
+    {
+        if (!current_user_can('manage_options')) {
+            return new \WP_REST_Response(['error' => 'Insufficient permissions'], 403);
+        }
+
+        $enabled = $request->get_param('enabled');
+        
+        // Salva in opzione WordPress
+        update_option('gik25_debug_mode', $enabled ? '1' : '0');
+        
+        // Applica immediatamente se possibile
+        if ($enabled) {
+            @ini_set('display_errors', '1');
+            @ini_set('log_errors', '1');
+            @error_reporting(E_ALL);
+        } else {
+            @ini_set('display_errors', '0');
+            @ini_set('log_errors', '1'); // Mantieni log anche se display è disabilitato
+            @error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+        }
+        
+        return new \WP_REST_Response([
+            'debug_enabled' => $enabled,
+            'message' => $enabled ? 'Debug mode enabled' : 'Debug mode disabled',
+            'timestamp' => current_time('mysql'),
+        ], 200);
     }
 }
 

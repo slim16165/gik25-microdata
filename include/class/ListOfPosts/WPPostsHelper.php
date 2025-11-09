@@ -1,6 +1,6 @@
 <?php
 namespace gik25microdata\ListOfPosts;
-use gik25microdata\TagHelper;
+use gik25microdata\Utility\TagHelper;
 use gik25microdata\Utility\HtmlHelper;
 use gik25microdata\Utility\MyString;
 use gik25microdata\Utility\ServerHelper;
