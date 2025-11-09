@@ -50,25 +50,27 @@ Aggiornare anche la versione del plugin su revious-microdata.php
 
 Se `composer.lock` è desincronizzato con `composer.json` (errore GitHub Actions):
 
-**Sul server Cloudways (via SSH):**
+**⭐ Opzione 1: GitHub Actions (Automatico - Consigliato)**
+1. Vai su: https://github.com/slim16165/gik25-microdata/actions/workflows/update-composer-lock.yml
+2. Clicca "Run workflow" → "Run workflow"
+3. GitHub Actions aggiorna automaticamente `composer.lock` e fa il commit
+
+**💻 Opzione 2: Localmente (se hai Composer installato)**
 ```bash
-cd /path/to/wp-content/plugins/gik25-microdata
+# Windows (PowerShell)
 composer update --no-interaction --prefer-dist
 git add composer.lock
 git commit -m "Update composer.lock"
 git push
-```
 
-**Localmente (se hai PHP/Composer):**
-```bash
 # Linux/Mac
 bash scripts/update-composer-lock.sh
-
-# Windows
-powershell -ExecutionPolicy Bypass -File scripts/update-composer-lock.ps1
 ```
 
-**Nota**: `composer.lock` deve essere committato e sincronizzato con `composer.json` per evitare errori in GitHub Actions.
+**📚 Opzione 3: Installa Composer su Windows**
+Vedi [docs/COMPOSER_SETUP.md](docs/COMPOSER_SETUP.md) per istruzioni complete.
+
+**Nota**: `composer.lock` deve essere committato e sincronizzato con `composer.json` per evitare errori in GitHub Actions. **Mai eseguire `composer update` in produzione** - usa sempre `composer install --no-dev`.
 
 ### Validazione Sintassi PHP
 

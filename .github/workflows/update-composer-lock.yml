@@ -1,0 +1,66 @@
+name: Update composer.lock
+
+on:
+  workflow_dispatch: # Permette di eseguire manualmente da GitHub UI
+  push:
+    paths:
+      - 'composer.json'
+    branches:
+      - master
+
+jobs:
+  update-composer-lock:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, xml, curl, zip
+          coverage: none
+      
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      
+      - name: Validate composer.json
+        run: composer validate --strict
+      
+      - name: Update composer.lock
+        run: |
+          echo "🔄 Updating composer.lock..."
+          composer update --no-interaction --prefer-dist --no-scripts
+          
+          # Verifica se composer.lock è cambiato
+          if git diff --quiet composer.lock; then
+            echo "✅ composer.lock is already up to date"
+            exit 0
+          fi
+          
+          echo "📝 composer.lock has been updated"
+          echo "📋 Changes:"
+          git diff --stat composer.lock
+          
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add composer.lock
+          git commit -m "chore: Update composer.lock [skip ci]" || exit 0
+          git push
+          echo "✅ composer.lock updated and pushed successfully"
+
