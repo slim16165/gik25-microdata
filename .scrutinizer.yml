@@ -1,0 +1,49 @@
+build:
+  nodes:
+    analysis:
+      environment:
+        php:
+          version: '8.1'
+      project_setup:
+        override: |
+          # Forza installazione Composer 2
+          composer self-update --2
+          composer --version
+          composer install --no-interaction --prefer-dist --no-scripts
+      tests:
+        override:
+          - command: composer install --no-interaction --prefer-dist
+            coverage:
+              file: phpunit-coverage.xml
+              format: php-clover
+
+filter:
+  excluded_paths:
+    - tests/*
+    - vendor/*
+    - node_modules/*
+    - mcp-server/*
+    - externals/*
+
+coding_standards:
+  php:
+    - { tool: 'phpcs', standard: 'PSR2' }
+
+tools:
+  external_code_coverage:
+    timeout: 600
+  php_code_sniffer:
+    enabled: true
+    config:
+      standard: PSR2
+  php_cpd:
+    enabled: true
+  php_loc:
+    enabled: true
+  php_mess_detector:
+    enabled: true
+  php_analyzer:
+    enabled: true
+  sensiolabs_security_checker:
+    enabled: true
+
