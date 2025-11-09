@@ -49,7 +49,10 @@ abstract class ShortcodeBase
         if ($this->PostContainsShortCode($this->shortcode))
         {
             add_action('wp_enqueue_scripts', array($this, 'styles'));
-            add_action('wp_enqueue_scripts', array($this, 'scripts'));
+            // Carica scripts() solo se il metodo esiste (non tutti gli shortcode hanno JS)
+            if (method_exists($this, 'scripts')) {
+                add_action('wp_enqueue_scripts', array($this, 'scripts'));
+            }
         }
     }
 

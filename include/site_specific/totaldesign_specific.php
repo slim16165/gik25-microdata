@@ -21,6 +21,12 @@ function ConditionalLoadJsCss_Colori()
 function _conditionalLoadJsCss_Colori()
 {
     global $post;
+    
+    // Verifica che $post sia valido (può essere null in archive pages, search, ecc.)
+    if (!is_a($post, 'WP_Post') || !isset($post->ID)) {
+        return;
+    }
+    
     $postConTagColori = TagHelper::find_post_id_from_taxonomy("colori", 'post_tag');//args: term_name "colori", taxonomy_type 'post_tag'
     if (in_array($post->ID, $postConTagColori))
         ColorWidget::carousel_js();
