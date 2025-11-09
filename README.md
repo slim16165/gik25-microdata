@@ -101,6 +101,23 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+## 2.0.1 (2025-11-09) - Bug Fixes
+
+### 🐛 Fix Critici
+- ✅ **Fix Fatal Error Shortcode**: Risolto errore `Perfectpullquote/Prezzo/Youtube does not have method "scripts"`
+  - Metodo `scripts()` ora opzionale in `ShortcodeBase` (verifica `method_exists()` prima di chiamare)
+  - Non tutti gli shortcode hanno JavaScript, solo alcuni (blinkingbutton, appnav, kitchenfinder)
+- ✅ **Fix Null Pointer**: Risolto errore `Attempt to read property "ID" on null` in `totaldesign_specific.php`
+  - Aggiunto check `is_a($post, 'WP_Post') && isset($post->ID)` prima di usare `$post->ID`
+  - Previene errori in archive pages, search pages, ecc. dove `$post` può essere null
+
+### 📋 Note
+- Errori Action Scheduler (tabella database mancante) non sono del plugin, ma del plugin Action Scheduler/ImageOptimization
+- Query Monitor memory exhaustion causato da errori Action Scheduler
+- Media.php warnings (undefined array key) sono di WordPress core o altri plugin
+
+---
+
 ## 2.0.0 (2025-11-09) - Major Release 🎉
 
 ### 🎉 Nuove Funzionalità Major
