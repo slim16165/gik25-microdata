@@ -1,13 +1,18 @@
 <?php
-namespace gik25microdata;
+namespace gik25microdata\WPSettings;
 
-//TODO: classe da completare.. ci sono cablature e casini vari
+use gik25microdata\Utility\TagHelper;
 
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.
 }
 
+/**
+ * Classe per escludere post da query WordPress
+ * 
+ * TODO: classe da completare.. ci sono cablature e casini vari
+ */
 class ExcludePostFrom
 {
 
@@ -47,7 +52,7 @@ class ExcludePostFrom
      */
     function exclude_posts_from_everywhere($query): void
     {
-        $ids = \gik25microdata\Utility\TagHelper::find_post_id_from_taxonomy("OT", 'post_tag');
+        $ids = TagHelper::find_post_id_from_taxonomy("OT", 'post_tag');
 
         if ($query->is_home() || $query->is_feed() || $query->is_archive())
         {

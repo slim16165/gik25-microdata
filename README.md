@@ -101,6 +101,63 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+## 2.0.0 (2025-11-09) - Major Release 🎉
+
+### 🎉 Nuove Funzionalità Major
+- ✅ **Parser Log Avanzato**: Estrazione stack trace completo, raggruppamento intelligente, prioritizzazione errori critici
+- ✅ **REST API Health Check**: Nuovi endpoint `/wp-json/wp-mcp/v1/health/errors` e `/wp-json/wp-mcp/v1/health/errors/critical` per interrogare errori via MCP
+- ✅ **Visualizzazione Errori PHP Rinnovata**: Sezione dedicata, stack trace espandibile, evidenza visiva
+- ✅ **Toggle Debug Mode**: Endpoint REST `/wp-json/wp-mcp/v1/health/debug` per abilitare/disabilitare debug mode
+
+### 🔄 Breaking Changes
+- ⚠️ **Dipendenze Aggiornate**: `yiisoft/html` ^3.0, `illuminate/collections` ^10.0 (richiedono aggiornamento composer)
+- ⚠️ **Namespace Riorganizzati**: 
+  - `ColorWidget` → `gik25microdata\Widgets\ColorWidget`
+  - `TagHelper` → `gik25microdata\Utility\TagHelper`
+  - `ReviousMicrodataSettingsPage` → `gik25microdata\Admin\SettingsPage`
+  - `AdminHelper` → `gik25microdata\Admin\AdminHelper`
+  - `ExcludePostFrom` → `gik25microdata\WPSettings\ExcludePostFrom`
+- ⚠️ **Riorganizzazione Directory**: File spostati in struttura più organizzata (retrocompatibilità mantenuta durante transizione)
+
+### 🏗️ Riorganizzazione Codebase
+- ✅ **Riorganizzazione Directory Fase 1**: 
+  - `ColorWidget.php` → `Widgets/ColorWidget.php`
+  - `TagHelper.php` → `Utility/TagHelper.php`
+  - `revious-microdata-settings.php` → `Admin/SettingsPage.php`
+  - `AdminHelper.class.php` → `Admin/AdminHelper.php`
+  - `ExcludePostFrom.php` → `WPSettings/ExcludePostFrom.php`
+- ✅ **File Analyze-Log Spostati**: Script debug spostati in `scripts/debug/` per migliore organizzazione
+- ✅ **Namespace Aggiornati**: Aggiornati tutti i riferimenti per usare nuovi namespace
+- ✅ **Retrocompatibilità**: Mantenuta retrocompatibilità per ColorWidget durante transizione
+
+### 📊 Miglioramenti Errori PHP
+- ✅ **Visualizzazione Errori PHP Migliorata**: Sezione dedicata con evidenza visiva, stack trace completo espandibile, file e riga evidenziati
+- ✅ **Parser Log Avanzato**: Estrazione stack trace completo (fino a 20 righe), raggruppamento intelligente per file/riga, prioritizzazione errori critici
+- ✅ **Raggruppamento Intelligente**: Errori simili raggruppati per tipo/file/riga con conteggio occorrenze
+- ✅ **Contesto Esecuzione**: Identificazione contesto (AJAX, WP-CRON, frontend, backend, REST API) per ogni errore
+
+### 📋 Documentazione
+- ✅ **HEALTH_CHECK.md Aggiornato**: Aggiunta documentazione completa per parser log e visualizzazione errori PHP
+- ✅ **MCP.md Consolidato**: Creato file consolidato `docs/MCP.md` con tutta la documentazione MCP
+- ✅ **Script Debug Documentati**: Aggiornati commenti in `scripts/debug/analyze-log-page.php` con nuove istruzioni
+
+### 🛠️ Composer e Dependencies
+- ✅ **Versioni Aggiornate**: `yiisoft/html` aggiornato a `^3.0`, `illuminate/collections` a `^10.0`
+- ✅ **Monolog Aggiunto**: Aggiunto `monolog/monolog ^3.0` per logging strutturato
+- ✅ **Dev Dependencies**: Aggiunti `phpunit/phpunit ^10.0`, `rector/rector ^0.19`, `friendsofphp/php-cs-fixer ^3.0`
+- ✅ **Scripts Composer**: Aggiunti script per `phpstan`, `psalm`, `cs-fix`, `rector`, `test`
+
+### 🚀 GitHub Actions
+- ✅ **Test Estesi**: Aggiunti step per PHPStan, Psalm, PHP CS Fixer, Security Audit, PHPUnit
+- ✅ **Validazione Migliorata**: Test suite configurabile con fallback graceful se non configurata
+
+### 📋 Note Migrazione
+- **Composer**: Eseguire `composer update` per aggiornare dipendenze a versioni major
+- **Namespace**: I namespace sono stati riorganizzati ma la retrocompatibilità è mantenuta durante la transizione
+- **Breaking Changes**: Verificare compatibilità con `yiisoft/html` ^3.0 e `illuminate/collections` ^10.0
+
+---
+
 ## 1.16.8 (2025-11-09)
 
 ### Miglioramenti Errori PHP

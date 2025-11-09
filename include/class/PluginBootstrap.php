@@ -280,9 +280,8 @@ class PluginBootstrap
         
         // Carica settings page (protetto)
         SafeExecution::safe_execute(function() {
-            require_once(self::$plugin_dir . '/include/revious-microdata-settings.php');
-            if (class_exists('\gik25microdata\ReviousMicrodataSettingsPage')) {
-                new \gik25microdata\ReviousMicrodataSettingsPage();
+            if (class_exists('\gik25microdata\Admin\SettingsPage')) {
+                new \gik25microdata\Admin\SettingsPage();
             }
         }, null, true);
         
@@ -290,8 +289,8 @@ class PluginBootstrap
         
         // Istanzia helper admin (con gestione errori individuale) (protetto)
         SafeExecution::safe_execute(function() {
-            if (class_exists('\gik25microdata\AdminHelper')) {
-                new \gik25microdata\AdminHelper();
+            if (class_exists('\gik25microdata\Admin\AdminHelper')) {
+                new \gik25microdata\Admin\AdminHelper();
             }
         }, null, true);
         

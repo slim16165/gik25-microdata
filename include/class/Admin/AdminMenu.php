@@ -220,8 +220,8 @@ class AdminMenu
      */
     private static function render_settings_tab(): void
     {
-        if (class_exists('\gik25microdata\ReviousMicrodataSettingsPage')) {
-            \gik25microdata\ReviousMicrodataSettingsPage::render_page();
+        if (class_exists('\gik25microdata\Admin\SettingsPage')) {
+            \gik25microdata\Admin\SettingsPage::render_page();
         } else {
             echo '<div class="wrap"><h1>Errore</h1><p>Impossibile caricare la pagina settings. Classe non trovata.</p></div>';
         }

@@ -1,11 +1,11 @@
 <?php
-namespace gik25microdata;
+namespace gik25microdata\Admin;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-class ReviousMicrodataSettingsPage
+class SettingsPage
 {
     /**
      * Holds the values to be used in the fields callbacks
@@ -875,5 +875,6 @@ class ReviousMicrodataSettingsPage
 
 }
 
-// Nota: L'istanziazione di ReviousMicrodataSettingsPage è ora gestita centralmente
+// Nota: L'istanziazione di SettingsPage è ora gestita centralmente
 // nel file bootstrap revious-microdata.php per mantenere la logica di inizializzazione centralizzata
+

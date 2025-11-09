@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 /**
  * Pagina unificata per gestione shortcode
  * 
- * Combina funzionalità di ShortcodesPage e ReviousMicrodataSettingsPage
+ * Combina funzionalità di ShortcodesPage e SettingsPage
  * con layout migliorato tipo Elementor (1 shortcode per riga)
  */
 class ShortcodesManagerPage
