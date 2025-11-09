@@ -36,7 +36,7 @@ jobs:
       composer: ${{ steps.filter.outputs.composer }}
       config: ${{ steps.filter.outputs.config }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -58,7 +58,7 @@ jobs:
     if: needs.changes.outputs.php == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -93,7 +93,7 @@ jobs:
     if: needs.changes.outputs.composer == 'true' || needs.changes.outputs.php == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -169,7 +169,7 @@ jobs:
     if: (needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true') && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -206,7 +206,7 @@ jobs:
     if: (needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true') && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -243,7 +243,7 @@ jobs:
     if: (needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true') && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -288,7 +288,7 @@ jobs:
     if: needs.changes.outputs.php == 'true' && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
