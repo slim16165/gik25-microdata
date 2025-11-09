@@ -1,6 +1,5 @@
 {
   "name": "gik25/gik25-microdata",
-  "version": "2.0.1",
   "description": "Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazioni SEO e widget interattivi. Supporta TotalDesign.it, SuperInformati.com, NonSoloDieti.it, ChieCosa.it, Prestinforma.it",
   "type": "wordpress-plugin",
   "minimum-stability": "dev",
@@ -56,6 +55,9 @@
     "test": [
       "phpunit"
     ],
+    "test-coverage": [
+      "phpunit --coverage-html coverage --coverage-clover coverage.xml"
+    ],
     "phpstan": [
       "phpstan analyse"
     ],
@@ -70,12 +72,6 @@
     ],
     "rector": [
       "rector process"
-    ],
-    "test": [
-      "phpunit"
-    ],
-    "test-coverage": [
-      "phpunit --coverage-html coverage --coverage-clover coverage.xml"
     ]
   }
 }

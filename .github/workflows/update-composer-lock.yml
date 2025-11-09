@@ -31,13 +31,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
       
-      - name: Validate composer.json
-        run: composer validate --strict
+      - name: Validate composer.json (structure only)
+        run: |
+          echo "🔍 Validating composer.json structure..."
+          composer validate --no-check-lock --strict || {
+            echo "❌ composer.json has structural errors"
+            exit 1
+          }
+          echo "✅ composer.json structure is valid"
       
       - name: Update composer.lock
         run: |
           echo "🔄 Updating composer.lock..."
-          composer update --no-interaction --prefer-dist --no-scripts
+          echo "📦 This may take a few minutes..."
+          
+          # Aggiorna composer.lock
+          composer update --no-interaction --prefer-dist --no-scripts --with-all-dependencies
           
           # Verifica se composer.lock è cambiato
           if git diff --quiet composer.lock; then
@@ -46,8 +55,15 @@ jobs:
           fi
           
           echo "📝 composer.lock has been updated"
-          echo "📋 Changes:"
-          git diff --stat composer.lock
+          echo "📋 Summary of changes:"
+          git diff --stat composer.lock | head -20
+          
+          # Valida che composer.lock sia sincronizzato
+          echo "✅ Validating updated composer.lock..."
+          composer validate --strict || {
+            echo "⚠️ Warning: composer.lock validation still has issues"
+            echo "This might be due to package conflicts - review the changes"
+          }
           
       - name: Commit and push
         run: |

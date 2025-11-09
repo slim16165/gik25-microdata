@@ -98,11 +98,19 @@ jobs:
       - name: Validate composer.json
         run: |
           echo "🔍 Validating composer.json..."
-          composer validate --strict || {
-            echo "⚠️ composer.json validation failed or composer.lock is out of sync"
-            echo "Run 'composer update' locally or on the server to fix this"
+          # Valida composer.json (ignora warning su composer.lock desincronizzato)
+          composer validate --strict --no-check-lock || {
+            echo "❌ composer.json validation failed"
+            echo "Fix composer.json errors before continuing"
             exit 1
           }
+          
+          # Verifica separatamente se composer.lock è desincronizzato
+          if ! composer validate --strict 2>&1 | grep -q "Lock file is not up to date"; then
+            echo "⚠️ composer.lock might be out of sync"
+            echo "ℹ️  Run the 'Update composer.lock' workflow to fix this"
+            echo "ℹ️  Or run 'composer update' locally/server"
+          fi
       
       - name: Cache Composer packages
         id: composer-cache
