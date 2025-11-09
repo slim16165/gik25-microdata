@@ -243,15 +243,15 @@ class PluginBootstrap
             }
         }, null, true);
 
-        // Shortcodes admin page (protetto)
+        // Shortcodes unified page (protetto) - gestisce sia Gestione che Utilizzo
         SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Admin\ShortcodesUnifiedPage')) {
+                \gik25microdata\Admin\ShortcodesUnifiedPage::init();
+            }
+            // Le pagine figlie vengono inizializzate automaticamente quando vengono renderizzate
             if (class_exists('\gik25microdata\Admin\ShortcodesManagerPage')) {
                 \gik25microdata\Admin\ShortcodesManagerPage::init();
             }
-        }, null, true);
-
-        // Shortcode usage admin page (protetto)
-        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\Admin\ShortcodesUsagePage')) {
                 \gik25microdata\Admin\ShortcodesUsagePage::init();
             }

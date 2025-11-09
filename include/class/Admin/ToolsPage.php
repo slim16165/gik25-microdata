@@ -22,9 +22,13 @@ class ToolsPage
             wp_die(__('Non hai i permessi per visualizzare questa pagina.', 'gik25-microdata'));
         }
 
+        // Verifica se siamo in una pagina con tab (Dashboard unificata)
+        $is_tabbed_page = isset($_GET['page']) && $_GET['page'] === 'revious-microdata' && isset($_GET['tab']) && $_GET['tab'] === 'tools';
         ?>
         <div class="wrap">
+            <?php if (!$is_tabbed_page): ?>
             <h1><?php esc_html_e('Strumenti Revious Microdata', 'gik25-microdata'); ?></h1>
+            <?php endif; ?>
             <p><?php esc_html_e('Esporta le impostazioni correnti degli shortcode per migrare o fare backup.', 'gik25-microdata'); ?></p>
 
             <h2><?php esc_html_e('Esporta configurazione shortcode', 'gik25-microdata'); ?></h2>

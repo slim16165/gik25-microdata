@@ -101,6 +101,10 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.16.7 _(2025-11-09)_
+* **Riorganizzazione Menu Admin**: Dashboard, Impostazioni e Strumenti unificati in una pagina con tab. Shortcodes e Utilizzo Shortcode unificati in una pagina con tab. Menu più pulito e organizzato.
+* **Fix TinyMCE Buttons**: Corretto errore `array_push(): Argument #1 ($array) must be of type array, null given` in tutti gli shortcode che registrano bottoni TinyMCE (boxinfo, flipbox, blinkingbutton, prezzo, telefono, slidingbox, youtube, perfectpullquote). Aggiunto controllo per verificare che il parametro sia un array prima di usare `array_push()`.
+
 ##### 1.16.6 _(2025-11-09)_
 * **Fix UI Health Check**: Ripristinato funzionamento tab dettagli e interazioni
   * Script JavaScript completo per gestione tab Riepilogo/Dettagli

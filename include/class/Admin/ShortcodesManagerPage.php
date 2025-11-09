@@ -54,7 +54,9 @@ class ShortcodesManagerPage
         
         ?>
         <div class="wrap">
+            <?php if (!isset($_GET['page']) || $_GET['page'] !== 'revious-microdata-shortcodes'): ?>
             <h1><?php esc_html_e('Gestione Shortcode', 'gik25-microdata'); ?></h1>
+            <?php endif; ?>
 
             <?php if (isset($_GET['updated'])) : ?>
                 <div class="notice notice-success is-dismissible">
@@ -186,7 +188,7 @@ class ShortcodesManagerPage
                             <input type="hidden" name="action" value="gik25_toggle_shortcode">
                             <input type="hidden" name="slug" value="<?php echo esc_attr($slug); ?>">
                             <input type="hidden" name="enable" value="<?php echo $enabled ? '0' : '1'; ?>">
-                            <input type="hidden" name="redirect_page" value="<?php echo esc_attr(AdminMenu::MENU_SLUG . '-shortcodes'); ?>">
+                            <input type="hidden" name="redirect_page" value="revious-microdata-shortcodes">
                             
                             <label class="shortcode-toggle-switch">
                                 <input type="checkbox" <?php checked($enabled); ?> onchange="this.form.submit()">
@@ -221,16 +223,22 @@ class ShortcodesManagerPage
 
         $slug = isset($_POST['slug']) ? sanitize_text_field(wp_unslash($_POST['slug'])) : '';
         $enable = isset($_POST['enable']) ? (bool) intval($_POST['enable']) : false;
-        $redirect_page = isset($_POST['redirect_page']) ? sanitize_text_field(wp_unslash($_POST['redirect_page'])) : AdminMenu::MENU_SLUG . '-shortcodes';
+        $redirect_page = isset($_POST['redirect_page']) ? sanitize_text_field(wp_unslash($_POST['redirect_page'])) : 'revious-microdata-shortcodes';
 
         if ($slug) {
             ShortcodeRegistry::setSlugEnabled($slug, $enable);
         }
 
-        wp_safe_redirect(add_query_arg([
+        // Assicurati che il redirect includa il tab management se la pagina è quella unificata
+        $redirect_args = [
             'page' => $redirect_page,
             'updated' => $slug,
-        ], admin_url('admin.php')));
+        ];
+        if ($redirect_page === 'revious-microdata-shortcodes') {
+            $redirect_args['tab'] = 'management';
+        }
+
+        wp_safe_redirect(add_query_arg($redirect_args, admin_url('admin.php')));
         exit;
     }
 

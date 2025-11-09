@@ -68,6 +68,10 @@ EOF;
     }
 
     public function register_button($buttons) {
+        // Assicurati che $buttons sia un array (potrebbe essere null in alcuni contesti)
+        if (!is_array($buttons)) {
+            $buttons = array();
+        }
         array_push($buttons, 'md_telefono-menu');
         return $buttons;
     }

@@ -115,7 +115,8 @@ class ShortcodesPage
         }
 
         wp_safe_redirect(add_query_arg([
-            'page' => AdminMenu::MENU_SLUG . '-shortcodes',
+            'page' => 'revious-microdata-shortcodes',
+            'tab' => 'management',
             'updated' => $slug,
         ], admin_url('admin.php')));
         exit;

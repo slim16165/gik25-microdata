@@ -54,16 +54,32 @@ class ShortcodesUsagePage
         
         ?>
         <div class="wrap">
+            <?php if (!isset($_GET['page']) || $_GET['page'] !== 'revious-microdata-shortcodes'): ?>
             <h1><?php esc_html_e('Utilizzo Shortcode', 'gik25-microdata'); ?></h1>
+            <?php endif; ?>
             
             <div class="shortcode-usage-header" style="margin: 20px 0; padding: 15px; background: #fff; border: 1px solid #c3c4c7; border-radius: 4px;">
                 <p><?php esc_html_e('Panoramica completa degli shortcode utilizzati nel sito. I dati vengono scansionati automaticamente e memorizzati in cache per migliorare le performance.', 'gik25-microdata'); ?></p>
                 <p>
                     <label>
-                        <input type="checkbox" id="filter-used-only" <?php checked($filter_used_only); ?> onchange="window.location.href='<?php echo esc_url(admin_url('admin.php?page=' . AdminMenu::MENU_SLUG . '-shortcodes-usage&used_only=')); ?>' + (this.checked ? '1' : '0');">
+                        <input type="checkbox" id="filter-used-only" <?php checked($filter_used_only); ?> onchange="window.location.href='<?php echo esc_url(admin_url('admin.php?page=revious-microdata-shortcodes&tab=usage&used_only=')); ?>' + (this.checked ? '1' : '0');">
                         Mostra solo shortcode utilizzati
                     </label>
-                    <a href="<?php echo esc_url(wp_nonce_url(add_query_arg(['refresh_cache' => '1']), 'refresh_shortcode_usage_cache')); ?>" class="button" style="margin-left: 15px;">
+                    <?php 
+                    // Costruisci URL per refresh cache preservando tab e altri parametri
+                    $refresh_url = admin_url('admin.php');
+                    $refresh_args = [
+                        'page' => 'revious-microdata-shortcodes',
+                        'tab' => 'usage',
+                        'refresh_cache' => '1',
+                    ];
+                    if ($filter_used_only) {
+                        $refresh_args['used_only'] = '1';
+                    }
+                    $refresh_url = add_query_arg($refresh_args, $refresh_url);
+                    $refresh_url = wp_nonce_url($refresh_url, 'refresh_shortcode_usage_cache');
+                    ?>
+                    <a href="<?php echo esc_url($refresh_url); ?>" class="button" style="margin-left: 15px;">
                         <?php esc_html_e('🔄 Aggiorna Scansione', 'gik25-microdata'); ?>
                     </a>
                     <span class="description" style="margin-left: 10px;">

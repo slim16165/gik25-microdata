@@ -65,12 +65,20 @@ class Boxinfo extends ShortcodeBase
 
     public function add_buttons($plugin_array)
     {
+        // Assicurati che $plugin_array sia un array (potrebbe essere null in alcuni contesti)
+        if (!is_array($plugin_array)) {
+            $plugin_array = array();
+        }
         $plugin_array['Revious_boxinfo'] = plugins_url("{$this->asset_path}/js/TinyMCE/boxinfo.js");
         return $plugin_array;
     }
 
     public function register_buttons($buttons)
     {
+        // Assicurati che $buttons sia un array (potrebbe essere null in alcuni contesti)
+        if (!is_array($buttons)) {
+            $buttons = array();
+        }
         array_push($buttons, 'boxinfo-menu');
         return $buttons;
     }

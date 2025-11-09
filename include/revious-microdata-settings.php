@@ -85,9 +85,14 @@ class ReviousMicrodataSettingsPage
     {
         // Set class property
         $this->options = get_option( 'revious_microdata_option_name' );
+        
+        // Verifica se siamo in una pagina con tab (Dashboard unificata)
+        $is_tabbed_page = isset($_GET['page']) && $_GET['page'] === 'revious-microdata' && isset($_GET['tab']) && $_GET['tab'] === 'settings';
         ?>
         <div class="wrap">
+            <?php if (!$is_tabbed_page): ?>
             <h1>Revious Microdata - Impostazioni</h1>
+            <?php endif; ?>
             <p>Configura le impostazioni del plugin. Le modifiche verranno applicate immediatamente.</p>
             
             <form method="post" action="options.php" class="revious-microdata-settings-form">
