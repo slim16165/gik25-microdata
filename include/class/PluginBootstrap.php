@@ -2,6 +2,7 @@
 namespace gik25microdata;
 
 use gik25microdata\Utility\OptimizationHelper;
+use gik25microdata\Utility\SafeExecution;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
@@ -24,28 +25,47 @@ class PluginBootstrap
 
     /**
      * Inizializza il plugin
+     * PROTETTO: gestisce errori senza bloccare WordPress
      */
     public static function init(string $plugin_file): void
     {
-        self::$plugin_dir = dirname($plugin_file);
-        self::$plugin_file = $plugin_file;
-        
-        // Registra error handlers
-        self::registerErrorHandlers();
-        
-        // Verifica e gestisce dipendenze Composer
-        if (!self::checkComposerDependencies()) {
-            return; // Plugin non caricato se mancano dipendenze
-        }
-        
-        // Carica autoloader
-        require_once self::$plugin_dir . '/vendor/autoload.php';
-        
-        // Inizializza tabelle database (caroselli, health check)
-        self::initializeDatabase();
-        
-        // Inizializza il plugin
-        self::initializePlugin();
+        // Esegui inizializzazione in modo sicuro
+        SafeExecution::safe_execute(function() use ($plugin_file) {
+            self::$plugin_dir = dirname($plugin_file);
+            self::$plugin_file = $plugin_file;
+            
+            // Registra error handlers (protetto)
+            SafeExecution::safe_execute(function() {
+                self::registerErrorHandlers();
+            }, null, true);
+            
+            // Verifica e gestisce dipendenze Composer (protetto)
+            $dependencies_ok = SafeExecution::safe_execute(function() {
+                return self::checkComposerDependencies();
+            }, false, true);
+            
+            if (!$dependencies_ok) {
+                return; // Plugin non caricato se mancano dipendenze
+            }
+            
+            // Carica autoloader (protetto)
+            $autoload_path = self::$plugin_dir . '/vendor/autoload.php';
+            if (file_exists($autoload_path)) {
+                SafeExecution::safe_execute(function() use ($autoload_path) {
+                    require_once $autoload_path;
+                }, null, true);
+            }
+            
+            // Inizializza tabelle database (protetto)
+            SafeExecution::safe_execute(function() {
+                self::initializeDatabase();
+            }, null, true);
+            
+            // Inizializza il plugin (protetto)
+            SafeExecution::safe_execute(function() {
+                self::initializePlugin();
+            }, null, true);
+        }, null, true);
     }
     
     /**
@@ -95,8 +115,8 @@ class PluginBootstrap
             }
         }
 
-        // Mostra notifica admin
-        add_action('admin_notices', function() use ($auto_install_attempted, $auto_install_result) {
+        // Mostra notifica admin (protetto)
+        SafeExecution::safe_add_action('admin_notices', function() use ($auto_install_attempted, $auto_install_result) {
             if ($auto_install_attempted && $auto_install_result && $auto_install_result['success']) {
                 echo '<div class="notice notice-success is-dismissible">';
                 echo '<p><strong>Revious Microdata:</strong> ' . esc_html($auto_install_result['message']) . '</p>';
@@ -165,8 +185,8 @@ class PluginBootstrap
                 define('PLUGIN_NAME_PREFIX', 'md_');
             }
 
-            // Hook sempre attivi (XML-RPC, etc.) - eseguiti in tutti i contesti
-            add_filter('xmlrpc_methods', [self::class, 'removeXmlrpcMethods']);
+            // Hook sempre attivi (XML-RPC, etc.) - eseguiti in tutti i contesti (protetto)
+            SafeExecution::safe_add_filter('xmlrpc_methods', [self::class, 'removeXmlrpcMethods']);
 
             // Inizializzazione condizionale per contesto
             if (defined('DOING_AJAX') && DOING_AJAX) {
@@ -204,108 +224,88 @@ class PluginBootstrap
     private static function initializeAdmin(): void
     {
         // Carica gli shortcode anche nel backend (necessario per health check e altre funzionalità)
-        // Gli shortcode devono essere disponibili anche nel backend per essere verificati
-        add_action('init', function () {
-            self::loadShortcodeFiles();
+        // Gli shortcode devono essere disponibili anche nel backend per essere verificati (protetto)
+        SafeExecution::safe_add_action('init', function () {
+            SafeExecution::safe_execute(function() {
+                self::loadShortcodeFiles();
+            }, null, true);
         }, 1);
         
-        // Carica anche i file site_specific nel backend (per shortcode aggiuntivi)
-        try {
+        // Carica anche i file site_specific nel backend (per shortcode aggiuntivi) (protetto)
+        SafeExecution::safe_execute(function() {
             self::detectCurrentWebsite();
-        } catch (\Throwable $e) {
-            self::logError('Errore nel rilevamento automatico del sito (admin)', $e);
-        }
+        }, null, true);
         
-        // Menu admin principale (deve essere registrato per primo)
-        try {
+        // Menu admin principale (deve essere registrato per primo) (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\Admin\AdminMenu')) {
                 \gik25microdata\Admin\AdminMenu::init();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di AdminMenu', $e);
-        }
+        }, null, true);
 
-        // Shortcodes admin page
-        try {
+        // Shortcodes admin page (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\Admin\ShortcodesManagerPage')) {
                 \gik25microdata\Admin\ShortcodesManagerPage::init();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di ShortcodesPage', $e);
-        }
+        }, null, true);
 
-        // Shortcode usage admin page
-        try {
+        // Shortcode usage admin page (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\Admin\ShortcodesUsagePage')) {
                 \gik25microdata\Admin\ShortcodesUsagePage::init();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di ShortcodesUsagePage', $e);
-        }
+        }, null, true);
         
-        // Carousels Page (unificata con tab: gestione, migrazione, test)
-        try {
+        // Carousels Page (unificata con tab: gestione, migrazione, test) (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\Admin\CarouselsPage')) {
                 \gik25microdata\Admin\CarouselsPage::init();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di CarouselsPage', $e);
-        }
+        }, null, true);
         
-        // Health Check (solo admin)
-        try {
+        // Health Check (solo admin) (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\HealthCheck\HealthChecker')) {
                 \gik25microdata\HealthCheck\HealthChecker::init();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di HealthChecker', $e);
-        }
+        }, null, true);
 
-        // Tools tab
-        try {
+        // Tools tab (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\Admin\ToolsPage')) {
                 \gik25microdata\Admin\ToolsPage::init();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di ToolsPage', $e);
-        }
+        }, null, true);
         
-        // Carica settings page
-        try {
+        // Carica settings page (protetto)
+        SafeExecution::safe_execute(function() {
             require_once(self::$plugin_dir . '/include/revious-microdata-settings.php');
             if (class_exists('\gik25microdata\ReviousMicrodataSettingsPage')) {
                 new \gik25microdata\ReviousMicrodataSettingsPage();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nel caricamento della pagina settings', $e);
-        }
+        }, null, true);
         
         // CarouselManager, MigrationPreview, CarouselTester sono ora unificati in CarouselsPage (inizializzato sopra)
         
-        // Istanzia helper admin (con gestione errori individuale)
-        try {
+        // Istanzia helper admin (con gestione errori individuale) (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\AdminHelper')) {
                 new \gik25microdata\AdminHelper();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di AdminHelper', $e);
-        }
+        }, null, true);
         
-        try {
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\WPSettings\HeaderHelper')) {
                 new \gik25microdata\WPSettings\HeaderHelper();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di HeaderHelper', $e);
-        }
+        }, null, true);
         
-        try {
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\WPSettings\WordpressBehaviourModifier')) {
                 new \gik25microdata\WPSettings\WordpressBehaviourModifier();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di WordpressBehaviourModifier', $e);
-        }
+        }, null, true);
     }
 
     /**
@@ -314,41 +314,40 @@ class PluginBootstrap
     private static function initializeFrontend(): void
     {
         // Ottimizzazioni - spostato su template_redirect per evitare warning is_single()
-        // La funzione usa is_single() che non funziona prima che la query WordPress sia eseguita
-        add_action('template_redirect', function() {
-            try {
+        // La funzione usa is_single() che non funziona prima che la query WordPress sia eseguita (protetto)
+        SafeExecution::safe_add_action('template_redirect', function() {
+            SafeExecution::safe_execute(function() {
                 if (class_exists('\gik25microdata\Utility\OptimizationHelper')) {
                     OptimizationHelper::ConditionalLoadCssJsOnPostsWhichContainAnyEnabledShortcode();
                 }
-            } catch (\Throwable $e) {
-                self::logError('Errore nell\'inizializzazione di OptimizationHelper', $e);
-            }
+            }, null, true);
         }, 5); // Priorità 5 per eseguire prima di altre azioni su template_redirect
         
-        // Carica tutte le classi Shortcodes (compatibilità con filesystem case-sensitive)
-        add_action('init', function () {
-            self::loadShortcodeFiles();
+        // Carica tutte le classi Shortcodes (compatibilità con filesystem case-sensitive) (protetto)
+        SafeExecution::safe_add_action('init', function () {
+            SafeExecution::safe_execute(function() {
+                self::loadShortcodeFiles();
+            }, null, true);
         }, 1);
         
-        // Rilevamento automatico sito
-        try {
+        // Rilevamento automatico sito (protetto)
+        SafeExecution::safe_execute(function() {
             self::detectCurrentWebsite();
-        } catch (\Throwable $e) {
-            self::logError('Errore nel rilevamento automatico del sito', $e);
-        }
+        }, null, true);
         
-        // ColorWidget
-        try {
+        // ColorWidget (protetto)
+        SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\ColorWidget')) {
                 \gik25microdata\ColorWidget::Initialize();
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nell\'inizializzazione di ColorWidget', $e);
-        }
+        }, null, true);
         
-        // Debug: verifica shortcode registrati (solo se Query Monitor è attivo)
-        add_action('wp_loaded', function() {
-            if (function_exists('do_action')) {
+        // Debug: verifica shortcode registrati (solo se Query Monitor è attivo) (protetto)
+        SafeExecution::safe_add_action('wp_loaded', function() {
+            SafeExecution::safe_execute(function() {
+                if (!function_exists('do_action')) {
+                    return;
+                }
                 global $shortcode_tags;
                 $plugin_shortcodes = [];
                 
@@ -393,30 +392,40 @@ class PluginBootstrap
      * Metodo pubblico per permettere il caricamento anche nel backend (es. per health check)
      * Carica i file delle classi Shortcodes per registrare shortcode e hook AJAX
      */
+    /**
+     * Carica i file degli shortcode
+     * PROTETTO: gestisce errori senza bloccare WordPress
+     */
     public static function loadShortcodeFiles(): void
     {
-        try {
+        SafeExecution::safe_execute(function() {
             $shortcodes_dir = self::$plugin_dir . '/include/class/Shortcodes';
             if (is_dir($shortcodes_dir)) {
-                foreach (glob($shortcodes_dir . '/*.php') as $file) {
-                    require_once $file;
+                $files = @glob($shortcodes_dir . '/*.php');
+                if ($files !== false) {
+                    foreach ($files as $file) {
+                        SafeExecution::safe_execute(function() use ($file) {
+                            require_once $file;
+                        }, null, true);
+                    }
                 }
             }
 
-            if (class_exists('\gik25microdata\Shortcodes\ShortcodeRegistry')) {
-                \gik25microdata\Shortcodes\ShortcodeRegistry::init();
-            }
-        } catch (\Throwable $e) {
-            self::logError('Errore nel caricamento delle classi Shortcodes', $e);
-        }
+            SafeExecution::safe_execute(function() {
+                if (class_exists('\gik25microdata\Shortcodes\ShortcodeRegistry')) {
+                    \gik25microdata\Shortcodes\ShortcodeRegistry::init();
+                }
+            }, null, true);
+        }, null, true);
     }
 
     /**
      * Rileva automaticamente il sito corrente e carica il file specifico
+     * PROTETTO: gestisce errori senza bloccare WordPress
      */
     private static function detectCurrentWebsite(): void
     {
-        try {
+        SafeExecution::safe_execute(function() {
             if (!isset($_SERVER['HTTP_HOST'])) {
                 return; // Non possiamo determinare il dominio
             }
@@ -441,9 +450,7 @@ class PluginBootstrap
                     self::logError("File specifico per dominio non trovato: {$specific_file}");
                 }
             }
-        } catch (\Throwable $e) {
-            self::logError('Errore nel rilevamento automatico del sito', $e);
-        }
+        }, null, true);
     }
 
     /**
@@ -513,25 +520,31 @@ class PluginBootstrap
 
     /**
      * Log errori del plugin in modo sicuro senza far crashare WordPress
+     * PROTETTO: non logga se siamo già in una situazione di errore per evitare loop
      */
     public static function logError(string $message, ?\Throwable $exception = null): void
     {
-        if (function_exists('error_log')) {
-            $log_message = '[Revious Microdata] ' . $message;
-            if ($exception instanceof \Throwable) {
-                $log_message .= ' | Exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine();
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    $log_message .= "\n" . $exception->getTraceAsString();
+        // Esegui logging in modo sicuro
+        SafeExecution::safe_execute(function() use ($message, $exception) {
+            if (function_exists('error_log')) {
+                $log_message = '[Revious Microdata] ' . $message;
+                if ($exception instanceof \Throwable) {
+                    $log_message .= ' | Exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine();
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        $log_message .= "\n" . $exception->getTraceAsString();
+                    }
                 }
+                @error_log($log_message); // Usa @ per evitare errori durante il logging
             }
-            error_log($log_message);
-        }
+        }, null, true);
         
-        $log_location = self::getLogLocation();
+        $log_location = SafeExecution::safe_execute(function() {
+            return self::getLogLocation();
+        }, ['path' => '', 'url' => '', 'exists' => false], true);
 
-        // Mostra notifica admin solo in backend e non durante AJAX
+        // Mostra notifica admin solo in backend e non durante AJAX (protetto)
         if (is_admin() && !defined('DOING_AJAX')) {
-            add_action('admin_notices', function() use ($message, $exception, $log_location) {
+            SafeExecution::safe_add_action('admin_notices', function() use ($message, $exception, $log_location) {
                 echo '<div class="notice notice-error is-dismissible">';
                 echo '<p><strong>Revious Microdata:</strong> ' . esc_html($message) . '</p>';
                 

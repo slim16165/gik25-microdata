@@ -25,6 +25,8 @@ Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazi
 - 🤖 **MCP Server**: Server Model Context Protocol per interrogazione sito WordPress da Cursor/AI
 - 🤖 **Widget Contestuali**: Inserimento automatico widget basati su keywords articoli
 - 🔍 **Health Check**: Sistema verifica funzionalità plugin dopo deploy (pagina admin + REST API)
+- 📊 **Parser Log Cloudways**: Analisi automatica log server per rilevare problemi (errori 5xx, PHP fatal, slow queries)
+- 🛡️ **Protezione Globale**: Sistema SafeExecution che previene blocchi WordPress in caso di errori
 - 🎯 **SEO**: Schema markup, microdata, ottimizzazioni RankMath/Yoast
 - 🎨 **Color Widget**: Caroselli e selezioni colori dinamici
 - ⚡ **Performance**: Caricamento condizionale CSS/JS, cache, ottimizzazioni
@@ -82,6 +84,34 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - Contextual Widgets: inserimento automatico basato su keywords articoli
 
 # Changelog
+
+##### 1.16.4 _(2025-11-08)_
+* **Parser Log Cloudways**: Aggiunto sistema di analisi log server per rilevare problemi
+  * Parser specifico per Cloudways che analizza Nginx, Apache, PHP e WordPress cron logs
+  * Rilevamento automatico errori critici (5xx, PHP Fatal, timeout, etc.)
+  * Tracciamento contesto di esecuzione (AJAX, WP-CRON, WP-CLI, Frontend, Backend, REST API)
+  * Ignorati completamente errori Action Scheduler (tabelle opzionali mancanti)
+  * Integrato nell'Health Check con riepilogo per contesto
+  * File: `include/class/HealthCheck/CloudwaysLogParser.php`
+* **Sistema Protezione Globale**: Aggiunto sistema SafeExecution per proteggere tutto il plugin
+  * Classe `SafeExecution` per eseguire codice in modo sicuro senza bloccare WordPress
+  * Protezione automatica di tutti gli hook WordPress (add_action, add_filter)
+  * Protezione AJAX e REST API handlers
+  * Disabilitazione logging durante operazioni critiche per evitare loop infiniti
+  * Ripristino automatico stato originale dopo esecuzione
+  * File: `include/class/Utility/SafeExecution.php`
+* **Protezione Plugin Completa**: Tutto il plugin ora gestisce errori senza bloccare WordPress
+  * PluginBootstrap completamente protetto (init, database, admin, frontend)
+  * HealthChecker completamente protetto (tutti i check, AJAX, REST API)
+  * Tutti gli hook WordPress protetti con SafeExecution
+  * Gestione errori silenziosa per prevenire loop infiniti di log
+  * File modificati: `include/class/PluginBootstrap.php`, `include/class/HealthCheck/HealthChecker.php`
+* **Miglioramenti Parser Log**:
+  * Limiti sicurezza: file max 100MB, chunk max 5MB, timeout 30s
+  * Protezione memoria: limite 256MB durante analisi
+  * Gestione errori silenziosa senza generare log infiniti
+  * Rilevamento contesto: identifica dove viene eseguito il codice (AJAX, WP-CRON, etc.)
+  * Riepilogo contesti: mostra distribuzione errori per tipo di esecuzione
 
 ##### 1.16.3 _(2025-01-XX)_
 * **Fix Critici OptimizationHelper**: Corretti errori PHP fatali in `OptimizationHelper.php`

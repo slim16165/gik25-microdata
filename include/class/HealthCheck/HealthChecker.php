@@ -243,23 +243,33 @@ class HealthChecker
 
     /**
      * AJAX handler per eseguire check
+     * PROTETTO: gestisce errori senza bloccare WordPress
      */
     public static function ajax_run_checks(): void
     {
-        check_ajax_referer('gik25_health_check', 'nonce');
-        
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Permessi insufficienti');
-            return;
+        try {
+            check_ajax_referer('gik25_health_check', 'nonce');
+            
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error('Permessi insufficienti');
+                return;
+            }
+
+            $checks = self::run_all_checks();
+            
+            ob_start();
+            self::render_checks_results($checks);
+            $html = ob_get_clean();
+
+            wp_send_json_success(['html' => $html, 'checks' => $checks]);
+            
+        } catch (\Throwable $e) {
+            // Gestisci errore senza crashare WordPress
+            wp_send_json_error([
+                'message' => 'Errore durante l\'esecuzione degli health check',
+                'error' => $e->getMessage(),
+            ]);
         }
-
-        $checks = self::run_all_checks();
-        
-        ob_start();
-        self::render_checks_results($checks);
-        $html = ob_get_clean();
-
-        wp_send_json_success(['html' => $html, 'checks' => $checks]);
     }
 
     /**
@@ -279,59 +289,92 @@ class HealthChecker
 
     /**
      * REST API handler per health check
+     * PROTETTO: gestisce errori senza bloccare WordPress
      */
     public static function rest_health_check(): \WP_REST_Response
     {
-        $checks = self::run_all_checks();
-        
-        $summary = [
-            'total' => count($checks),
-            'success' => count(array_filter($checks, fn($c) => $c['status'] === 'success')),
-            'warnings' => count(array_filter($checks, fn($c) => $c['status'] === 'warning')),
-            'errors' => count(array_filter($checks, fn($c) => $c['status'] === 'error')),
-            'timestamp' => current_time('mysql'),
-            'checks' => $checks,
-        ];
+        try {
+            $checks = self::run_all_checks();
+            
+            $summary = [
+                'total' => count($checks),
+                'success' => count(array_filter($checks, fn($c) => $c['status'] === 'success')),
+                'warnings' => count(array_filter($checks, fn($c) => $c['status'] === 'warning')),
+                'errors' => count(array_filter($checks, fn($c) => $c['status'] === 'error')),
+                'timestamp' => current_time('mysql'),
+                'checks' => $checks,
+            ];
 
-        return new \WP_REST_Response($summary, 200);
+            return new \WP_REST_Response($summary, 200);
+            
+        } catch (\Throwable $e) {
+            // Ritorna risposta di errore invece di crashare
+            return new \WP_REST_Response([
+                'error' => true,
+                'message' => 'Errore durante l\'esecuzione degli health check',
+                'total' => 0,
+                'success' => 0,
+                'warnings' => 0,
+                'errors' => 0,
+                'timestamp' => current_time('mysql'),
+                'checks' => [],
+            ], 500);
+        }
     }
 
     /**
      * Esegui tutti i check
+     * PROTETTO: gestisce errori senza bloccare WordPress
      */
     public static function run_all_checks(): array
     {
-        $checks = [];
-        
-        // Carica gli shortcode prima di verificarli (necessario perché vengono caricati solo nel frontend)
-        // Questo permette all'health check di funzionare anche nel backend
-        self::ensure_shortcodes_loaded();
+        // Esegui tutti i check in modo sicuro
+        return \gik25microdata\Utility\SafeExecution::safe_execute(function() {
+            $checks = [];
+            
+            // Carica gli shortcode prima di verificarli (necessario perché vengono caricati solo nel frontend)
+            // Questo permette all'health check di funzionare anche nel backend
+            \gik25microdata\Utility\SafeExecution::safe_execute(function() {
+                self::ensure_shortcodes_loaded();
+            }, null, true);
 
-        // 1. Check shortcode registrati
-        $checks[] = self::check_shortcodes();
+            // Esegui tutti i check in modo sicuro (ognuno protetto individualmente)
+            $check_methods = [
+                'check_shortcodes',
+                'check_disabled_shortcodes_usage',
+                'check_rest_api',
+                'check_ajax_endpoints',
+                'check_files',
+                'check_database_tables',
+                'check_assets',
+                'check_classes',
+                'check_logs',
+            ];
+            
+            foreach ($check_methods as $method) {
+                $check_result = \gik25microdata\Utility\SafeExecution::safe_execute(function() use ($method) {
+                    // Chiama il metodo dinamicamente
+                    if (method_exists(self::class, $method)) {
+                        return call_user_func([self::class, $method]);
+                    }
+                    return [
+                        'name' => ucfirst(str_replace('check_', '', $method)),
+                        'status' => 'warning',
+                        'message' => 'Metodo check non trovato',
+                        'details' => 'Il metodo ' . $method . ' non esiste.',
+                    ];
+                }, [
+                    'name' => ucfirst(str_replace('check_', '', $method)),
+                    'status' => 'warning',
+                    'message' => 'Check non disponibile (errore interno gestito)',
+                    'details' => 'Il check ha riscontrato un problema. Questo non ha impatto sul funzionamento del sito.',
+                ], true);
+                
+                $checks[] = $check_result;
+            }
 
-        // 2. Shortcode disabilitati presenti nei contenuti
-        $checks[] = self::check_disabled_shortcodes_usage();
-
-        // 3. Check REST API endpoints
-        $checks[] = self::check_rest_api();
-
-        // 4. Check AJAX endpoints
-        $checks[] = self::check_ajax_endpoints();
-
-        // 5. Check file esistenza
-        $checks[] = self::check_files();
-
-        // 6. Check tabelle database
-        $checks[] = self::check_database_tables();
-
-        // 7. Check CSS/JS caricati
-        $checks[] = self::check_assets();
-
-        // 8. Check classi PHP
-        $checks[] = self::check_classes();
-
-        return $checks;
+            return $checks;
+        }, [], true); // Ritorna array vuoto in caso di errore critico
     }
 
     /**
@@ -972,6 +1015,142 @@ class HealthChecker
                         (empty($missing_required) ? '' : 'Mancanti (richieste): ' . implode(', ', $missing_required) . "\n") .
                         (!empty($missing_optional) ? 'Mancanti (opzionali): ' . implode(', ', $missing_optional) : ''),
         ];
+    }
+
+    /**
+     * Check log Cloudways per problemi
+     * PROTETTO: gestisce errori senza bloccare WordPress
+     */
+    private static function check_logs(): array
+    {
+        // Salva stato originale per ripristino sicuro
+        $original_state = self::disable_error_logging();
+        
+        try {
+            // Limita risorse per evitare problemi
+            $old_memory_limit = @ini_get('memory_limit');
+            $old_max_execution_time = @ini_get('max_execution_time');
+            @ini_set('memory_limit', '256M');
+            @set_time_limit(30); // Max 30 secondi
+            
+            // Esegui analisi in modo sicuro
+            $analysis = CloudwaysLogParser::analyze_logs();
+            
+            // Riepilogo contesti
+            $context_summary = self::get_context_summary($analysis['issues'] ?? []);
+            if (!empty($context_summary)) {
+                $analysis['details'] .= "\n" . $context_summary;
+            }
+            
+            return [
+                'name' => 'Analisi Log Cloudways',
+                'status' => $analysis['status'] ?? 'warning',
+                'message' => $analysis['message'] ?? 'Analisi completata',
+                'details' => $analysis['details'] ?? 'Nessun dettaglio disponibile',
+            ];
+            
+        } catch (\Throwable $e) {
+            // NON loggare l'errore - questo eviterebbe loop infiniti
+            // Ritorna un messaggio sicuro senza crashare WordPress
+            return [
+                'name' => 'Analisi Log Cloudways',
+                'status' => 'warning',
+                'message' => 'Analisi log non disponibile (errore interno gestito)',
+                'details' => 'Il parser ha riscontrato un problema durante l\'analisi. Questo non ha impatto sul funzionamento del sito.',
+            ];
+        } finally {
+            // RIPRISTINA SEMPRE le impostazioni
+            self::restore_error_logging($original_state);
+            if (isset($old_memory_limit)) {
+                @ini_set('memory_limit', $old_memory_limit);
+            }
+            if (isset($old_max_execution_time)) {
+                @set_time_limit((int)$old_max_execution_time);
+            }
+        }
+    }
+    
+    /**
+     * Disabilita il logging degli errori in modo sicuro
+     * @return array Stato originale da ripristinare
+     */
+    private static function disable_error_logging(): array
+    {
+        return [
+            'error_reporting' => @error_reporting(0),
+            'display_errors' => @ini_get('display_errors'),
+            'log_errors' => @ini_get('log_errors'),
+            'error_log' => @ini_get('error_log'),
+        ];
+    }
+    
+    /**
+     * Ripristina il logging degli errori
+     * @param array $state Stato originale da ripristinare
+     */
+    private static function restore_error_logging(array $state): void
+    {
+        if (isset($state['error_reporting'])) {
+            @error_reporting($state['error_reporting']);
+        }
+        if (isset($state['display_errors'])) {
+            @ini_set('display_errors', $state['display_errors']);
+        }
+        if (isset($state['log_errors'])) {
+            @ini_set('log_errors', $state['log_errors']);
+        }
+        if (isset($state['error_log'])) {
+            @ini_set('error_log', $state['error_log']);
+        }
+    }
+    
+    /**
+     * Genera riepilogo dei contesti di esecuzione
+     */
+    private static function get_context_summary(array $issues): string
+    {
+        $contexts_count = [
+            'wp_cli' => 0,
+            'ajax' => 0,
+            'wp_cron' => 0,
+            'frontend' => 0,
+            'backend' => 0,
+            'rest_api' => 0,
+            'unknown' => 0,
+        ];
+        
+        foreach ($issues as $issue) {
+            if (!empty($issue['contexts'])) {
+                foreach ($issue['contexts'] as $context) {
+                    if (isset($contexts_count[$context])) {
+                        $contexts_count[$context]++;
+                    }
+                }
+            }
+        }
+        
+        $context_labels = [
+            'wp_cli' => 'WP-CLI',
+            'ajax' => 'AJAX',
+            'wp_cron' => 'WP-CRON',
+            'frontend' => 'Frontend',
+            'backend' => 'Backend',
+            'rest_api' => 'REST API',
+            'unknown' => 'Unknown',
+        ];
+        
+        $summary_parts = [];
+        foreach ($contexts_count as $context => $count) {
+            if ($count > 0) {
+                $summary_parts[] = $context_labels[$context] . ': ' . $count;
+            }
+        }
+        
+        if (empty($summary_parts)) {
+            return '';
+        }
+        
+        return "\nRiepilogo per contesto di esecuzione:\n" . implode(', ', $summary_parts);
     }
 }
 

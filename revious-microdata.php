@@ -3,7 +3,7 @@
  * Plugin Name: Revious Microdata
  * Plugin URI:  https://github.com/slim16165/gik25-microdata
  * Description: Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazioni SEO e widget interattivi. Include sistema caroselli configurabili, widget cucine, navigazione app-like, MCP server per AI, health check e molto altro.
- * Version:     1.16.3
+ * Version:     1.16.4
  * Author:      Gianluigi Salvi
  * Author URI:  https://github.com/slim16165
  * License:     GPL-2.0+
@@ -18,7 +18,7 @@
  * 
  * @package ReviousMicrodata
  * @author  Gianluigi Salvi
- * @version 1.16.3
+ * @version 1.16.4
  */
 
 if (!defined('ABSPATH')) {
