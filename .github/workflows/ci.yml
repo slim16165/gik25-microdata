@@ -3,8 +3,26 @@ name: CI
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - '**.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/ci.yml'
+      - 'phpstan.neon'
+      - 'psalm.xml'
+      - '.php-cs-fixer.dist.php'
+      - 'phpunit.xml*'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - '**.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/ci.yml'
+      - 'phpstan.neon'
+      - 'psalm.xml'
+      - '.php-cs-fixer.dist.php'
+      - 'phpunit.xml*'
 
 permissions:
   contents: read
@@ -72,7 +90,7 @@ jobs:
   # Validazione Composer
   composer:
     needs: changes
-    if: needs.changes.outputs.composer == 'true' || needs.changes.outputs.php == 'true' || github.event_name == 'push'
+    if: needs.changes.outputs.composer == 'true' || needs.changes.outputs.php == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -117,7 +135,7 @@ jobs:
   # PHPStan Static Analysis
   phpstan:
     needs: [changes, composer]
-    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true' || github.event_name == 'push'
+    if: (needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true') && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -154,7 +172,7 @@ jobs:
   # Psalm Static Analysis
   psalm:
     needs: [changes, composer]
-    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true' || github.event_name == 'push'
+    if: (needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true') && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -191,7 +209,7 @@ jobs:
   # PHP CS Fixer Code Style
   cs-fixer:
     needs: [changes, composer]
-    if: needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true'
+    if: (needs.changes.outputs.php == 'true' || needs.changes.outputs.config == 'true') && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -236,7 +254,7 @@ jobs:
   # Test Suite
   test:
     needs: [changes, composer]
-    if: needs.changes.outputs.php == 'true'
+    if: needs.changes.outputs.php == 'true' && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

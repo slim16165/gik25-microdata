@@ -1,12 +1,7 @@
 name: Update composer.lock
 
 on:
-  workflow_dispatch: # Permette di eseguire manualmente da GitHub UI
-  push:
-    paths:
-      - 'composer.json'
-    branches:
-      - master
+  workflow_dispatch: # Solo esecuzione manuale da GitHub UI (niente trigger automatici)
 
 jobs:
   update-composer-lock:
@@ -60,7 +55,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
           git add composer.lock
+          # [skip ci] evita che questo commit triggeri il workflow CI
           git commit -m "chore: Update composer.lock [skip ci]" || exit 0
           git push
           echo "✅ composer.lock updated and pushed successfully"
+          echo "ℹ️  Note: This commit uses [skip ci] to avoid triggering CI workflow"
 
