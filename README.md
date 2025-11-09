@@ -60,14 +60,38 @@ composer validate-syntax
 composer validate-syntax-windows
 ```
 
-**Git Pre-commit Hook:**
+### Git Pre-commit Hook (Opzionale)
+
+Per validare automaticamente la sintassi PHP prima di ogni commit:
+
+**Linux/Mac:**
 ```bash
-# Linux/Mac
-cp .git/hooks/pre-commit.example .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
+composer install-pre-commit
+# oppure manualmente:
+bash scripts/install-pre-commit-hook.sh
 ```
 
-Il workflow `.github/workflows/php.yml` include automaticamente la validazione della sintassi PHP su ogni push o pull request.
+**Windows:**
+```powershell
+composer install-pre-commit-windows
+# oppure manualmente:
+powershell -ExecutionPolicy Bypass -File scripts/install-pre-commit-hook.ps1
+```
+
+Il hook validerà automaticamente tutti i file PHP staged prima di permettere il commit.
+
+### GitHub Actions CI/CD
+
+Il workflow `.github/workflows/ci.yml` include automaticamente:
+- ✅ Validazione sintassi PHP
+- ✅ Validazione Composer
+- ✅ Security Audit
+- ✅ PHPStan Static Analysis (level 9)
+- ✅ Psalm Static Analysis
+- ✅ PHP CS Fixer Code Style
+- ✅ Test Suite (se configurata)
+
+I controlli vengono eseguiti in parallelo per performance ottimali e solo sui file modificati (path filtering).
 
 ## USAGE
 
@@ -107,6 +131,30 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - Contextual Widgets: inserimento automatico basato su keywords articoli
 
 # Changelog
+
+## 2.2.0 (2025-11-09) - Separazione Analisi Log e Ottimizzazioni
+
+### 🔍 Separazione Analisi Log Cloudways
+- ✅ **Riepilogo Separato**: Analisi log Cloudways ora separata dagli health check normali
+  - Riepilogo Health Check: statistiche separate (totale, successi, warning, errori)
+  - Riepilogo Analisi Log: stato, messaggio, conteggio errori PHP critici
+  - Sezioni visivamente distinte con stili diversi
+- ✅ **Dettagli Separati**: Due sezioni distinte nella tab "Dettagli"
+  - Dettagli Health Check: tutti gli health check normali
+  - Dettagli Analisi Log Cloudways: analisi log completa con errori PHP, tail errori, dettagli completi (tutto collapsed)
+  - Separazione visiva con bordi e titoli distinti
+
+### ⚡ Ottimizzazioni Parser Log
+- ✅ **Esclusione File .gz**: File compressi (.gz) esclusi di default (troppo pesanti, file rotati vecchi)
+- ✅ **Lettura Coda Efficiente**: Per file grandi, lettura solo degli ultimi 2MB (dove ci sono gli errori più recenti)
+  - Anche file giganti vengono analizzati (solo coda), garantendo sempre accesso agli errori più recenti
+  - Nessun limite di dimensione assoluto, ma lettura intelligente della parte finale
+- ✅ **Struttura Collapsed**: Tutte le sezioni analisi log ora collapsed di default per interfaccia più pulita
+  - Errori PHP Critici (collapsed)
+  - Ultimi errori dai log (tail, collapsed)
+  - Dettagli completi (collapsed)
+
+---
 
 ## 2.1.1 (2025-11-09) - Miglioramenti Parser Log Cloudways
 
