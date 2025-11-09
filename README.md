@@ -101,6 +101,28 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+##### 1.16.5 _(2025-11-09)_
+* **Miglioramenti Parser Log**: Sistema esempi migliorato per maggiore chiarezza
+  * Aumentato numero esempi raccolti: errori PHP/Apache (10), Nginx 5xx (8), PHP slow (8), WP cron (5)
+  * Sistema dinamico esempi mostrati: 3-5 esempi in base alle occorrenze (50+ = 4, 100+ = 5)
+  * Indicatore (+X altri) quando ci sono più esempi disponibili
+  * Migliorata varietà: rimozione duplicati, esempi più informativi
+  * PHP Slow Requests: include timestamp e prima riga stack trace
+  * Formato più informativo: script | timestamp | stack_info
+  * File: `include/class/HealthCheck/CloudwaysLogParser.php`
+* **Fix Caricamento SafeExecution**: Risolto errore 'Class not found'
+  * Caricamento manuale SafeExecution.php prima di PluginBootstrap
+  * Aggiunti controlli function_exists() per funzioni WordPress
+  * Protezione contro chiamate premature durante inizializzazione
+  * File: `revious-microdata.php`, `include/class/Utility/SafeExecution.php`
+* **Sistema Validazione Sintassi PHP**: Prevenzione errori di sintassi
+  * Script validazione bash (Linux/Mac) e PowerShell (Windows)
+  * Composer scripts: validate-syntax e validate-syntax-windows
+  * Git pre-commit hook opzionale
+  * Validazione automatica in GitHub Actions
+  * Documentazione: `docs/VALIDATION.md`
+  * File: `scripts/validate-php-syntax.sh`, `scripts/validate-php-syntax.ps1`, `.github/workflows/php.yml`
+
 ##### 1.16.4 _(2025-11-08)_
 * **Parser Log Cloudways**: Aggiunto sistema di analisi log server per rilevare problemi
   * Parser specifico per Cloudways che analizza Nginx, Apache, PHP e WordPress cron logs
