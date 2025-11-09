@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 2.3.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get version from tag
+        if: github.event_name == 'push'
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+      
+      - name: Get version from input
+        if: github.event_name == 'workflow_dispatch'
+        id: get_version
+        run: |
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          echo "Version: ${{ github.event.inputs.version }}"
+      
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Estrai changelog dal README.md
+          VERSION="${{ steps.get_version.outputs.version }}"
+          CHANGELOG=$(sed -n "/^## $VERSION/,/^## /p" README.md | head -n -1)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: Release v${{ steps.get_version.outputs.version }}
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## 📦 Installazione
+            
+            Scarica la release da [GitHub Releases](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.get_version.outputs.version }})
+            
+            ## 🔄 Aggiornamento
+            
+            Dopo l'aggiornamento, eseguire:
+            ```bash
+            composer install --no-dev
+            ```
+          draft: false
+          prerelease: false
+

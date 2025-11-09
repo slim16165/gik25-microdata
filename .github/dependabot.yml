@@ -1,0 +1,58 @@
+version: 2
+updates:
+  # Aggiorna dipendenze Composer (PHP)
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "php"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    # Ignora aggiornamenti major (richiedono test manuali)
+    ignore:
+      - dependency-name: "yiisoft/html"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "illuminate/collections"
+        update-types: ["version-update:semver-major"]
+    # Raggruppa aggiornamenti patch e minor
+    groups:
+      php-dependencies:
+        patterns:
+          - "yiisoft/*"
+          - "illuminate/*"
+          - "monolog/*"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-dependencies:
+        patterns:
+          - "phpstan/*"
+          - "vimeo/psalm"
+          - "phpunit/phpunit"
+          - "rector/rector"
+          - "friendsofphp/php-cs-fixer"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Aggiorna GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+

@@ -1,0 +1,45 @@
+name: "SLSA Attestations"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+jobs:
+  attest:
+    name: Generate SLSA attestation
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      attestations: write
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}"
+          subject-digest: "sha256:${{ github.sha }}"
+          push-to-registry: false
+
+      - name: Upload attestation
+        uses: actions/upload-artifact@v4
+        with:
+          name: slsa-attestation
+          path: slsa-attestation.json
+          retention-days: 30
+

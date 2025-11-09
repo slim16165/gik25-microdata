@@ -1,0 +1,25 @@
+name: "Dependency Review"
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: "Dependency Review"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Blocca PR se ci sono vulnerabilità critiche o high
+          fail-on-severity: moderate
+          # Commenta sulla PR con i dettagli
+          comment-summary-in-pr: always
+

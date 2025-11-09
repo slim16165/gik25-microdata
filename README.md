@@ -115,9 +115,15 @@ Il workflow `.github/workflows/ci.yml` include automaticamente:
 - ✅ PHPStan Static Analysis (level 9)
 - ✅ Psalm Static Analysis
 - ✅ PHP CS Fixer Code Style
-- ✅ Test Suite (se configurata)
+- ✅ Test Suite con Code Coverage
+- ✅ CodeQL Security Analysis
+- ✅ Dependency Review
+- ✅ SLSA Attestations
+- ✅ Dependabot (aggiornamenti automatici dipendenze)
 
 I controlli vengono eseguiti in parallelo per performance ottimali e solo sui file modificati (path filtering).
+
+Vedi [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md) per la configurazione completa GitHub.
 
 ## USAGE
 
@@ -182,8 +188,18 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 - ✅ **Workflow Ottimizzati**: CI si attiva solo su file rilevanti (PHP, composer, config)
 - ✅ **Update composer.lock**: Workflow manuale per aggiornamento dipendenze
 
-### 📚 Documentazione
-- ✅ **TESTING_STRATEGY.md**: Piano completo per miglioramenti test (già presente)
+### 🔒 Sicurezza e Qualità
+- ✅ **CodeQL Security Analysis**: Analisi automatica vulnerabilità (JavaScript, PHP)
+- ✅ **Dependency Review**: Review automatica dipendenze nelle PR
+- ✅ **Dependabot**: Aggiornamenti automatici dipendenze (Composer, GitHub Actions)
+- ✅ **SLSA Attestations**: Attestazioni di provenienza codice per sicurezza supply chain
+- ✅ **Security Policy**: Policy di sicurezza e procedure per segnalazione vulnerabilità
+
+### 📋 Templates e Documentazione
+- ✅ **Pull Request Template**: Template standardizzato per PR con checklist
+- ✅ **Issue Templates**: Template per bug report e feature request
+- ✅ **Release Workflow**: Creazione automatica release GitHub da tag
+- ✅ **GITHUB_SETUP.md**: Guida completa configurazione GitHub
 - ✅ **.gitignore**: Aggiunti file coverage e cache test
 
 ---

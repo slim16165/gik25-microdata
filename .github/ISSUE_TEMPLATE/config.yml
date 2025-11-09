@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Supporto Generale
+    url: https://github.com/slim16165/gik25-microdata/issues
+    about: Apri una issue per supporto o domande generali
+  - name: 📚 Documentazione
+    url: https://github.com/slim16165/gik25-microdata/tree/master/docs
+    about: Consulta la documentazione del plugin
+
