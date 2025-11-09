@@ -95,23 +95,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+          coverage: none
+      
       - name: Validate composer.json structure
         run: |
           echo "🔍 Validating composer.json structure (ignoring lock file)..."
           # Valida SOLO la struttura di composer.json, ignora completamente composer.lock
           # Questo step NON fallisce mai su problemi di composer.lock
-          set +e
-          VALIDATION_OUTPUT=$(composer validate --no-check-lock --strict 2>&1)
-          VALIDATION_EXIT=$?
-          set -e
-          
-          if [ $VALIDATION_EXIT -eq 0 ]; then
-            echo "✅ composer.json structure is valid"
-          else
-            echo "❌ composer.json has structural errors:"
-            echo "$VALIDATION_OUTPUT"
-            exit 1
-          fi
+          composer validate --no-check-lock --strict
+          echo "✅ composer.json structure is valid"
       
       - name: Check composer.lock sync status (info only)
         run: |
@@ -120,17 +117,21 @@ jobs:
           # Questo è solo informativo
           set +e
           LOCK_CHECK=$(composer validate --strict 2>&1 || true)
+          LOCK_EXIT=$?
           set -e
           
-          if echo "$LOCK_CHECK" | grep -q "Lock file is not up to date"; then
+          if [ $LOCK_EXIT -ne 0 ] && echo "$LOCK_CHECK" | grep -q "Lock file is not up to date"; then
             echo "⚠️  INFO: composer.lock is out of sync with composer.json"
             echo "ℹ️  This is normal and does not block the build"
             echo "ℹ️  To fix: Run the 'Update composer.lock' workflow manually"
             echo ""
             echo "📋 Details:"
             echo "$LOCK_CHECK" | grep -A 15 "Lock file errors" || echo "$LOCK_CHECK" | tail -10
-          else
+          elif [ $LOCK_EXIT -eq 0 ]; then
             echo "✅ composer.lock is synchronized with composer.json"
+          else
+            echo "ℹ️  composer.lock validation returned: $LOCK_EXIT"
+            echo "$LOCK_CHECK" | tail -5
           fi
         continue-on-error: true
       
