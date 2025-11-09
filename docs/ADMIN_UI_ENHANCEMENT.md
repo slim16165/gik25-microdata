@@ -96,12 +96,25 @@
 - [ ] Aggiungere preview shortcode in admin
 - [ ] Aggiungere drag & drop per ordinamento shortcode
 
-## Note
+## 📝 Note
 
 - Le funzionalità completate sono già in produzione
 - Tools tab ha base solida, serve solo aggiungere funzionalità avanzate
 - Help tab è opzionale ma migliorerebbe UX
 - Miglioramenti futuri sono nice-to-have, non critici
+
+## 🐛 Fix Stabilità (v2.0.1)
+
+### Fix Critici Applicati
+- ✅ **ShortcodeBase**: Metodo `scripts()` reso opzionale (verifica `method_exists()`)
+  - Risolve fatal error per shortcode senza JavaScript (Perfectpullquote, Prezzo, Youtube)
+- ✅ **totaldesign_specific.php**: Check null per `$post` prima di accedere a `$post->ID`
+  - Previene errori in archive/search pages dove `$post` può essere null
+
+### Note Tecniche
+- I fix di stabilità sono stati applicati e testati in produzione
+- Nessun impatto sulle funzionalità admin UI esistenti
+- Tutti i shortcode ora funzionano correttamente anche senza metodo `scripts()`
 
 ## Riferimenti
 
