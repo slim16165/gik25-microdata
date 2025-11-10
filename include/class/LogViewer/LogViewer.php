@@ -22,7 +22,7 @@ class LogViewer
         }
         
         // Verifica che REST API sia disponibile
-        $rest_url = rest_url('gik25/v1/logs/errors');
+        $rest_url = rest_url('gik25/v1/logs');
         $nonce = wp_create_nonce('wp_rest');
         
         // Debug: verifica che l'endpoint sia registrato (solo se REST API è disponibile)
@@ -32,11 +32,11 @@ class LogViewer
                 $rest_server = rest_get_server();
                 if ($rest_server) {
                     $rest_routes = $rest_server->get_routes();
-                    $endpoint_exists = isset($rest_routes['/gik25/v1/logs/errors']);
+                    $endpoint_exists = isset($rest_routes['/gik25/v1/logs']);
                     
                     // Se l'endpoint non esiste, logga per debug
                     if (!$endpoint_exists && defined('WP_DEBUG') && WP_DEBUG && WP_DEBUG_LOG) {
-                        error_log('LogViewer: Endpoint REST /gik25/v1/logs/errors non trovato.');
+                        error_log('LogViewer: Endpoint REST /gik25/v1/logs non trovato.');
                     }
                 }
             } catch (\Throwable $e) {
@@ -259,7 +259,8 @@ class LogViewer
                     var total = data.total || 0;
                     var errors = data.errors || [];
                     
-                    document.getElementById('log-viewer-info').textContent = 'Totale: ' + total + ' errori | Mostrati: ' + errors.length;
+                    var reasonNote = (data.debug && data.debug.reason) ? ' | ' + data.debug.reason : '';
+                    document.getElementById('log-viewer-info').textContent = 'Totale: ' + total + ' errori | Mostrati: ' + errors.length + reasonNote;
                     document.getElementById('log-viewer-info').style.display = 'inline';
                     document.getElementById('log-viewer-info').style.color = '#666';
                     
@@ -588,4 +589,3 @@ class LogViewer
         <?php
     }
 }
-

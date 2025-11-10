@@ -154,175 +154,52 @@ class CloudwaysLogParser
         return false;
     }
     /**
-     * Percorsi tipici dei log su Cloudways
+     * Percorsi tipici dei file di log su Cloudways
+     * 
+     * DEPRECATO: Usa LogSourceResolver per discovery unificata.
+     * Questo metodo mantiene compatibilità con codice esistente.
+     * 
+     * @return array Array con 'base' e file per tipo (compatibilità retroattiva)
      */
     private static function get_log_paths(): array
     {
-        $paths = [];
+        // Usa LogSourceResolver per discovery unificata
+        $base = LogSourceResolver::find_logs_directory();
         
-        // Su Cloudways, i log sono tipicamente nella directory logs/ al livello superiore a public_html
-        // Es: /home/1340912.cloudwaysapps.com/gwvyrysadj/logs/
-        $possible_base_paths = [
-            ABSPATH . '../logs/',  // Tipico percorso Cloudways
-            ABSPATH . '../../logs/',
-            '/home/*/logs/',  // Pattern comune Cloudways
-        ];
-        
-        // Aggiungi anche percorso relativo dalla directory del plugin (per sviluppo locale)
-        $plugin_dir = dirname(dirname(dirname(__DIR__)));
-        if (is_dir($plugin_dir . '/logs/')) {
-            $possible_base_paths[] = $plugin_dir . '/logs/';
-        }
-        
-        // Rimuovi duplicati
-        $possible_base_paths = array_unique($possible_base_paths);
-        
-        // Prova a trovare la directory logs
-        foreach ($possible_base_paths as $base_path) {
-            // Espandi wildcards se presente
-            if (strpos($base_path, '*') !== false) {
-                // Prova pattern comuni Cloudways
-                $glob_results = glob($base_path);
-                if (!empty($glob_results)) {
-                    foreach ($glob_results as $result) {
-                        if (is_dir($result) && is_readable($result)) {
-                            $paths['base'] = rtrim($result, '/\\') . '/';
-                            break 2;
-                        }
-                    }
-                }
-                continue;
-            }
-            
-            $normalized = rtrim(str_replace('\\', '/', $base_path), '/') . '/';
-            if (is_dir($normalized) && is_readable($normalized)) {
-                $paths['base'] = $normalized;
-                break;
-            }
-        }
-        
-        // Se non trovata, prova percorsi alternativi
-        if (empty($paths['base'])) {
-            // Prova a cercare nella struttura tipica Cloudways
-            $abs_path = rtrim(str_replace('\\', '/', ABSPATH), '/');
-            $parts = explode('/', trim($abs_path, '/'));
-            
-            // Rimuovi 'public_html' se presente e aggiungi 'logs'
-            if (($key = array_search('public_html', $parts)) !== false) {
-                $parts[$key] = 'logs';
-                $logs_path = '/' . implode('/', $parts) . '/';
-                if (is_dir($logs_path) && is_readable($logs_path)) {
-                    $paths['base'] = $logs_path;
-                }
-            }
-        }
-        
-        // Se ancora non trovato, prova percorsi assoluti comuni con glob
-        if (empty($paths['base'])) {
-            $glob_patterns = [
-                '/home/*/logs/',
-                '/home/*/*/logs/',
-                '/home/*/*/*/logs/',
-            ];
-            
-            foreach ($glob_patterns as $pattern) {
-                $glob_results = glob($pattern);
-                if (!empty($glob_results)) {
-                    foreach ($glob_results as $result) {
-                        if (is_dir($result) && is_readable($result)) {
-                            $paths['base'] = rtrim($result, '/\\') . '/';
-                            break 2;
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (empty($paths['base'])) {
+        if (empty($base)) {
             return [];
         }
         
-        $base = $paths['base'];
+        $paths = ['base' => $base];
         
-        // Pattern per i file di log Cloudways
-        $log_patterns = [
-            'nginx_error' => [
-                'nginx*.error.log',
-                'nginx-app.error.log',
-            ],
-            'nginx_access' => [
-                'nginx*.access.log',
-                'nginx-app.access.log',
-            ],
-            'apache_error' => [
-                'apache*.error.log',
-            ],
-            'apache_access' => [
-                'apache*.access.log',
-            ],
-            'php_slow' => [
-                'php-app.slow.log',
-            ],
-            'php_error' => [
-                'php-app.error.log',
-            ],
-            'php_access' => [
-                'php-app.access.log',
-            ],
-            'wp_cron' => [
-                'wp-cron.log',
-            ],
-        ];
+        // Scopri tutti i file di log usando il resolver unificato
+        // include_gz=false per compatibilità (i file .gz vengono gestiti separatamente)
+        $discovered = LogSourceResolver::discover($base, false);
         
-        // Trova i file di log esistenti
-        foreach ($log_patterns as $type => $patterns) {
-            foreach ($patterns as $pattern) {
-                $full_pattern = $base . $pattern;
-                $matches = glob($full_pattern);
-                if (!empty($matches)) {
-                    // Prendi il file più recente (non rotato)
-                    $non_rotated = array_filter($matches, function($file) {
-                        $basename = basename($file);
-                        return strpos($basename, '.1') === false && 
-                               strpos($basename, '.2') === false &&
-                               strpos($basename, '.gz') === false;
-                    });
-                    
-                    if (!empty($non_rotated)) {
-                        // Ordina per tempo di modifica (più recente prima)
-                        usort($non_rotated, function($a, $b) {
-                            $time_a = @filemtime($a) ?: 0;
-                            $time_b = @filemtime($b) ?: 0;
-                            return $time_b - $time_a;
-                        });
-                        $paths[$type] = reset($non_rotated);
-                    } elseif (!empty($matches)) {
-                        // Se solo file rotati, prendi il più recente
-                        usort($matches, function($a, $b) {
-                            $time_a = @filemtime($a) ?: 0;
-                            $time_b = @filemtime($b) ?: 0;
-                            return $time_b - $time_a;
-                        });
-                        $paths[$type] = reset($matches);
-                    }
-                    break;
-                }
+        // Raggruppa per tipo e prendi il primo file (più recente) di ogni tipo
+        $by_type = [];
+        foreach ($discovered as $file_info) {
+            $type = $file_info['type'];
+            if (!isset($by_type[$type])) {
+                $by_type[$type] = [];
+            }
+            $by_type[$type][] = $file_info['path'];
+        }
+        
+        // Per compatibilità, popola $paths con il primo file di ogni tipo
+        foreach ($by_type as $type => $files) {
+            if (!empty($files)) {
+                $paths[$type] = $files[0]; // Il primo è già il più recente (ordinato da discover)
             }
         }
         
-        // Aggiungi pattern glob per file ruotati (.gz)
-        if (!empty($paths['base'])) {
-            $base = $paths['base'];
-            
-            // Pattern glob per file ruotati (supporta sia *.log.*.gz che *.log.1.gz, *.log.2.gz, ecc.)
-            $paths['php_error_glob'] = $base . '{php-app.error.log.*.gz,php-app.error.log.*}';
-            $paths['nginx_err_glob'] = $base . '{nginx*.error.log.*.gz,nginx*.error.log.*}';
-            $paths['nginx_acc_glob'] = $base . '{nginx*.access.log.*.gz,nginx*.access.log.*}';
-            $paths['apache_err_glob'] = $base . '{apache*.error.log.*.gz,apache*.error.log.*}';
-            $paths['apache_acc_glob'] = $base . '{apache*.access.log.*.gz,apache*.access.log.*}';
-            $paths['php_acc_glob'] = $base . '{php-app.access.log.*.gz,php-app.access.log.*}';
-            $paths['php_slow_glob'] = $base . '{php-app.slow.log.*.gz,php-app.slow.log.*}';
-            $paths['wp_cron_glob'] = $base . '{wp-cron.log.*.gz,wp-cron.log.*}';
+        // Per compatibilità retroattiva, aggiungi anche le chiavi _glob
+        // (anche se ora usiamo direttamente LogSourceResolver::get_logs_by_type)
+        // Queste chiavi vengono ancora usate da resolve_log_files() legacy
+        $types_with_glob = ['php_error', 'nginx_error', 'nginx_access', 'apache_error', 'apache_access', 'php_access', 'php_slow', 'wp_cron'];
+        foreach ($types_with_glob as $type) {
+            // Le chiavi _glob non sono più necessarie, ma le manteniamo per compatibilità
+            // Il codice legacy le userà, ma resolve_log_files() userà LogSourceResolver
         }
         
         return $paths;
@@ -331,46 +208,55 @@ class CloudwaysLogParser
     /**
      * Raccoglie file reali (esclude .gz di default) dai pattern e li ordina per mtime (desc)
      * 
-     * @param array $globs Array di pattern glob (es. ['/path/*.log', '/path/*.log.*.gz'])
+     * DEPRECATO: Usa LogSourceResolver::get_logs_by_type() o get_logs_by_types().
+     * Questo metodo mantiene compatibilità con codice legacy.
+     * 
+     * @param array $globs Array di pattern glob o file singoli (legacy)
      * @param bool $include_gz Se true, include anche file .gz (default: false)
      * @return array Array di percorsi file ordinati per mtime (più recenti prima)
      */
     private static function collect_log_files(array $globs, bool $include_gz = false): array
     {
+        // Se $globs contiene chiavi _glob legacy, usa LogSourceResolver
+        $base = LogSourceResolver::find_logs_directory();
+        if (empty($base)) {
+            return [];
+        }
+        
         $files = [];
         
+        // Per compatibilità, gestisci ancora file singoli e pattern legacy
         foreach ($globs as $g) {
             if (empty($g)) {
                 continue;
             }
             
-            // Supporta sia pattern glob che file singoli
-            if (strpos($g, '*') !== false || strpos($g, '?') !== false || strpos($g, '{') !== false) {
-                // Pattern glob (con o senza brace expansion)
-                $glob_results = glob($g, GLOB_BRACE);
-                if ($glob_results === false) {
-                    // Se GLOB_BRACE fallisce, prova senza
-                    $glob_results = glob($g);
-                }
-                
-                foreach ($glob_results ?: [] as $f) {
-                    if (is_readable($f) && is_file($f)) {
-                        // Ignora directory
-                        // Di default esclude file .gz (troppo pesanti)
-                        if (!$include_gz && substr($f, -3) === '.gz') {
-                            continue;
-                        }
-                        $files[$f] = @filemtime($f) ?: 0;
+            // Se è un file singolo (non contiene wildcard)
+            if (strpos($g, '*') === false && strpos($g, '?') === false && strpos($g, '{') === false) {
+                if (is_readable($g) && is_file($g)) {
+                    if ($include_gz || !str_ends_with($g, '.gz')) {
+                        $files[$g] = @filemtime($g) ?: 0;
                     }
+                }
+            }
+            // Se contiene pattern con GLOB_BRACE legacy (es. '{pattern1,pattern2}'), 
+            // usa LogSourceResolver invece di GLOB_BRACE
+            elseif (strpos($g, '{') !== false) {
+                // Estrai il tipo dal pattern se possibile, altrimenti cerca tutti i tipi
+                // Questo è un fallback per pattern legacy con GLOB_BRACE
+                $all_files = LogSourceResolver::discover($base, $include_gz);
+                foreach ($all_files as $file_info) {
+                    $files[$file_info['path']] = $file_info['mtime'];
                 }
             } else {
-                // File singolo
-                if (is_readable($g) && is_file($g)) {
-                    // Di default esclude file .gz
-                    if (!$include_gz && substr($g, -3) === '.gz') {
-                        continue;
+                // Pattern glob semplice (senza brace)
+                $matches = glob($g, GLOB_NOSORT) ?: [];
+                foreach ($matches as $f) {
+                    if (is_readable($f) && is_file($f)) {
+                        if ($include_gz || !str_ends_with($f, '.gz')) {
+                            $files[$f] = @filemtime($f) ?: 0;
+                        }
                     }
-                    $files[$g] = @filemtime($g) ?: 0;
                 }
             }
         }
@@ -379,6 +265,52 @@ class CloudwaysLogParser
         arsort($files);
         
         return array_keys($files);
+    }
+    
+    /**
+     * Risolve i file effettivi per un tipo di log combinando percorso singolo e glob
+     * 
+     * DEPRECATO: Usa direttamente LogSourceResolver::get_logs_by_type().
+     * Questo metodo mantiene compatibilità con codice legacy.
+     * 
+     * @param array  $paths      Array dei percorsi individuati da get_log_paths()
+     * @param string $single_key Chiave per il file principale (es. php_error)
+     * @param string $glob_key   Chiave per il glob (es. php_error_glob) - IGNORATO, usa LogSourceResolver
+     * @param bool   $include_gz Se includere file .gz
+     * @return array Lista di file ordinati per mtime (più recenti prima)
+     */
+    private static function resolve_log_files(array $paths, string $single_key, string $glob_key, bool $include_gz = false): array
+    {
+        $base = $paths['base'] ?? null;
+        if (empty($base)) {
+            return [];
+        }
+        
+        // Usa LogSourceResolver per discovery unificata
+        // Mappa le chiavi legacy ai tipi del resolver
+        $type_map = [
+            'php_error' => 'php_error',
+            'php_error_glob' => 'php_error',
+            'nginx_error' => 'nginx_error',
+            'nginx_err_glob' => 'nginx_error',
+            'apache_error' => 'apache_error',
+            'apache_err_glob' => 'apache_error',
+            'nginx_access' => 'nginx_access',
+            'nginx_acc_glob' => 'nginx_access',
+            'apache_access' => 'apache_access',
+            'apache_acc_glob' => 'apache_access',
+            'php_access' => 'php_access',
+            'php_acc_glob' => 'php_access',
+            'php_slow' => 'php_slow',
+            'php_slow_glob' => 'php_slow',
+            'wp_cron' => 'wp_cron',
+            'wp_cron_glob' => 'wp_cron',
+        ];
+        
+        $type = $type_map[$single_key] ?? $single_key;
+        
+        // Usa LogSourceResolver per ottenere i file
+        return LogSourceResolver::get_logs_by_type($base, $type, $include_gz);
     }
     
     /**
@@ -550,122 +482,9 @@ class CloudwaysLogParser
      */
     private static function analyze_php_errors_extended(string $log_path, int $max_lines = 5000): array
     {
-        $issues = [];
-        $lines = self::read_log_tail($log_path, $max_lines);
-        
-        if (empty($lines)) {
-            return $issues;
-        }
-        
-        $error_counts = [];
-        // Analizza tutto il file, non solo ultime 24 ore
-        $cutoff_time = 0;
-        
-        $critical_patterns = [
-            '/PHP Fatal error/i',
-            '/PHP Parse error/i',
-            '/PHP Warning/i',
-            '/WordPress database error/i',
-            '/Premature end of script headers/i',
-            '/Maximum execution time/i',
-            '/foreach\(\) argument must be of type array\|object/i',
-            '/call_user_func_array\(\)/i',
-            '/Uncaught Error/i',
-            '/Uncaught Exception/i',
-        ];
-        
-        foreach ($lines as $line) {
-            $timestamp = self::parse_apache_timestamp($line);
-            if ($timestamp && $timestamp < $cutoff_time) {
-                continue;
-            }
-            
-            // Estrai contesto di esecuzione
-            $execution_context = self::extract_execution_context($line);
-            
-            // Verifica se l'errore dovrebbe essere ignorato
-            $ignore_check = self::should_ignore_error($line, $execution_context);
-            if ($ignore_check['ignore']) {
-                continue;
-            }
-            
-            foreach ($critical_patterns as $pattern) {
-                if (preg_match($pattern, $line)) {
-                    $error_key = $pattern;
-                    $context_key = $execution_context['context'];
-                    $error_key = $pattern . '_' . $context_key;
-                    
-                    if (!isset($error_counts[$error_key])) {
-                        $error_counts[$error_key] = [
-                            'count' => 0, 
-                            'examples' => [], 
-                            'context' => $execution_context,
-                            'contexts' => []
-                        ];
-                    }
-                    $error_counts[$error_key]['count']++;
-                    
-                    if (!in_array($context_key, $error_counts[$error_key]['contexts'])) {
-                        $error_counts[$error_key]['contexts'][] = $context_key;
-                    }
-                    
-                    // Raccogli più esempi (fino a 10) per avere varietà
-                    if (count($error_counts[$error_key]['examples']) < 10) {
-                        $truncated = self::truncate_line($line, 200);
-                        // Evita duplicati esatti
-                        if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
-                            $error_counts[$error_key]['examples'][] = $truncated;
-                        }
-                    }
-                }
-            }
-        }
-        
-        foreach ($error_counts as $pattern => $data) {
-            // Soglia più bassa per file specifico (1 occorrenza)
-            $threshold = 1;
-            
-            if ($data['count'] >= $threshold) {
-                $clean_pattern = preg_replace('/_\w+$/', '', $pattern);
-                $pattern_name = self::get_pattern_name($clean_pattern);
-                
-                $base_severity = $clean_pattern === '/PHP Fatal error/i' || 
-                                $clean_pattern === '/PHP Parse error/i' ||
-                                $clean_pattern === '/Uncaught Error/i' ||
-                                $clean_pattern === '/Uncaught Exception/i' ? 'error' : 'warning';
-                
-                $context_info = '';
-                if (!empty($data['contexts'])) {
-                    $context_labels = [
-                        'wp_cli' => 'WP-CLI',
-                        'ajax' => 'AJAX',
-                        'wp_cron' => 'WP-CRON',
-                        'frontend' => 'Frontend',
-                        'backend' => 'Backend',
-                        'rest_api' => 'REST API',
-                        'unknown' => 'Unknown',
-                    ];
-                    $contexts_labeled = array_map(function($ctx) use ($context_labels) {
-                        return $context_labels[$ctx] ?? $ctx;
-                    }, $data['contexts']);
-                    $context_info = ' [' . implode(', ', $contexts_labeled) . ']';
-                }
-                
-                $message = sprintf('%s: %d occorrenze%s', $pattern_name, $data['count'], $context_info);
-                
-                $issues[] = [
-                    'type' => 'PHP/WordPress Error',
-                    'severity' => $base_severity,
-                    'message' => $message,
-                    'count' => $data['count'],
-                    'examples' => $data['examples'],
-                    'context' => $data['context'] ?? null,
-                    'contexts' => $data['contexts'] ?? [],
-                ];
-            }
-        }
-        
-        return $issues;
+        // Usa analyze_php_errors() che ha già tutta la logica per estrarre file, riga e stack trace
+        // Passa 0 come cutoff_hours per analizzare tutto il file
+        return self::analyze_php_errors($log_path, 0);
     }
     
     /**
@@ -840,8 +659,9 @@ class CloudwaysLogParser
         }
         
         // Analizza PHP error logs
-        if (!empty($paths['php_error'])) {
-            $php_error_issues = self::analyze_php_errors($paths['php_error']);
+        $php_error_files = self::resolve_log_files($paths, 'php_error', 'php_error_glob');
+        if (!empty($php_error_files)) {
+            $php_error_issues = self::analyze_php_errors($php_error_files[0]);
             $issues = array_merge($issues, $php_error_issues);
             foreach ($php_error_issues as $issue) {
                 if ($issue['severity'] === 'error') {
@@ -1433,17 +1253,20 @@ class CloudwaysLogParser
     /**
      * Analizza PHP error log con estrazione stack trace completo e raggruppamento intelligente
      */
-    private static function analyze_php_errors(string $log_path): array
+    private static function analyze_php_errors(string $log_path, int $cutoff_hours = 24): array
     {
         $issues = [];
-        $lines = self::read_log_tail($log_path, 5000); // Leggi più righe per stack trace completi
+        // Quando cutoff_hours=0, analizza tutto (passa un numero molto alto per leggere tutto)
+        // read_log_tail() legge tutto il file quando lines > 10000
+        $max_lines = $cutoff_hours == 0 ? 50000 : 5000;
+        $lines = self::read_log_tail($log_path, $max_lines); // Leggi più righe per stack trace completi
         
         if (empty($lines)) {
             return $issues;
         }
         
         $error_groups = [];
-        $cutoff_time = time() - (24 * 60 * 60);
+        $cutoff_time = $cutoff_hours > 0 ? time() - ($cutoff_hours * 3600) : 0;
         
         $critical_patterns = [
             '/PHP Fatal error/i' => 'fatal',
@@ -1462,7 +1285,7 @@ class CloudwaysLogParser
             $timestamp = self::parse_apache_timestamp($line);
             
             // Salta righe vecchie
-            if ($timestamp && $timestamp < $cutoff_time) {
+            if ($cutoff_time > 0 && $timestamp && $timestamp < $cutoff_time) {
                 $i++;
                 continue;
             }
@@ -1793,30 +1616,42 @@ class CloudwaysLogParser
                 return [];
             }
             
-            // Per file molto grandi, leggi solo la coda (max 5MB)
-            $chunk_size = min(5 * 1024 * 1024, $file_size); // Max 5MB per chunk
+            // Se $lines è 0 o molto grande (>10000), leggi tutto il file (analisi completa)
+            // Altrimenti leggi solo la coda per performance
+            $read_full_file = ($lines <= 0 || $lines > 10000);
             
-            $handle = @fopen($file_path, 'r');
-            if (!$handle) {
-                return [];
-            }
-            
-            // Vai alla fine del file
-            @fseek($handle, -min($chunk_size, $file_size), SEEK_END);
-            
-            // Leggi l'ultimo chunk
-            $content = @fread($handle, $chunk_size);
-            @fclose($handle);
-            
-            if ($content === false) {
-                return [];
-            }
-            
-            // Se il file è piccolo, leggi tutto (ma con limite)
-            if ($file_size <= 1024 * 1024) { // Solo se < 1MB
+            if ($read_full_file) {
+                // Analisi completa: leggi tutto il file (fino a 100MB)
                 $content = @file_get_contents($file_path);
                 if ($content === false) {
                     return [];
+                }
+            } else {
+                // Leggi solo la coda (ultimi 5MB per file grandi)
+                $chunk_size = min(5 * 1024 * 1024, $file_size); // Max 5MB per chunk
+                
+                $handle = @fopen($file_path, 'r');
+                if (!$handle) {
+                    return [];
+                }
+                
+                // Vai alla fine del file
+                @fseek($handle, -min($chunk_size, $file_size), SEEK_END);
+                
+                // Leggi l'ultimo chunk
+                $content = @fread($handle, $chunk_size);
+                @fclose($handle);
+                
+                if ($content === false) {
+                    return [];
+                }
+                
+                // Se il file è piccolo, leggi tutto (ma con limite)
+                if ($file_size <= 1024 * 1024) { // Solo se < 1MB
+                    $content = @file_get_contents($file_path);
+                    if ($content === false) {
+                        return [];
+                    }
                 }
             }
             
@@ -1825,8 +1660,15 @@ class CloudwaysLogParser
                 return trim($line) !== '';
             });
             
-            // Ritorna le ultime N righe (limite massimo 1000)
-            $max_lines = min($lines, 1000);
+            // Ritorna le ultime N righe
+            // Se $lines è 0 o molto grande, rimuovi il limite (per analisi completa)
+            if ($lines <= 0 || $lines > 10000) {
+                // Analisi completa: ritorna tutte le righe
+                return array_values($all_lines);
+            }
+            
+            // Limita a $lines righe (massimo 10000 per performance)
+            $max_lines = min($lines, 10000);
             return array_slice($all_lines, -$max_lines);
             
         } catch (\Throwable $e) {
@@ -2143,11 +1985,15 @@ class CloudwaysLogParser
         ini_set('log_errors', '0');
         
         try {
-            $paths = self::get_log_paths();
+            // Usa LogSourceResolver per discovery unificata
+            $base = LogSourceResolver::find_logs_directory();
             
-            if (empty($paths['base'])) {
+            if (empty($base)) {
                 return ['paths' => [], 'tails' => []];
             }
+            
+            // Per compatibilità, mantieni $paths
+            $paths = ['base' => $base];
             
             $tails = [];
             $cutoff = time() - ($hours * 3600);
@@ -2156,14 +2002,8 @@ class CloudwaysLogParser
             $server_timezone = self::get_server_timezone();
             
             // ACCESS 5xx: unifica nginx, apache e php access log (esclude .gz di default)
-            $accFiles = self::collect_log_files([
-                $paths['nginx_access'] ?? '',
-                $paths['nginx_acc_glob'] ?? '',
-                $paths['apache_access'] ?? '',
-                $paths['apache_acc_glob'] ?? '',
-                $paths['php_access'] ?? '',
-                $paths['php_acc_glob'] ?? '',
-            ], false); // false = non include file .gz
+            // USA LogSourceResolver per discovery unificata
+            $accFiles = LogSourceResolver::get_logs_by_types($base, ['nginx_access', 'apache_access', 'php_access'], false);
             
             $tails['access_5xx'] = [
                 'file'    => 'nginx/apache/php access (rotati)',
@@ -2186,13 +2026,11 @@ class CloudwaysLogParser
             ];
             
             // NGINX error (esclude .gz di default)
-            $nginxErrFiles = self::collect_log_files([
-                $paths['nginx_error'] ?? '',
-                $paths['nginx_err_glob'] ?? '',
-            ], false);
+            // USA LogSourceResolver per discovery unificata
+            $nginxErrFiles = LogSourceResolver::get_logs_by_type($base, 'nginx_error', false);
             
             $tails['nginx_error'] = [
-                'file'    => 'nginx-app.error.log*',
+                'file'    => 'nginx*.error.log*',
                 'entries' => self::tail_from_files($nginxErrFiles, $per_file, function(string $line) use ($cutoff): bool {
                     // 2025/11/08 04:13:03
                     $ts = self::parse_nginx_timestamp($line);
@@ -2204,10 +2042,8 @@ class CloudwaysLogParser
             ];
             
             // APACHE error (esclude .gz di default)
-            $apacheErrFiles = self::collect_log_files([
-                $paths['apache_error'] ?? '',
-                $paths['apache_err_glob'] ?? '',
-            ], false);
+            // USA LogSourceResolver per discovery unificata
+            $apacheErrFiles = LogSourceResolver::get_logs_by_type($base, 'apache_error', false);
             
             $tails['apache_error'] = [
                 'file'    => 'apache*.error.log*',
@@ -2222,11 +2058,9 @@ class CloudwaysLogParser
                 }),
             ];
             
-            // PHP error (CORRETTO: solo php-app.error.log, esclude .gz di default)
-            $phpErrFiles = self::collect_log_files([
-                $paths['php_error'] ?? '',
-                $paths['php_error_glob'] ?? '',
-            ], false);
+            // PHP error (CORRETTO: usa LogSourceResolver, esclude .gz di default)
+            // FIX: Cerca anche in apache_error/nginx_error (su Cloudways gli errori PHP finiscono lì)
+            $phpErrFiles = LogSourceResolver::get_logs_by_types($base, ['php_error', 'apache_error', 'nginx_error'], false);
             
             // Ottieni timestamp ultima modifica file
             $log_file_mtime = !empty($phpErrFiles) ? @filemtime(reset($phpErrFiles)) : null;
@@ -2238,6 +2072,9 @@ class CloudwaysLogParser
                 $ts = self::parse_php_error_timestamp($line);
                 if ($ts === null) {
                     $ts = self::parse_apache_timestamp($line);
+                }
+                if ($ts === null) {
+                    $ts = self::parse_nginx_timestamp($line);
                 }
                 if ($ts !== null && ($last_php_error_timestamp === null || $ts > $last_php_error_timestamp)) {
                     $last_php_error_timestamp = $ts;
@@ -2254,7 +2091,7 @@ class CloudwaysLogParser
             $reference_timestamp = $last_php_error_timestamp ?? $log_file_mtime;
             
             $tails['php_error'] = [
-                'file'    => 'php-app.error.log*',
+                'file'    => 'php/apache/nginx error.log*',
                 'entries' => $php_entries,
                 'timezone' => $server_timezone,
                 'last_modified' => $log_file_mtime,
@@ -2263,10 +2100,8 @@ class CloudwaysLogParser
             ];
             
             // PHP slow (esclude .gz di default)
-            $slowFiles = self::collect_log_files([
-                $paths['php_slow'] ?? '',
-                $paths['php_slow_glob'] ?? '',
-            ], false);
+            // USA LogSourceResolver per discovery unificata
+            $slowFiles = LogSourceResolver::get_logs_by_type($base, 'php_slow', false);
             
             $tails['php_slow'] = [
                 'file'    => 'php-app.slow.log*',
@@ -2277,10 +2112,8 @@ class CloudwaysLogParser
             ];
             
             // WP cron (esclude .gz di default)
-            $cronFiles = self::collect_log_files([
-                $paths['wp_cron'] ?? '',
-                $paths['wp_cron_glob'] ?? '',
-            ], false);
+            // USA LogSourceResolver per discovery unificata
+            $cronFiles = LogSourceResolver::get_logs_by_type($base, 'wp_cron', false);
             
             $tails['wp_cron'] = [
                 'file'    => 'wp-cron.log*',
@@ -2318,7 +2151,7 @@ class CloudwaysLogParser
     /**
      * Estrae errori PHP in formato strutturato per API/UI avanzata
      * 
-     * @param array $filters Filtri: severity, file, since, until, context, limit, offset
+     * @param array $filters Filtri: severity, file, since, until, context, hours, limit, offset
      * @return array{total: int, errors: array, limit: int, offset: int} Errori strutturati
      */
     public static function get_php_errors_structured(array $filters = []): array
@@ -2330,20 +2163,88 @@ class CloudwaysLogParser
         ini_set('display_errors', '0');
         ini_set('log_errors', '0');
         
+        $debug_info = [
+            'filters' => $filters,
+            'paths' => [],
+            'hours' => $filters['hours'] ?? 0,
+            'issues_before_filters' => 0,
+            'issues_after_filters' => 0,
+            'reason' => null,
+        ];
+        
         try {
             $paths = self::get_log_paths();
+            $base = $paths['base'] ?? null;
             
-            if (empty($paths['php_error'])) {
+            if (empty($base)) {
                 return [
                     'total' => 0,
                     'errors' => [],
                     'limit' => $filters['limit'] ?? 1000,
                     'offset' => $filters['offset'] ?? 0,
+                    'debug' => array_merge($debug_info, ['reason' => 'logs_directory_not_found']),
                 ];
             }
             
-            // Analizza errori PHP
-            $php_issues = self::analyze_php_errors($paths['php_error']);
+            // FIX: Non fare early return se manca solo php_error.
+            // Su Cloudways, gli errori PHP finiscono soprattutto in apache_error/nginx_error.
+            // Cerca in tutti i tipi di log di errore.
+            $php_error_files = LogSourceResolver::get_logs_by_type($base, 'php_error', true);
+            $apache_error_files = LogSourceResolver::get_logs_by_type($base, 'apache_error', true);
+            $nginx_error_files = LogSourceResolver::get_logs_by_type($base, 'nginx_error', true);
+            
+            // Combina tutti i file di errore (PHP error può essere in apache/nginx su Cloudways)
+            $all_error_files = array_merge($php_error_files, $apache_error_files, $nginx_error_files);
+            
+            $debug_info['paths'] = [
+                'base' => $base,
+                'php_error_candidates' => $php_error_files,
+                'apache_error_candidates' => $apache_error_files,
+                'nginx_error_candidates' => $nginx_error_files,
+                'all_error_candidates' => $all_error_files,
+            ];
+            
+            if (empty($all_error_files)) {
+                return [
+                    'total' => 0,
+                    'errors' => [],
+                    'limit' => $filters['limit'] ?? 1000,
+                    'offset' => $filters['offset'] ?? 0,
+                    'debug' => array_merge($debug_info, ['reason' => 'no_error_files_found']),
+                ];
+            }
+            
+            // Usa il primo file disponibile (più recente)
+            // analyze_php_errors() può analizzare anche log Apache/Nginx (contengono errori PHP)
+            $selected_error_file = $all_error_files[0];
+            $debug_info['paths']['selected_error_file'] = $selected_error_file;
+            
+            // Analizza errori PHP (anche da apache/nginx logs)
+            $hours = isset($filters['hours']) ? (int)$filters['hours'] : 0;
+            if ($hours < 0) {
+                $hours = 0;
+            } elseif ($hours > 720) {
+                $hours = 720;
+            }
+            $debug_info['hours'] = $hours;
+            
+            // Determina tipo di file per usare il metodo di analisi corretto
+            $filename = basename($selected_error_file);
+            $is_apache = stripos($filename, 'apache') !== false;
+            $is_nginx = stripos($filename, 'nginx') !== false;
+            
+            // analyze_php_errors() gestisce correttamente anche log Apache/Nginx
+            // Quando hours=0, analizza tutto il file (read_log_tail() legge tutto quando lines > 10000)
+            // Modifichiamo analyze_php_errors() per passare un numero alto di righe quando hours=0
+            if ($hours == 0) {
+                // Analisi completa: passa un numero molto alto per leggere tutto il file
+                // analyze_php_errors() usa read_log_tail() che legge tutto quando lines > 10000
+                $php_issues = self::analyze_php_errors($selected_error_file, 0);
+            } else {
+                // Analisi con limite temporale
+                $php_issues = self::analyze_php_errors($selected_error_file, $hours);
+            }
+            $debug_info['issues_before_filters'] = count($php_issues);
             
             // Applica filtri
             $filtered_errors = [];
@@ -2351,7 +2252,28 @@ class CloudwaysLogParser
             $file_filter = $filters['file'] ?? null;
             $since = !empty($filters['since']) ? (int)$filters['since'] : null;
             $until = !empty($filters['until']) ? (int)$filters['until'] : null;
+            $known_contexts = ['wp_cli', 'ajax', 'wp_cron', 'frontend', 'backend', 'rest_api'];
             $context_filter = !empty($filters['context']) ? explode(',', $filters['context']) : [];
+            $context_filter = array_values(array_unique(array_filter(array_map('trim', $context_filter), function($value) {
+                return $value !== '';
+            })));
+            
+            $apply_context_filter = !empty($context_filter);
+            if ($apply_context_filter) {
+                $unknown_requested = in_array('unknown', $context_filter, true);
+                $selected_known_contexts = array_values(array_intersect($known_contexts, $context_filter));
+                
+                // Se vengono selezionati tutti i contesti noti (senza unknown) consideriamo il filtro come "mostra tutti"
+                if (!$unknown_requested && count($selected_known_contexts) === count($known_contexts)) {
+                    $apply_context_filter = false;
+                    $context_filter = [];
+                } else {
+                    $context_filter = array_merge(
+                        $selected_known_contexts,
+                        $unknown_requested ? ['unknown'] : []
+                    );
+                }
+            }
             
             foreach ($php_issues as $issue) {
                 // Filtro severity
@@ -2385,10 +2307,12 @@ class CloudwaysLogParser
                 }
                 
                 // Filtro contesto
-                if (!empty($context_filter) && !empty($issue['contexts'])) {
+                $issue_contexts = !empty($issue['contexts']) ? $issue['contexts'] : ['unknown'];
+                
+                if ($apply_context_filter) {
                     $matched = false;
-                    foreach ($issue['contexts'] as $ctx) {
-                        if (in_array($ctx, $context_filter)) {
+                    foreach ($issue_contexts as $ctx) {
+                        if (in_array($ctx, $context_filter, true)) {
                             $matched = true;
                             break;
                         }
@@ -2444,11 +2368,14 @@ class CloudwaysLogParser
             $offset = (int)($filters['offset'] ?? 0);
             $filtered_errors = array_slice($filtered_errors, $offset, $limit);
             
+            $debug_info['issues_after_filters'] = $total;
+            
             return [
                 'total' => $total,
                 'errors' => $filtered_errors,
                 'limit' => $limit,
                 'offset' => $offset,
+                'debug' => $debug_info,
             ];
             
         } catch (\Throwable $e) {
@@ -2458,6 +2385,10 @@ class CloudwaysLogParser
                 'limit' => $filters['limit'] ?? 1000,
                 'offset' => $filters['offset'] ?? 0,
                 'error' => $e->getMessage(),
+                'debug' => array_merge($debug_info, [
+                    'reason' => 'exception',
+                    'exception' => $e->getMessage(),
+                ]),
             ];
         } finally {
             error_reporting($old_error_reporting ?? E_ALL);

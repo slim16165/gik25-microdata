@@ -1,0 +1,90 @@
+/**
+ * Health Check CSS
+ * Stili per la pagina di Health Check
+ */
+
+.health-check-toolbar {
+    margin: 10px 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.health-check-item {
+    padding: 15px;
+    margin: 10px 0;
+    border-left: 4px solid #ddd;
+    background: #f9f9f9;
+}
+
+.health-check-item.success {
+    border-left-color: #46b450;
+    background: #f0f9f0;
+}
+
+.health-check-item.warning {
+    border-left-color: #ffb900;
+    background: #fffbf0;
+}
+
+.health-check-item.error {
+    border-left-color: #dc3232;
+    background: #fff0f0;
+}
+
+.health-check-item h3 {
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.health-check-item .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+}
+
+.health-check-item.success .badge {
+    background: #46b450;
+}
+
+.health-check-item.warning .badge {
+    background: #ffb900;
+}
+
+.health-check-item.error .badge {
+    background: #dc3232;
+}
+
+.health-check-item .details {
+    margin-top: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+}
+
+.health-check-summary {
+    padding: 20px;
+    margin: 20px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.health-check-section {
+    display: none;
+}
+
+.health-check-section.active {
+    display: block;
+}
+

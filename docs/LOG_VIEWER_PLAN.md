@@ -88,6 +88,7 @@ Query params:
 - `since`: timestamp Unix
 - `until`: timestamp Unix
 - `context`: wp_cli,ajax,wp_cron,frontend,backend,rest_api (comma-separated)
+- `hours`: limita l'analisi alle ultime N ore (0 = tutto il log)
 - `limit`: numero massimo risultati (default: 1000)
 - `offset`: offset paginazione
 - `format`: json,csv (default: json)

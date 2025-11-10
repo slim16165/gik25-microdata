@@ -76,8 +76,17 @@ class LogViewerAPI
                 ],
                 'context' => [
                     'type' => 'string',
-                    'description' => 'Filtro contesto (comma-separated: wp_cli,ajax,wp_cron,frontend,backend,rest_api)',
+                    'description' => 'Filtro contesto (comma-separated: wp_cli,ajax,wp_cron,frontend,backend,rest_api,unknown)',
                     'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'hours' => [
+                    'type' => 'integer',
+                    'description' => 'Limita l\'analisi alle ultime N ore (0 = intero log)',
+                    'default' => 0,
+                    'sanitize_callback' => 'absint',
+                    'validate_callback' => function($param) {
+                        return $param <= 720; // Max 30 giorni per sicurezza
+                    },
                 ],
                 'limit' => [
                     'type' => 'integer',

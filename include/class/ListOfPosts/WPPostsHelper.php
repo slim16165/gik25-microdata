@@ -35,11 +35,17 @@ class WPPostsHelper
         foreach ($target_postids as $target_postid)
         {
             $target_post = get_post($target_postid);
+            
+            // FIX: Verifica che get_post non restituisca null
+            if (!$target_post || !is_a($target_post, 'WP_Post')) {
+                continue;
+            }
 
             if ($target_post->post_status !== "publish" )
             {
                 $debugMsg = "NON PUBBLICATO: " . get_permalink($target_post->ID);
                 do_action( 'qm/debug', $debugMsg );
+                continue; // Non includere post non pubblicati
             }
 
             $target_posts[] = $target_post;
@@ -75,11 +81,16 @@ class WPPostsHelper
         else
         {
             $target_post = get_post($target_postid);
-
-            if ($target_post->post_status !== "publish" )
-            {
-                $debugMsg = "NON PUBBLICATO: " . get_permalink($target_post->ID);
-                do_action( 'qm/debug', $debugMsg );
+            
+            // FIX: Verifica che get_post non restituisca null
+            if ($target_post && is_a($target_post, 'WP_Post')) {
+                if ($target_post->post_status !== "publish" )
+                {
+                    $debugMsg = "NON PUBBLICATO: " . get_permalink($target_post->ID);
+                    do_action( 'qm/debug', $debugMsg );
+                }
+            } else {
+                $target_post = null;
             }
         }
 
@@ -95,7 +106,17 @@ class WPPostsHelper
     {
         global $post;
         $current_post = $post;
+        
+        // FIX: Verifica che $current_post sia valido
+        if (!$current_post || !is_a($current_post, 'WP_Post') || !isset($current_post->ID)) {
+            return false;
+        }
+        
         $current_permalink = get_permalink($current_post->ID);
+        
+        if (!$current_permalink) {
+            return false;
+        }
 
         return strcmp($current_permalink, $target_url) == 0;
     }

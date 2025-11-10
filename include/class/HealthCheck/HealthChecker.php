@@ -2,6 +2,7 @@
 namespace gik25microdata\HealthCheck;
 
 use gik25microdata\Shortcodes\ShortcodeRegistry;
+use gik25microdata\HealthCheck\HealthCheckConstants;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -20,8 +21,6 @@ if (!defined('ABSPATH')) {
  */
 class HealthChecker
 {
-    private const CHECK_CACHE_KEY = 'health_check_results';
-    private const CHECK_CACHE_EXPIRATION = 300; // 5 minuti
 
     /**
      * Inizializza health check
@@ -30,6 +29,9 @@ class HealthChecker
     {
         // Pagina admin per health check
         add_action('admin_menu', [self::class, 'add_admin_page']);
+        
+        // Carica assets CSS/JS solo nella pagina di health check
+        add_action('admin_enqueue_scripts', [self::class, 'enqueue_admin_assets']);
         
         // AJAX endpoint per eseguire check
         add_action('wp_ajax_gik25_health_check', [self::class, 'ajax_run_checks']);
@@ -71,7 +73,8 @@ class HealthChecker
      */
     public static function render_admin_page(): void
     {
-        $checks = self::run_all_checks();
+        // Forza refresh al caricamento della pagina (bypass cache per visualizzazione immediata)
+        $checks = self::run_all_checks(true);
         ?>
         <div class="wrap">
             <h1>Health Check - Revious Microdata</h1>
@@ -103,241 +106,69 @@ class HealthChecker
                 <?php self::render_checks_results($checks); ?>
             </div>
         </div>
+        <?php
+    }
 
-        <style>
-            .health-check-toolbar {
-                margin: 10px 0 20px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                align-items: center;
+    /**
+     * Carica assets CSS e JS per la pagina admin
+     * Viene chiamato dall'hook admin_enqueue_scripts
+     */
+    public static function enqueue_admin_assets(string $hook_suffix): void
+    {
+        // Carica solo nella pagina di health check
+        // Il page hook può essere 'gik25-health-check' o 'tools_page_gik25-health-check' a seconda della struttura
+        if ($hook_suffix !== 'gik25-health-check' && strpos($hook_suffix, 'gik25-health-check') === false) {
+            // Verifica anche tramite GET parameter (fallback)
+            if (!isset($_GET['page']) || $_GET['page'] !== 'gik25-health-check') {
+                return;
             }
-            .health-check-item {
-                padding: 15px;
-                margin: 10px 0;
-                border-left: 4px solid #ddd;
-                background: #f9f9f9;
-            }
-            .health-check-item.success {
-                border-left-color: #46b450;
-                background: #f0f9f0;
-            }
-            .health-check-item.warning {
-                border-left-color: #ffb900;
-                background: #fffbf0;
-            }
-            .health-check-item.error {
-                border-left-color: #dc3232;
-                background: #fff0f0;
-            }
-            .health-check-item h3 {
-                margin: 0 0 10px 0;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .health-check-item .badge {
-                display: inline-block;
-                padding: 2px 8px;
-                border-radius: 10px;
-                font-size: 11px;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                color: #fff;
-            }
-            .health-check-item.success .badge { background: #46b450; }
-            .health-check-item.warning .badge { background: #ffb900; }
-            .health-check-item.error .badge { background: #dc3232; }
-            .health-check-item .details {
-                margin-top: 10px;
-                padding: 10px;
-                background: white;
-                border-radius: 4px;
-                font-family: monospace;
-                font-size: 12px;
-                white-space: pre-wrap;
-            }
-            .health-check-summary {
-                padding: 20px;
-                margin: 20px 0;
-                background: #fff;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-            .health-check-section { display: none; }
-            .health-check-section.active { display: block; }
-        </style>
-
-        <script>
-        jQuery(document).ready(function($) {
-            var healthCheckNonce = '<?php echo esc_js(wp_create_nonce('gik25_health_check')); ?>';
-            var $resultsContainer = $('#health-check-results');
-            var copyFeedbackTimeout = null;
-
-            function bindHealthCheckUI(activeTab) {
-                var $tabs = $('.nav-tab-wrapper a');
-                var targetTab = activeTab || $tabs.filter('.nav-tab-active').data('tab') || 'summary';
-
-                $tabs.removeClass('nav-tab-active');
-                $tabs.filter('[data-tab="' + targetTab + '"]').addClass('nav-tab-active');
-
-                $('.health-check-section').removeClass('active');
-                $('#' + targetTab).addClass('active');
-
-                $tabs.off('click').on('click', function(e) {
-                    e.preventDefault();
-                    bindHealthCheckUI($(this).data('tab'));
-                });
-
-                $('#filter-status').off('change').on('change', function() {
-                    var val = $(this).val();
-                    $('.health-check-item').show();
-                    if (val !== 'all') {
-                        $('.health-check-item').not('.' + val).hide();
-                    }
-                }).trigger('change');
-            }
-
-            function setRunningState(isRunning) {
-                var $button = $('#run-health-check');
-                if (isRunning) {
-                    $button.data('original-html', $button.html());
-                    $button.prop('disabled', true).html('⏳ <?php echo esc_js(__('In esecuzione...', 'gik25-microdata')); ?>');
-                } else {
-                    var original = $button.data('original-html');
-                    if (original) {
-                        $button.html(original);
-                    }
-                    $button.prop('disabled', false);
-                }
-            }
-
-            function renderResults(html, activeTab) {
-                $resultsContainer.html(html);
-                bindHealthCheckUI(activeTab);
-            }
-
-            $('#run-health-check').off('click').on('click', function() {
-                setRunningState(true);
-                var activeTab = $('.nav-tab-wrapper a.nav-tab-active').data('tab') || 'summary';
-
-                $.ajax({
-                    url: ajaxurl,
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {
-                        action: 'gik25_health_check',
-                        nonce: healthCheckNonce
-                    }
-                }).done(function(response) {
-                    if (response && response.success && response.data && response.data.html) {
-                        renderResults(response.data.html, activeTab);
-                    } else {
-                        var message = (response && response.data && response.data.message) ? response.data.message : 'Errore sconosciuto.';
-                        window.alert('Health Check fallito: ' + message);
-                    }
-                }).fail(function(xhr) {
-                    console.error('Health Check AJAX error', xhr);
-                    window.alert('Errore durante l\'esecuzione degli health check. Controlla la console per dettagli.');
-                }).always(function() {
-                    setRunningState(false);
-                });
-            });
-
-            $('#copy-results').off('click').on('click', function() {
-                var $button = $(this);
-                var originalHtml = $button.html();
-
-                function restoreButton() {
-                    if (copyFeedbackTimeout) {
-                        clearTimeout(copyFeedbackTimeout);
-                    }
-                    copyFeedbackTimeout = setTimeout(function() {
-                        $button.html(originalHtml);
-                    }, 2000);
-                }
-
-                var text = formatHealthCheckResults();
-
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(function() {
-                        $button.html('✅ <?php echo esc_js(__('Copiato!', 'gik25-microdata')); ?>');
-                        restoreButton();
-                    }).catch(function() {
-                        fallbackCopy(text, $button, originalHtml, restoreButton);
-                    });
-                } else {
-                    fallbackCopy(text, $button, originalHtml, restoreButton);
-                }
-            });
-
-            function fallbackCopy(text, $button, originalHtml, restoreButton) {
-                var $textarea = $('<textarea>', {
-                    text: text,
-                    css: { position: 'absolute', left: '-9999px', top: '0' }
-                }).appendTo('body');
-
-                $textarea.trigger('focus').trigger('select');
-                try {
-                    document.execCommand('copy');
-                    $button.html('✅ <?php echo esc_js(__('Copiato!', 'gik25-microdata')); ?>');
-                } catch (err) {
-                    console.error('Clipboard fallback failed', err);
-                    window.alert('Impossibile copiare automaticamente. Copia manualmente i risultati.');
-                }
-                $textarea.remove();
-                restoreButton();
-            }
-
-            function formatHealthCheckResults() {
-                var lines = [];
-                lines.push('=== Health Check - Revious Microdata ===');
-
-                var summaryText = $resultsContainer.find('.health-check-summary').text().replace(/\s+/g, ' ').trim();
-                if (summaryText) {
-                    lines.push(summaryText);
-                }
-
-                $resultsContainer.find('.health-check-item').each(function() {
-                    var $item = $(this);
-                    var status = 'INFO';
-                    if ($item.hasClass('error')) {
-                        status = 'ERROR';
-                    } else if ($item.hasClass('warning')) {
-                        status = 'WARNING';
-                    } else if ($item.hasClass('success')) {
-                        status = 'SUCCESS';
-                    }
-
-                    var title = $.trim($item.find('h3').text());
-                    var message = $.trim($item.find('p').first().text());
-
-                    lines.push('');
-                    lines.push('[' + status + '] ' + title);
-                    if (message) {
-                        lines.push('   ' + message);
-                    }
-
-                    var detailsText = $.trim($item.find('.details').text());
-                    if (detailsText) {
-                        lines.push('   Dettagli:');
-                        detailsText.split(/\n/).forEach(function(line) {
-                            var trimmed = $.trim(line);
-                            if (trimmed.length) {
-                                lines.push('      ' + trimmed);
-                            }
-                        });
-                    }
-                });
-
-                return lines.join('\n');
-            }
-
-            bindHealthCheckUI('summary');
-        });
-        </script>
-         <?php
-     }
+        }
+        
+        // Determina plugin directory
+        $plugin_dir = plugin_dir_path(__FILE__);
+        $plugin_dir = dirname(dirname(dirname($plugin_dir)));
+        $plugin_file = $plugin_dir . '/revious-microdata.php';
+        if (!file_exists($plugin_file)) {
+            $plugin_file = $plugin_dir . '/gik25-microdata.php';
+        }
+        
+        // Versione basata su filemtime (cache busting)
+        $css_file = $plugin_dir . '/assets/css/health-check.css';
+        $css_version = file_exists($css_file) ? filemtime($css_file) : '1.0.0';
+        
+        $js_file = $plugin_dir . '/assets/js/health-check.js';
+        $js_version = file_exists($js_file) ? filemtime($js_file) : '1.0.0';
+        
+        // Carica CSS
+        wp_enqueue_style(
+            'gik25-health-check',
+            plugins_url('assets/css/health-check.css', $plugin_file),
+            [],
+            $css_version
+        );
+        
+        // Carica JS (dipende da jQuery)
+        wp_enqueue_script(
+            'gik25-health-check',
+            plugins_url('assets/js/health-check.js', $plugin_file),
+            ['jquery'],
+            $js_version,
+            true
+        );
+        
+        // Localizza script con dati PHP
+        wp_localize_script('gik25-health-check', 'healthCheckData', [
+            'nonce' => wp_create_nonce('gik25_health_check'),
+            'i18n' => [
+                'running' => __('In esecuzione...', 'gik25-microdata'),
+                'copied' => __('Copiato!', 'gik25-microdata'),
+                'checkFailed' => __('Health Check fallito: ', 'gik25-microdata'),
+                'unknownError' => __('Errore sconosciuto.', 'gik25-microdata'),
+                'ajaxError' => __('Errore durante l\'esecuzione degli health check. Controlla la console per dettagli.', 'gik25-microdata'),
+                'copyFailed' => __('Impossibile copiare automaticamente. Copia manualmente i risultati.', 'gik25-microdata'),
+            ],
+        ]);
+    }
      
     /**
      * Formatta una riga di log per anteprima (DEPRECATO: usa LogFormatter)
@@ -390,16 +221,26 @@ class HealthChecker
             $log_php_errors_count = count($log_check['php_errors']);
         }
 
+        // Calcola tail degli errori UNA SOLA VOLTA (usa il numero più grande richiesto)
+        // Questo evita doppie chiamate costose a recent_errors_tail()
+        $tail = null;
+        if ($log_check) {
+            $tail = \gik25microdata\HealthCheck\CloudwaysLogParser::recent_errors_tail(
+                HealthCheckConstants::TAIL_LINES_DETAILS,
+                HealthCheckConstants::TAIL_WINDOW_HOURS
+            );
+        }
+
         ?>
         <div class="health-check-section active" id="summary">
             <!-- Riepilogo Health Check -->
             <div class="health-check-summary" style="margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 4px;">
                 <h2><?php esc_html_e('Riepilogo Health Check', 'gik25-microdata'); ?></h2>
                 <p>
-                    <strong><?php esc_html_e('Totale:', 'gik25-microdata'); ?></strong> <?php echo $health_total; ?> |
-                    <span style="color:#46b450;"><?php esc_html_e('[OK] Successo:', 'gik25-microdata'); ?> <?php echo $health_success; ?></span> |
-                    <span style="color:#ffb900;"><?php esc_html_e('[WARN] Warning:', 'gik25-microdata'); ?> <?php echo $health_warnings; ?></span> |
-                    <span style="color:#dc3232;"><?php esc_html_e('[ERR] Errori:', 'gik25-microdata'); ?> <?php echo $health_errors; ?></span>
+                        <strong><?php esc_html_e('Totale:', 'gik25-microdata'); ?></strong> <?php echo $health_total; ?> |
+                    <span style="color:<?php echo esc_attr(HealthCheckConstants::getStatusColor('success')); ?>;"><?php esc_html_e('[OK] Successo:', 'gik25-microdata'); ?> <?php echo $health_success; ?></span> |
+                    <span style="color:<?php echo esc_attr(HealthCheckConstants::getStatusColor('warning')); ?>;"><?php esc_html_e('[WARN] Warning:', 'gik25-microdata'); ?> <?php echo $health_warnings; ?></span> |
+                    <span style="color:<?php echo esc_attr(HealthCheckConstants::getStatusColor('error')); ?>;"><?php esc_html_e('[ERR] Errori:', 'gik25-microdata'); ?> <?php echo $health_errors; ?></span>
                 </p>
                 <p><small><?php esc_html_e('Ultimo check:', 'gik25-microdata'); ?> <?php echo current_time('mysql'); ?></small></p>
             </div>
@@ -411,31 +252,34 @@ class HealthChecker
                     <p>
                         <strong><?php esc_html_e('Stato:', 'gik25-microdata'); ?></strong> 
                         <span style="color:<?php 
-                            echo $log_status === 'error' ? '#dc3232' : ($log_status === 'warning' ? '#ffb900' : '#46b450'); 
+                            echo esc_attr(HealthCheckConstants::getStatusColor($log_status === 'unknown' ? 'success' : $log_status)); 
                         ?>; font-weight: bold;">
                             <?php echo esc_html(strtoupper($log_status)); ?>
                         </span>
                     </p>
                     <p><?php echo esc_html($log_check['message']); ?></p>
                     <?php if ($log_php_errors_count > 0): ?>
-                        <p style="color: #dc3232; font-weight: bold;">
+                        <p style="color: <?php echo esc_attr(HealthCheckConstants::getStatusColor('error')); ?>; font-weight: bold;">
                             ⚠️ <?php echo $log_php_errors_count; ?> errore/i PHP critico/i rilevato/i
                         </p>
                     <?php endif; ?>
                     
                     <?php 
                     // Mostra ultimi errori PHP (critici + warning) in anteprima
-                    $tail = \gik25microdata\HealthCheck\CloudwaysLogParser::recent_errors_tail(15, 24);
-                    if (!empty($tail['tails']['php_error']['entries'])) {
+                    // Usa il tail già calcolato, limitando a TAIL_LINES_PREVIEW per l'anteprima
+                    if ($tail && !empty($tail['tails']['php_error']['entries'])) {
+                        // Prendi solo le prime TAIL_LINES_PREVIEW righe per l'anteprima
+                        $preview_entries = array_slice($tail['tails']['php_error']['entries'], 0, HealthCheckConstants::TAIL_LINES_PREVIEW);
+                        
                         // Filtra per severity: mostra fatal, error, exception, warning
                         $php_errors_preview = [];
                         $critical_count = 0;
                         $warning_count = 0;
                         
-                        foreach ($tail['tails']['php_error']['entries'] as $error_line) {
+                        foreach ($preview_entries as $error_line) {
                             $severity = \gik25microdata\LogViewer\LogFormatter::extract_severity($error_line);
                             
-                            if (in_array($severity, ['fatal', 'parse', 'error', 'exception'])) {
+                            if (HealthCheckConstants::isCriticalSeverity($severity)) {
                                 $critical_count++;
                                 if (count($php_errors_preview) < 8) {
                                     $php_errors_preview[] = ['line' => $error_line, 'severity' => $severity];
@@ -479,7 +323,9 @@ class HealthChecker
                                     <?php 
                                     $error_line = $error_data['line'];
                                     $error_severity = $error_data['severity'];
-                                    $severity_color = in_array($error_severity, ['fatal', 'parse', 'error', 'exception']) ? '#dc3232' : '#ffb900';
+                                    $severity_color = HealthCheckConstants::isCriticalSeverity($error_severity) 
+                                        ? HealthCheckConstants::getStatusColor('error') 
+                                        : HealthCheckConstants::getStatusColor('warning');
                                     ?>
                                     <li style="margin: 5px 0; color: #333;">
                                         <span style="color: <?php echo esc_attr($severity_color); ?>; font-weight: bold; font-size: 10px; margin-right: 5px;">
@@ -489,9 +335,9 @@ class HealthChecker
                                             <?php echo esc_html(\gik25microdata\LogViewer\LogFormatter::format_preview($error_line)); ?>
                                         </code>
                                     </li>
-                                <?php endforeach; ?>
+                                    <?php endforeach; ?>
                             </ul>
-                            <?php if (count($tail['tails']['php_error']['entries']) > count($php_errors_preview)): ?>
+                            <?php if ($tail && count($tail['tails']['php_error']['entries']) > count($php_errors_preview)): ?>
                                 <p style="font-size: 11px; color: #666; margin-top: 5px;">
                                     ... e altri <?php echo count($tail['tails']['php_error']['entries']) - count($php_errors_preview); ?> errori (vedi Log Viewer)
                                 </p>
@@ -548,11 +394,6 @@ class HealthChecker
                         </h3>
                         <p style="margin-bottom: 15px;"><?php echo esc_html($log_check['message']); ?></p>
                         
-                        <?php 
-                        // Tail degli ultimi errori grezzi dai log
-                        $tail = \gik25microdata\HealthCheck\CloudwaysLogParser::recent_errors_tail(30, 24); 
-                        ?>
-                        
                         <!-- Errori PHP Critici (collapsed) -->
                         <?php if ($has_php_errors): ?>
                             <details style="margin: 15px 0; background: #fff5f5; border: 1px solid #dc3232; border-radius: 4px; padding: 10px;">
@@ -569,16 +410,8 @@ class HealthChecker
                                                     </span>
                                                     <span>
                                                         <?php 
-                                                        $error_type_labels = [
-                                                            'fatal' => 'Fatal Error',
-                                                            'parse' => 'Parse Error',
-                                                            'error' => 'Uncaught Error',
-                                                            'exception' => 'Uncaught Exception',
-                                                            'warning' => 'PHP Warning',
-                                                            'database' => 'Database Error',
-                                                        ];
                                                         $error_type = $php_error['error_type'] ?? 'unknown';
-                                                        echo esc_html($error_type_labels[$error_type] ?? ucfirst($error_type));
+                                                        echo esc_html(HealthCheckConstants::ERROR_TYPE_LABELS[$error_type] ?? ucfirst($error_type));
                                                         ?>
                                                     </span>
                                                     <span style="font-size: 14px; font-weight: normal; color: #666;">
@@ -618,17 +451,8 @@ class HealthChecker
                                                     <div style="margin: 10px 0;">
                                                         <strong>Contesto:</strong> 
                                                         <?php 
-                                                        $context_labels = [
-                                                            'wp_cli' => 'WP-CLI',
-                                                            'ajax' => 'AJAX',
-                                                            'wp_cron' => 'WP-CRON',
-                                                            'frontend' => 'Frontend',
-                                                            'backend' => 'Backend',
-                                                            'rest_api' => 'REST API',
-                                                            'unknown' => 'Unknown',
-                                                        ];
-                                                        $contexts_display = array_map(function($ctx) use ($context_labels) {
-                                                            return $context_labels[$ctx] ?? $ctx;
+                                                        $contexts_display = array_map(function($ctx) {
+                                                            return HealthCheckConstants::getContextLabel($ctx);
                                                         }, $php_error['contexts']);
                                                         echo esc_html(implode(', ', $contexts_display));
                                                         ?>
@@ -688,17 +512,7 @@ class HealthChecker
                                                                                 <div style="margin-bottom: 8px;">
                                                                                     <strong>Contesto:</strong> 
                                                                                     <?php 
-                                                                                    $context_labels = [
-                                                                                        'wp_cli' => 'WP-CLI',
-                                                                                        'ajax' => 'AJAX',
-                                                                                        'wp_cron' => 'WP-CRON',
-                                                                                        'frontend' => 'Frontend',
-                                                                                        'backend' => 'Backend',
-                                                                                        'rest_api' => 'REST API',
-                                                                                        'unknown' => 'Unknown',
-                                                                                    ];
-                                                                                    $ctx_label = $context_labels[$example['context']] ?? $example['context'];
-                                                                                    echo esc_html($ctx_label);
+                                                                                    echo esc_html(HealthCheckConstants::getContextLabel($example['context']));
                                                                                     ?>
                                                                                 </div>
                                                                             <?php endif; ?>
@@ -742,15 +556,8 @@ class HealthChecker
                                         <details style="margin:10px 0; background:#fff; border-radius:4px; padding:10px; border: 1px solid #ddd;">
                                             <summary style="cursor:pointer; font-weight:600;">
                                                 <?php 
-                                                    $labels = [
-                                                        'access_5xx' => 'HTTP 5xx (Nginx/Apache/PHP Access)',
-                                                        'nginx_error'      => 'Nginx Error',
-                                                        'apache_error'     => 'Apache Error',
-                                                        'php_error'        => 'PHP Error',
-                                                        'php_slow'         => 'PHP Slow',
-                                                        'wp_cron'          => 'WP-Cron',
-                                                    ];
-                                                    echo esc_html(($labels[$key] ?? ucfirst($key)) . 
+                                                    $label = HealthCheckConstants::TAIL_LABELS[$key] ?? ucfirst($key);
+                                                    echo esc_html($label . 
                                                         (!empty($bundle['file']) ? ' · ' . $bundle['file'] : '') . 
                                                         ' (' . count($bundle['entries']) . ' righe)');
                                                 ?>
@@ -849,7 +656,9 @@ class HealthChecker
                 return;
             }
 
-            $checks = self::run_all_checks();
+            // Forza refresh quando richiesto via AJAX (bypass cache)
+            $force_refresh = isset($_POST['force_refresh']) && $_POST['force_refresh'] === '1';
+            $checks = self::run_all_checks($force_refresh);
             
             ob_start();
             self::render_checks_results($checks);
@@ -875,8 +684,8 @@ class HealthChecker
             'methods' => 'GET',
             'callback' => [self::class, 'rest_health_check'],
             'permission_callback' => function() {
-                // Accesso pubblico ma limitato (puoi aggiungere autenticazione se necessario)
-                return true;
+                // Accesso ristretto solo ad amministratori
+                return current_user_can('manage_options');
             },
         ]);
     }
@@ -917,13 +726,21 @@ class HealthChecker
     }
 
     /**
-     * Esegui tutti i check
+     * Esegui tutti i check (con cache)
      * PROTETTO: gestisce errori senza bloccare WordPress
      */
-    public static function run_all_checks(): array
+    public static function run_all_checks(bool $force_refresh = false): array
     {
+        // Verifica cache (se non forzato refresh)
+        if (!$force_refresh) {
+            $cache = get_transient(HealthCheckConstants::CHECK_CACHE_KEY);
+            if ($cache !== false && is_array($cache)) {
+                return $cache;
+            }
+        }
+
         // Esegui tutti i check in modo sicuro
-        return \gik25microdata\Utility\SafeExecution::safe_execute(function() {
+        $checks = \gik25microdata\Utility\SafeExecution::safe_execute(function() {
             $checks = [];
             
             // Carica gli shortcode prima di verificarli (necessario perché vengono caricati solo nel frontend)
@@ -969,6 +786,17 @@ class HealthChecker
 
             return $checks;
         }, [], true); // Ritorna array vuoto in caso di errore critico
+
+        // Salva in cache
+        if (!empty($checks)) {
+            set_transient(
+                HealthCheckConstants::CHECK_CACHE_KEY,
+                $checks,
+                HealthCheckConstants::CHECK_CACHE_EXPIRATION
+            );
+        }
+
+        return $checks;
     }
 
     /**
@@ -1301,28 +1129,48 @@ class HealthChecker
 
     /**
      * Check REST API endpoints
+     * Usa rest_do_request() per loopback zero-IO invece di wp_remote_get()
      */
     private static function check_rest_api(): array
     {
-        $endpoints = [
-            '/wp-json/wp-mcp/v1/categories',
-            '/wp-json/wp-mcp/v1/posts/recent',
-            '/wp-json/wp-mcp/v1/posts/search?q=test',
-        ];
+        // Endpoints configurabili tramite filter
+        $endpoints = apply_filters('gik25/healthcheck/rest_endpoints', [
+            '/wp-mcp/v1/categories',
+            '/wp-mcp/v1/posts/recent',
+            '/wp-mcp/v1/posts/search',
+        ]);
 
         $working = [];
         $failed = [];
 
         foreach ($endpoints as $endpoint) {
-            $url = home_url($endpoint);
-            $response = wp_remote_get($url, ['timeout' => 5]);
-            
-            if (is_wp_error($response)) {
-                $failed[] = $endpoint . ' (' . $response->get_error_message() . ')';
-            } elseif (wp_remote_retrieve_response_code($response) === 200) {
-                $working[] = $endpoint;
-            } else {
-                $failed[] = $endpoint . ' (HTTP ' . wp_remote_retrieve_response_code($response) . ')';
+            try {
+                // Usa rest_do_request() per loopback interno (zero I/O)
+                $request = new \WP_REST_Request('GET', $endpoint);
+                
+                // Aggiungi parametri query se presenti nell'endpoint
+                if (strpos($endpoint, '?') !== false) {
+                    parse_str(parse_url($endpoint, PHP_URL_QUERY), $params);
+                    foreach ($params as $key => $value) {
+                        $request->set_param($key, $value);
+                    }
+                    // Rimuovi query string dal path
+                    $endpoint = strtok($endpoint, '?');
+                    $request->set_route($endpoint);
+                }
+                
+                $response = rest_do_request($request);
+                
+                if ($response->is_error()) {
+                    $error = $response->as_error();
+                    $failed[] = $endpoint . ' (' . $error->get_error_message() . ')';
+                } elseif ($response->get_status() === 200) {
+                    $working[] = $endpoint;
+                } else {
+                    $failed[] = $endpoint . ' (HTTP ' . $response->get_status() . ')';
+                }
+            } catch (\Throwable $e) {
+                $failed[] = $endpoint . ' (Exception: ' . $e->getMessage() . ')';
             }
         }
 
@@ -1342,17 +1190,16 @@ class HealthChecker
 
     /**
      * Check AJAX endpoints
+     * Usa has_action() invece di accesso diretto a $wp_filter per robustezza
      */
     private static function check_ajax_endpoints(): array
     {
-        // AJAX endpoints opzionali (solo se kitchen_finder è attivo)
-        $optional_actions = [
+        // AJAX endpoints configurabili tramite filter
+        $optional_actions = apply_filters('gik25/healthcheck/ajax_actions', [
             'kitchen_finder_calculate',
             'kitchen_finder_pdf',
-        ];
+        ]);
 
-        // Verifica che gli hook siano registrati
-        global $wp_filter;
         $registered = [];
         $missing = [];
 
@@ -1360,11 +1207,9 @@ class HealthChecker
             $hook_logged = 'wp_ajax_' . $action;
             $hook_nopriv = 'wp_ajax_nopriv_' . $action;
             
-            // Verifica anche se le callback sono registrate e non vuote
-            $has_logged = isset($wp_filter[$hook_logged]) && 
-                         !empty($wp_filter[$hook_logged]->callbacks);
-            $has_nopriv = isset($wp_filter[$hook_nopriv]) && 
-                         !empty($wp_filter[$hook_nopriv]->callbacks);
+            // Usa has_action() per verificare se gli hook sono registrati
+            $has_logged = has_action($hook_logged);
+            $has_nopriv = has_action($hook_nopriv);
             
             if ($has_logged || $has_nopriv) {
                 $registered[] = $action;
@@ -1495,12 +1340,22 @@ class HealthChecker
 
     /**
      * Check assets (CSS/JS)
+     * Verifica prima file_exists() sul path, poi (opzionale) HEAD request
      */
     private static function check_assets(): array
     {
+        // Determina plugin directory e URL in modo robusto
         $plugin_dir = plugin_dir_path(__FILE__);
         $plugin_dir = dirname(dirname(dirname($plugin_dir)));
-        $plugin_url = plugin_dir_url($plugin_dir . '/revious-microdata.php');
+        
+        // Usa il file principale del plugin come riferimento
+        $plugin_file = $plugin_dir . '/revious-microdata.php';
+        if (!file_exists($plugin_file)) {
+            // Fallback: cerca il file principale
+            $plugin_file = $plugin_dir . '/gik25-microdata.php';
+        }
+        
+        $plugin_url = plugins_url('/', $plugin_file);
 
         $assets = [
             'assets/css/kitchen-finder.css',
@@ -1513,11 +1368,28 @@ class HealthChecker
         $failed = [];
 
         foreach ($assets as $asset) {
+            $file_path = $plugin_dir . '/' . $asset;
+            
+            // Prima verifica: file esiste sul filesystem?
+            if (!file_exists($file_path)) {
+                $failed[] = $asset . ' (file non trovato)';
+                continue;
+            }
+            
+            // Seconda verifica (opzionale): file accessibile via HTTP?
+            // Solo se necessario (es. per verificare permessi o hotlink protection)
             $url = $plugin_url . $asset;
-            $response = wp_remote_head($url, ['timeout' => 5]);
+            $response = wp_remote_head($url, [
+                'timeout' => 5,
+                'sslverify' => false, // Evita problemi con certificati self-signed in dev
+            ]);
             
             if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
                 $accessible[] = $asset;
+            } elseif (file_exists($file_path)) {
+                // File esiste ma non accessibile via HTTP (potrebbe essere hotlink protection)
+                // Consideralo comunque OK se il file esiste
+                $accessible[] = $asset . ' (file esiste, accesso HTTP non verificato)';
             } else {
                 $failed[] = $asset;
             }
@@ -1644,7 +1516,7 @@ class HealthChecker
             // Se ci sono errori PHP critici, priorità su di essi
             $php_critical_errors = array_filter($php_errors, function($issue) {
                 return $issue['severity'] === 'error' && 
-                       in_array($issue['error_type'] ?? '', ['fatal', 'parse', 'error', 'exception']);
+                       HealthCheckConstants::isCriticalSeverity($issue['error_type'] ?? '');
             });
             
             // Determina status: se ci sono errori PHP critici, status = error
@@ -1777,15 +1649,7 @@ class HealthChecker
      */
     private static function get_context_summary(array $issues): string
     {
-        $contexts_count = [
-            'wp_cli' => 0,
-            'ajax' => 0,
-            'wp_cron' => 0,
-            'frontend' => 0,
-            'backend' => 0,
-            'rest_api' => 0,
-            'unknown' => 0,
-        ];
+        $contexts_count = array_fill_keys(array_keys(HealthCheckConstants::CONTEXT_LABELS), 0);
         
         foreach ($issues as $issue) {
             if (!empty($issue['contexts'])) {
@@ -1797,20 +1661,10 @@ class HealthChecker
             }
         }
         
-        $context_labels = [
-            'wp_cli' => 'WP-CLI',
-            'ajax' => 'AJAX',
-            'wp_cron' => 'WP-CRON',
-            'frontend' => 'Frontend',
-            'backend' => 'Backend',
-            'rest_api' => 'REST API',
-            'unknown' => 'Unknown',
-        ];
-        
         $summary_parts = [];
         foreach ($contexts_count as $context => $count) {
             if ($count > 0) {
-                $summary_parts[] = $context_labels[$context] . ': ' . $count;
+                $summary_parts[] = HealthCheckConstants::getContextLabel($context) . ': ' . $count;
             }
         }
         

@@ -162,6 +162,16 @@ if ( ! defined( 'ABSPATH' ) ) {
             );
 
 			$result = $wpdb->get_results($sql);
+			
+			// FIX: Gestisci false (query fallita) e array vuoto
+			if ($result === false || !is_array($result)) {
+				error_log("TagHelper::find_post_id_from_taxonomy: Query fallita per term_name='{$term_name}', taxonomy_type='{$taxonomy_type}'. Errore: " . $wpdb->last_error);
+				return [];
+			}
+			
+			if (empty($result)) {
+				return [];
+			}
 
 			#region Imparare PHP
 
@@ -176,11 +186,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			$fn = function ($value)
 			{
-				return $value->ID;
+				// FIX: Verifica che l'oggetto abbia la proprietà ID
+				return isset($value->ID) ? (int)$value->ID : 0;
 			};
-			$ids = array_map($fn, $result);
+			$ids = array_filter(array_map($fn, $result), fn($id) => $id > 0);
 
-			return $ids;
+			return array_values($ids);
 		}
 
 	}
