@@ -431,6 +431,7 @@ class PluginBootstrap
     /**
      * Rileva automaticamente il sito corrente e carica il file specifico
      * PROTETTO: gestisce errori senza bloccare WordPress
+     * Usa il nuovo sistema SiteSpecificRegistry se disponibile
      */
     private static function detectCurrentWebsite(): void
     {
@@ -439,10 +440,19 @@ class PluginBootstrap
                 return; // Non possiamo determinare il dominio
             }
             
+            // Prova a usare il nuovo sistema SiteSpecificRegistry se disponibile
+            if (class_exists('\gik25microdata\SiteSpecific\SiteSpecificRegistry')) {
+                \gik25microdata\SiteSpecific\SiteSpecificRegistry::loadCurrentSiteFile(self::$plugin_dir);
+                return;
+            }
+            
+            // Fallback al sistema legacy
             $domain_specific_files = [
                 'www.nonsolodiete.it' => 'nonsolodiete_specific.php',
                 'www.superinformati.com' => 'superinformati_specific.php',
                 'www.totaldesign.it' => 'totaldesign_specific.php',
+                'www.chiecosa.it' => 'chiecosa_specific.php',
+                'www.prestitiinforma.it' => 'prestitinforma_specific.php',
                 // Aggiungi altre corrispondenze qui
             ];
 

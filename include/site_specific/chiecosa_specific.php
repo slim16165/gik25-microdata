@@ -2,42 +2,49 @@
 namespace gik25microdata\site_specific;
 
 use gik25microdata\ListOfPosts\ListOfPostsHelper;
+use gik25microdata\LinkGenerator\LinkGenerator;
+use gik25microdata\LinkGenerator\LinkCollectionBuilder;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
 
-add_shortcode('lista_single_temptation_island', 'temptation_island_single_handler');
-add_shortcode('temptation_island_vip_2019', 'temptation_island_vip_2019_handler');
-add_shortcode('amici_celebrities', 'amici_celebrities_handler');
-add_shortcode('tale_e_quale_show_2019', 'tale_e_quale_show_2019_handler');
+add_shortcode('lista_single_temptation_island', __NAMESPACE__ . '\\temptation_island_single_handler');
+add_shortcode('temptation_island_vip_2019', __NAMESPACE__ . '\\temptation_island_vip_2019_handler');
+add_shortcode('amici_celebrities', __NAMESPACE__ . '\\amici_celebrities_handler');
+add_shortcode('tale_e_quale_show_2019', __NAMESPACE__ . '\\tale_e_quale_show_2019_handler');
 
 function temptation_island_single_handler($atts, $content = null)
 {
-    $result = "<ul>";
-    $result .= linkIfNotSelf("https://www.chiecosa.it/alessandro-cannataro/", "Alessandro Cannataro");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/alessandro-zarino/", "Alessandro Zarino");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/alessia-calierno/", "Alessia Calierno");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/federica-lepanto/", "Federica Lepanto");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/giovanni-arrigoni/", "Giovanni Arrigoni");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/giulio-raselli/", "Giulio Raselli");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/cristina-rescigni/", "Cristina Rescigni");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/elena-cianni/", "Elena Cianni");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/javi-martinez/", "Javier Martinez");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/maddalena-vasselli/", "Maddalena Vasselli");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/mattia-birro/", "Mattia Birro");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/moreno-merlo/", "Moreno Merlo");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/nicolas-bovi/", "Nicolas Bovi");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/noemi-malizia/", "Noemi Malizia");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/rodolfo-salemi/", "Rodolfo Salemi");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/sabina-bakanaci/", "Sabina Bakanaci");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/sammy-hassan/", "Sammy Hassan");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/sonia-onelli/", "Sonia Onelli");
-    $result .= linkIfNotSelf("https://www.chiecosa.it/vanessa-cinelli/", "Vanessa Cinelli");
-
-    $result .= "</ul>";
-    return $result;
+    $links = [
+        ['target_url' => 'https://www.chiecosa.it/alessandro-cannataro/', 'nome' => 'Alessandro Cannataro'],
+        ['target_url' => 'https://www.chiecosa.it/alessandro-zarino/', 'nome' => 'Alessandro Zarino'],
+        ['target_url' => 'https://www.chiecosa.it/alessia-calierno/', 'nome' => 'Alessia Calierno'],
+        ['target_url' => 'https://www.chiecosa.it/federica-lepanto/', 'nome' => 'Federica Lepanto'],
+        ['target_url' => 'https://www.chiecosa.it/giovanni-arrigoni/', 'nome' => 'Giovanni Arrigoni'],
+        ['target_url' => 'https://www.chiecosa.it/giulio-raselli/', 'nome' => 'Giulio Raselli'],
+        ['target_url' => 'https://www.chiecosa.it/cristina-rescigni/', 'nome' => 'Cristina Rescigni'],
+        ['target_url' => 'https://www.chiecosa.it/elena-cianni/', 'nome' => 'Elena Cianni'],
+        ['target_url' => 'https://www.chiecosa.it/javi-martinez/', 'nome' => 'Javier Martinez'],
+        ['target_url' => 'https://www.chiecosa.it/maddalena-vasselli/', 'nome' => 'Maddalena Vasselli'],
+        ['target_url' => 'https://www.chiecosa.it/mattia-birro/', 'nome' => 'Mattia Birro'],
+        ['target_url' => 'https://www.chiecosa.it/moreno-merlo/', 'nome' => 'Moreno Merlo'],
+        ['target_url' => 'https://www.chiecosa.it/nicolas-bovi/', 'nome' => 'Nicolas Bovi'],
+        ['target_url' => 'https://www.chiecosa.it/noemi-malizia/', 'nome' => 'Noemi Malizia'],
+        ['target_url' => 'https://www.chiecosa.it/rodolfo-salemi/', 'nome' => 'Rodolfo Salemi'],
+        ['target_url' => 'https://www.chiecosa.it/sabina-bakanaci/', 'nome' => 'Sabina Bakanaci'],
+        ['target_url' => 'https://www.chiecosa.it/sammy-hassan/', 'nome' => 'Sammy Hassan'],
+        ['target_url' => 'https://www.chiecosa.it/sonia-onelli/', 'nome' => 'Sonia Onelli'],
+        ['target_url' => 'https://www.chiecosa.it/vanessa-cinelli/', 'nome' => 'Vanessa Cinelli'],
+    ];
+    
+    return LinkCollectionBuilder::create()
+        ->addLinks($links)
+        ->withImage(true)
+        ->removeIfSelf(true)
+        ->ulClass('my_shortcode_list')
+        ->build();
 }
 
 //	function amici_celebrities_handler($atts, $content = null)
@@ -93,85 +100,87 @@ function amici_celebrities_handler($atts, $content = null)
 
 function temptation_island_vip_2019_handler($atts, $content = null)
 {
-    $result = "<h3>Tutte le coppie concorrenti di Temptation Island Vip </h3>
-	<p> Di seguito tutte le coppie concorrenti di Temptation Island Vip</p>
-	<ul>";
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/nathalie-caldonazzo/", "Nathalie Caldonazzo");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/andrea-ippoliti/", "Andrea Ippoliti");
-    $result .= "</li>";
-
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/ciro-petrone/", "Ciro Petrone");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/federica-caputo/", "Federica Caputo");
-    $result .= "</li>";
-
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/simone-bonaccorsi/", "Simone Bonaccorsi");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/chiara-esposto/", "Chiara Esposito");
-    $result .= "</li>";
-
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/serena-enardu/", "Serena Enardu");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/pago/", "Pago");
-    $result .= "</li>";
-
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/anna-pettinelli/", "Anna Pettinelli");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/stefano-andrea-macchi/", "Stefano Macchi");
-    $result .= "</li>";
-
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/damiano-er-faina/", "Damiano \"Er Faina\"");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/sharon-macri/", "Sharon Macri");
-    $result .= "</li>";
-
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/gabriele-pippo/", "Gabriele Pippo");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/silvia-tirado/", "Silvia Tirado");
-    $result .= "</li>";
-
-    $result .= "<li>";
-    $result .= linkIfNotSelf2("https://www.chiecosa.it/alex-belli/", "Alex Belli");
-    $result .= " e " . linkIfNotSelf2("https://www.chiecosa.it/delia-duran/", "Delia Duran");
-    $result .= "</li>";
-
+    $result = "<h3>Tutte le coppie concorrenti di Temptation Island Vip</h3>";
+    $result .= "<p>Di seguito tutte le coppie concorrenti di Temptation Island Vip</p>";
+    $result .= "<ul>";
+    
+    // Coppie
+    $coppie = [
+        ['url1' => 'https://www.chiecosa.it/nathalie-caldonazzo/', 'nome1' => 'Nathalie Caldonazzo',
+         'url2' => 'https://www.chiecosa.it/andrea-ippoliti/', 'nome2' => 'Andrea Ippoliti'],
+        ['url1' => 'https://www.chiecosa.it/ciro-petrone/', 'nome1' => 'Ciro Petrone',
+         'url2' => 'https://www.chiecosa.it/federica-caputo/', 'nome2' => 'Federica Caputo'],
+        ['url1' => 'https://www.chiecosa.it/simone-bonaccorsi/', 'nome1' => 'Simone Bonaccorsi',
+         'url2' => 'https://www.chiecosa.it/chiara-esposto/', 'nome2' => 'Chiara Esposito'],
+        ['url1' => 'https://www.chiecosa.it/serena-enardu/', 'nome1' => 'Serena Enardu',
+         'url2' => 'https://www.chiecosa.it/pago/', 'nome2' => 'Pago'],
+        ['url1' => 'https://www.chiecosa.it/anna-pettinelli/', 'nome1' => 'Anna Pettinelli',
+         'url2' => 'https://www.chiecosa.it/stefano-andrea-macchi/', 'nome2' => 'Stefano Macchi'],
+        ['url1' => 'https://www.chiecosa.it/damiano-er-faina/', 'nome1' => 'Damiano "Er Faina"',
+         'url2' => 'https://www.chiecosa.it/sharon-macri/', 'nome2' => 'Sharon Macri'],
+        ['url1' => 'https://www.chiecosa.it/gabriele-pippo/', 'nome1' => 'Gabriele Pippo',
+         'url2' => 'https://www.chiecosa.it/silvia-tirado/', 'nome2' => 'Silvia Tirado'],
+        ['url1' => 'https://www.chiecosa.it/alex-belli/', 'nome1' => 'Alex Belli',
+         'url2' => 'https://www.chiecosa.it/delia-duran/', 'nome2' => 'Delia Duran'],
+    ];
+    
+    foreach ($coppie as $coppia) {
+        $result .= "<li>";
+        $result .= LinkGenerator::generateLinkIfNotSelf($coppia['url1'], $coppia['nome1']);
+        $result .= " e ";
+        $result .= LinkGenerator::generateLinkIfNotSelf($coppia['url2'], $coppia['nome2']);
+        $result .= "</li>";
+    }
+    
     $result .= "</ul>";
-
-
-    //Tentatiori
-    $result .= "<h3>Tutti i single di Temptation Island Vip </h3>
-<p> Di seguito tutti i single concorrenti di Temptation Island Vip</p>";
-    $result .= "<h4>Ragazzi single</h4>
-	<div class='my_shortcode_list'>
-	<ul class='my_shortcode_list'>";
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/antonio-moriconi/", "Antonio Moriconi");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/fabrizio-baldassarre/", "Fabrizio Baldassarre");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/mattia-bertucco/", "Mattia Bertucco");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/devid-nenci/", "David Nenci");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/alessandro-catania/", "Alessandro Catania");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/valerio-maggiolini/", "Valerio Maggiolini");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/gianmaria-gerolin/", "Gianmaria Gerolin");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/michele-loprieno/", "Michele Loprieno");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/alessandro-graziani/", "Alessandro Graziani");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/jack-queralt/", "Jack Querlat");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/riccardo-costantino/", "Riccardo Costantino");
-    $result .= "</div></ul>";
-
-
-    $result .= "<h4>Ragazze single</h4>
-	<div class='my_shortcode_list'><ul class='my_shortcode_list'>";
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/federica-francia/", "Federica Francia");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/federica-spano/", "Federica Spano");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/cecilia-zagarrigo/", "Cecilia Zagarrigo");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/marina-vetrova/", "Marina Vetrova");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/gaia-mastrototaro/", "Gaia Mastrotaro");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/zoe-malucci/", "Zoe Mallucci");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/darya-lapushka/", "Dasha Lapushka");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/valentina-anna-galli/", "Valentina Galli");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/antonietta-fragasso/", "Antonietta Fragrasso");
-    $result .= ListOfPostsHelper::GetLinkWithImage("https://www.chiecosa.it/alice-bertelli/", "Alice Bertelli");
-    $result .= "</div></ul>";
+    
+    // Single
+    $result .= "<h3>Tutti i single di Temptation Island Vip</h3>";
+    $result .= "<p>Di seguito tutti i single concorrenti di Temptation Island Vip</p>";
+    
+    $result .= "<h4>Ragazzi single</h4>";
+    $ragazzi = [
+        ['target_url' => 'https://www.chiecosa.it/antonio-moriconi/', 'nome' => 'Antonio Moriconi'],
+        ['target_url' => 'https://www.chiecosa.it/fabrizio-baldassarre/', 'nome' => 'Fabrizio Baldassarre'],
+        ['target_url' => 'https://www.chiecosa.it/mattia-bertucco/', 'nome' => 'Mattia Bertucco'],
+        ['target_url' => 'https://www.chiecosa.it/devid-nenci/', 'nome' => 'David Nenci'],
+        ['target_url' => 'https://www.chiecosa.it/alessandro-catania/', 'nome' => 'Alessandro Catania'],
+        ['target_url' => 'https://www.chiecosa.it/valerio-maggiolini/', 'nome' => 'Valerio Maggiolini'],
+        ['target_url' => 'https://www.chiecosa.it/gianmaria-gerolin/', 'nome' => 'Gianmaria Gerolin'],
+        ['target_url' => 'https://www.chiecosa.it/michele-loprieno/', 'nome' => 'Michele Loprieno'],
+        ['target_url' => 'https://www.chiecosa.it/alessandro-graziani/', 'nome' => 'Alessandro Graziani'],
+        ['target_url' => 'https://www.chiecosa.it/jack-queralt/', 'nome' => 'Jack Querlat'],
+        ['target_url' => 'https://www.chiecosa.it/riccardo-costantino/', 'nome' => 'Riccardo Costantino'],
+    ];
+    
+    $result .= LinkCollectionBuilder::create()
+        ->addLinks($ragazzi)
+        ->withImage(true)
+        ->removeIfSelf(true)
+        ->ulClass('my_shortcode_list')
+        ->build();
+    
+    $result .= "<h4>Ragazze single</h4>";
+    $ragazze = [
+        ['target_url' => 'https://www.chiecosa.it/federica-francia/', 'nome' => 'Federica Francia'],
+        ['target_url' => 'https://www.chiecosa.it/federica-spano/', 'nome' => 'Federica Spano'],
+        ['target_url' => 'https://www.chiecosa.it/cecilia-zagarrigo/', 'nome' => 'Cecilia Zagarrigo'],
+        ['target_url' => 'https://www.chiecosa.it/marina-vetrova/', 'nome' => 'Marina Vetrova'],
+        ['target_url' => 'https://www.chiecosa.it/gaia-mastrototaro/', 'nome' => 'Gaia Mastrotaro'],
+        ['target_url' => 'https://www.chiecosa.it/zoe-malucci/', 'nome' => 'Zoe Mallucci'],
+        ['target_url' => 'https://www.chiecosa.it/darya-lapushka/', 'nome' => 'Dasha Lapushka'],
+        ['target_url' => 'https://www.chiecosa.it/valentina-anna-galli/', 'nome' => 'Valentina Galli'],
+        ['target_url' => 'https://www.chiecosa.it/antonietta-fragasso/', 'nome' => 'Antonietta Fragrasso'],
+        ['target_url' => 'https://www.chiecosa.it/alice-bertelli/', 'nome' => 'Alice Bertelli'],
+    ];
+    
+    $result .= LinkCollectionBuilder::create()
+        ->addLinks($ragazze)
+        ->withImage(true)
+        ->removeIfSelf(true)
+        ->ulClass('my_shortcode_list')
+        ->build();
+    
     return $result;
 }
 
@@ -199,63 +208,9 @@ function tale_e_quale_show_2019_handler($atts, $content = null)
     return $result;
 }
 
-function linkIfNotSelf2($url, $nome)
-{
-    global $current_post;
-    $permalink = get_permalink($current_post->ID);
-
-    if ($permalink != $url) {
-        return "<a href=\"$url\">$nome</a>";
-    } else {
-        return "$nome";
-    }
-}
-
-function linkIfNotSelf($target_url, $nome, $removeIfSelf = true)
-{
-    global $current_post; //il post corrente
-    $current_permalink = get_permalink($current_post->ID);
-    $target_url = ReplaceTargetUrlIfStaging($target_url);
-
-    if ($current_permalink != $target_url) {
-        $target_postid = url_to_postid($target_url);
-
-        if ($target_postid == 0)
-            return "";
-
-        $target_post = get_post($target_postid);
-        if ($target_post->post_status === "publish") {
-            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-            return <<<TAG
-<li>
-<a href="$target_url">			
-<div class="li-img">
-	<img src="$featured_img_url" alt="$nome" />		
-</div>
-<div class="li-text">$nome</div>
-</a></li>\n
-TAG;
-        }
-    } else if (!$removeIfSelf) {
-        $target_postid = url_to_postid($target_url);
-
-        if ($target_postid == 0)
-            return "";
-
-        $target_post = get_post($target_postid);
-        if ($target_post->post_status === "publish") {
-            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-            return <<<TAG
-<li>
-<div class="li-img">
-	<img src="$featured_img_url" alt="$nome" />		
-</div>
-<div class="li-text">$nome</div>
-</li>\n
-TAG;
-        }
-    }
-}
+// Funzioni deprecate: usare LinkGenerator invece
+// linkIfNotSelf2() -> LinkGenerator::generateLinkIfNotSelf()
+// linkIfNotSelf() -> LinkGenerator::generateLinkWithThumbnail() o LinkCollectionBuilder
 
 
 //TODO: spostare nella classe base

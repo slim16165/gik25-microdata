@@ -3,6 +3,7 @@ namespace gik25microdata\site_specific;
 
 use gik25microdata\ListOfPosts\ListOfPostsHelper;
 use gik25microdata\ListOfPosts\Types\LinkBase;
+use gik25microdata\LinkGenerator\LinkCollectionBuilder;
 use Illuminate\Support\Collection;
 use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Ul;
@@ -35,151 +36,54 @@ add_shortcode('link_diete2', __NAMESPACE__ . '\\link_diete_handler2');
 
 function link_vitamine_handler($atts, $content = null)
 {
-    $l = new ListOfPostsHelper(false, true, false);
     $links = [
-        [
-            'target_url' => "https://www.nonsolodiete.it/vitamine-del-gruppo-b/",
-            'nome' => "Vitamine del gruppo B",
-        ],
-        [
-            'target_url' => "https://www.nonsolodiete.it/vitamina-b1/",
-            'nome' => "Vitamina B1",
-        ],
-        [
-            'target_url' => "https://www.nonsolodiete.it/vitamina-b5/",
-            'nome' => "Vitamina B5",
-        ],
-        [
-            'target_url' => "https://www.nonsolodiete.it/piridossina-vitamina-b6/",
-            'nome' => "Vitamina B6",
-        ],
-        [
-            'target_url' => "https://www.nonsolodiete.it/vitamina-b8/",
-            'nome' => "Vitamina B8",
-        ],
-        [
-            'target_url' => "https://www.nonsolodiete.it/vitamina-b12/",
-            'nome' => "Vitamina B12",
-        ],
-        [
-            'target_url' => "https://www.nonsolodiete.it/acido-folico-tutto-quello-che-dovete-sapere/",
-            'nome' => "Acido Folico",
-        ],
-        [
-            'target_url' => "https://www.nonsolodiete.it/vitamina-d/",
-            'nome' => "Vitamina D",
-        ]
+        ['target_url' => "https://www.nonsolodiete.it/vitamine-del-gruppo-b/", 'nome' => "Vitamine del gruppo B"],
+        ['target_url' => "https://www.nonsolodiete.it/vitamina-b1/", 'nome' => "Vitamina B1"],
+        ['target_url' => "https://www.nonsolodiete.it/vitamina-b5/", 'nome' => "Vitamina B5"],
+        ['target_url' => "https://www.nonsolodiete.it/piridossina-vitamina-b6/", 'nome' => "Vitamina B6"],
+        ['target_url' => "https://www.nonsolodiete.it/vitamina-b8/", 'nome' => "Vitamina B8"],
+        ['target_url' => "https://www.nonsolodiete.it/vitamina-b12/", 'nome' => "Vitamina B12"],
+        ['target_url' => "https://www.nonsolodiete.it/acido-folico-tutto-quello-che-dovete-sapere/", 'nome' => "Acido Folico"],
+        ['target_url' => "https://www.nonsolodiete.it/vitamina-d/", 'nome' => "Vitamina D"],
     ];
 
-    $collection = new Collection();
-
-    foreach ($links as $link) {
-        $collection->add(new LinkBase($link['target_url'], $link['nome'], ""));
-    }
-
-    $result = "<h3>Lista delle principali vitamine</h3>
-		<div class='thumbnail-list'>";
-
-    $result .= Html::ul()->class("thumbnail-list")->open();
-    $result .= $l->getLinksWithImagesCurrentColumn($collection);
-    $result .= Ul::tag()->close();
-
-    $result .= "</div>";
-    return $result;
+    return LinkCollectionBuilder::create()
+        ->addLinks($links)
+        ->withImage(true)
+        ->removeIfSelf(false)
+        ->ulClass('thumbnail-list')
+        ->buildWithTitle('Lista delle principali vitamine', 'thumbnail-list');
 }
 
 function link_diete_handler($atts, $content = null)
 {
-    $l = new ListOfPostsHelper(false, true, false, 2 /* two columns */);
+    $links = [
+        ['target_url' => "https://www.nonsolodiete.it/le-differenti-diete/", 'nome' => "Diete differenti"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-10-kg/", 'nome' => "Dieta per perdere 10kg"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-chetogenica/", 'nome' => "Dieta chetogenica"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-del-supermetabolismo/", 'nome' => "Dieta supermetabolismo"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-plank/", 'nome' => "Dieta Plank"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-senza-carboidrati/", 'nome' => "Dieta senza carboidrati"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-mima-digiuno/", 'nome' => "Dieta mima digiuno"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-del-riso-scotti-dietidea/", 'nome' => "Dieta del riso scotti"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-lemme/", 'nome' => "Dieta Lemme"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-vegana/", 'nome' => "Dieta Vegana"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-mediterranea/", 'nome' => "Dieta Mediterranea"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-sirt/", 'nome' => "Dieta Sirt"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-delle-uova/", 'nome' => "Dieta delle uova"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-panzironi/", 'nome' => "Dieta Panzironi"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-scarsdale/", 'nome' => "Dieta Scarsdale"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-prima-e-dopo-le-feste/", 'nome' => "Dieta Lampo di Natale"],
+        ['target_url' => "https://www.nonsolodiete.it/dieta-tina-cipollari/", 'nome' => "Dieta di Tina Cipollari"],
+    ];
 
-//		find_post_id_from_taxonomy("dieta");
-
-    $links = array(
-        array(
-            'target_url' => "https://www.nonsolodiete.it/le-differenti-diete/",
-            'nome' => "Diete differenti"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-10-kg/",
-            'nome' => "Dieta per perdere 10kg"//2
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-chetogenica/",
-            'nome' => "Dieta chetogenica"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-del-supermetabolismo/",
-            'nome' => "Dieta supermetabolismo"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-plank/", //5
-            'nome' => "Dieta Plank"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-senza-carboidrati/",
-            'nome' => "Dieta senza carboidrati"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-mima-digiuno/",
-            'nome' => "Dieta mima digiuno"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-del-riso-scotti-dietidea/",
-            'nome' => "Dieta del riso scotti"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-lemme/",
-            'nome' => "Dieta Lemme"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-vegana/", //10
-            'nome' => "Dieta Vegana"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-mediterranea/",
-            'nome' => "Dieta Mediterranea"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-sirt/",
-            'nome' => "Dieta Sirt"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-delle-uova/",
-            'nome' => "Dieta delle uova"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-panzironi/",
-            'nome' => "Dieta Panzironi"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-scarsdale/", //15
-            'nome' => "Dieta Scarsdale"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-prima-e-dopo-le-feste/",
-            'nome' => "Dieta Lampo di Natale"
-        ),
-        array(
-            'target_url' => "https://www.nonsolodiete.it/dieta-tina-cipollari/",
-            'nome' => "Dieta di Tina Cipollari"
-        )
-    );
-
-    $collection = new Collection();
-
-    foreach ($links as $link) {
-        $collection->add(new LinkBase($link['target_url'], $link['nome'], ""));
-    }
-
-    $result = "<h3>Lista delle principali Diete</h3>
-		<div class='thumbnail-list'>";
-
-    $result .= Html::ul()->class("thumbnail-list")->open();
-    $result .= $l->getLinksWithImagesCurrentColumn($collection);
-    $result .= Ul::tag()->close();
-
-    $result .= "</div>";
-    return $result;
+    return LinkCollectionBuilder::create()
+        ->addLinks($links)
+        ->withImage(true)
+        ->removeIfSelf(false)
+        ->columns(2)
+        ->ulClass('thumbnail-list')
+        ->buildWithTitle('Lista delle principali Diete', 'thumbnail-list');
 }
 
 

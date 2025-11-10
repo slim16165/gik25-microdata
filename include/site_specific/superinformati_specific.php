@@ -4,6 +4,7 @@ namespace gik25microdata\site_specific;
 
 use gik25microdata\ListOfPosts\ListOfPostsHelper;
 use gik25microdata\ListOfPosts\Types\LinkBase;
+use gik25microdata\LinkGenerator\LinkCollectionBuilder;
 use Illuminate\Support\Collection;
 use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Ul;
@@ -504,30 +505,17 @@ function link_vitamine_handler($atts, $content = null): string
 }
 
 /**
- * @param ListOfPostsHelper $l
- * @param array $links_data
- * @param $title
- * @param $ulClass
- * @return string
+ * Helper per generare liste di link (mantenuto per compatibilità)
+ * @deprecated Usare LinkCollectionBuilder::create()->addLinks()->buildWithTitle() invece
  */
 function printList(ListOfPostsHelper $l, array $links_data, $title, $ulClass): string
 {
-    $result = Html::h3($title);
-    $result .= Html::div()->class($ulClass)->open();
-    $result .= Html::ul()->class($ulClass)->open();
-    $result .= $l->GetLinksWithImages($links_data);
-    $result .= Html::ul()->close();
-    $result .= Html::div()->close();
-
-
-    //$result = H3::tag()->content($title)->render();
-//    $result .= Html::div("", ["class" => $ulClass])->open();
-//    $result .= Div::tag()->Class('thumbnail-list')->open();
-//    $result .= Ul::tag()->close();
-//    $result .= Div::tag()->close();
-//    $result .= Html::closeTag("ul");
-
-    return $result;
+    return LinkCollectionBuilder::create()
+        ->addLinks($links_data)
+        ->withImage(true)
+        ->removeIfSelf(false)
+        ->ulClass($ulClass)
+        ->buildWithTitle($title, $ulClass);
 }
 
 function link_tatuaggi_handler($atts, $content = null): string
