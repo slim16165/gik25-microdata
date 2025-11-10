@@ -1,0 +1,225 @@
+/**
+ * Log Viewer CSS
+ * Stili per la visualizzazione avanzata degli errori PHP
+ */
+
+.log-viewer-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    max-width: 100%;
+    margin: 20px 0;
+}
+
+.log-viewer-container h2 {
+    margin-bottom: 20px;
+}
+
+.log-viewer-container > p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.log-viewer-toolbar {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.log-viewer-toolbar > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.log-viewer-toolbar > div > div {
+    flex: 1;
+    min-width: 150px;
+}
+
+.log-viewer-toolbar > div > div:last-child {
+    flex: 0 0 auto;
+}
+
+.log-viewer-toolbar label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #23282d;
+}
+
+.log-viewer-toolbar input,
+.log-viewer-toolbar select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+}
+
+.log-viewer-toolbar input:focus,
+.log-viewer-toolbar select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.log-viewer-toolbar select[multiple] {
+    min-height: 80px;
+}
+
+.log-viewer-toolbar small {
+    color: #666;
+    font-size: 11px;
+}
+
+#log-viewer-status {
+    margin-top: 10px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+#log-viewer-loading {
+    display: none;
+}
+
+#log-viewer-info {
+    display: none;
+}
+
+#log-viewer-grid {
+    margin-top: 20px;
+}
+
+#log-viewer-grid .gridjs-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#log-viewer-grid .gridjs-tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.log-severity-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.log-severity-fatal {
+    background: #8b0000;
+}
+
+.log-severity-error {
+    background: #dc3232;
+}
+
+.log-severity-warning {
+    background: #ffb900;
+    color: #000;
+}
+
+.log-severity-info {
+    background: #666;
+}
+
+.log-context-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    background: #e5e5e5;
+    color: #333;
+    margin: 2px;
+}
+
+.log-details-toggle {
+    cursor: pointer;
+    color: #2271b1;
+    text-decoration: underline;
+}
+
+.log-details-toggle:hover {
+    color: #135e96;
+}
+
+.log-details-content {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.log-details-content pre {
+    margin: 0;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    overflow-x: auto;
+    font-size: 11px;
+}
+
+.log-viewer-filter-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.log-viewer-filter-group:first-child {
+    min-width: 200px;
+}
+
+.log-viewer-filter-group:nth-child(2) {
+    min-width: 200px;
+}
+
+.log-viewer-actions {
+    flex: 0 0 auto;
+}
+
+.log-viewer-actions .button {
+    margin-right: 5px;
+}
+
+.log-viewer-actions .button:last-child {
+    margin-right: 0;
+}
+
+.log-viewer-error-message {
+    padding: 20px;
+    background: #fff5f5;
+    border: 1px solid #dc3232;
+    border-radius: 4px;
+    color: #dc3232;
+}
+
+.log-viewer-empty-message {
+    padding: 20px;
+    background: #f0f8ff;
+    border: 1px solid #2271b1;
+    border-radius: 4px;
+    color: #2271b1;
+    text-align: center;
+}
+
+.log-detail-item {
+    margin-bottom: 10px;
+}
+
+.log-detail-code {
+    background: #f5f5f5;
+    padding: 5px;
+    display: block;
+    border-radius: 3px;
+    word-break: break-all;
+}
+

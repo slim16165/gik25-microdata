@@ -2,6 +2,12 @@
 namespace gik25microdata\Logs\Analysis;
 
 use gik25microdata\Logs\Resolver\LogSourceResolver;
+use gik25microdata\Logs\Support\TimestampParser;
+use gik25microdata\Logs\Support\ContextExtractor;
+use gik25microdata\Logs\Support\TimezoneHelper;
+use gik25microdata\Logs\Support\LogUtility;
+use gik25microdata\Logs\Filter\ErrorFilter;
+use gik25microdata\Logs\Reader\LogFileReader;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -19,142 +25,11 @@ if (!defined('ABSPATH')) {
  */
 class CloudwaysLogParser
 {
-    /**
-     * Pattern di errori che possono essere ignorati o declassati
-     * Questi sono errori noti che non sono critici per il funzionamento del sito
-     */
-    private static function get_ignorable_error_patterns(): array
-    {
-        return [
-            // Action Scheduler - tabelle mancanti (spesso non critiche)
-            '/Table.*actionscheduler.*doesn\'t exist/i',
-            '/Table.*actionscheduler.*does not exist/i',
-            
-            // Altri errori di tabelle opzionali di plugin
-            '/Table.*doesn\'t exist.*action_scheduler/i',
-            '/Table.*does not exist.*action_scheduler/i',
-            
-            // Errori di plugin che cercano tabelle opzionali
-            '/WordPress database error.*Table.*doesn\'t exist/i',
-            
-            // Errori specifici di Action Scheduler che sono non critici
-            '/ActionScheduler.*Table.*doesn\'t exist/i',
-            '/ActionScheduler.*Table.*does not exist/i',
-        ];
-    }
-    
-    /**
-     * Verifica se un errore può essere ignorato o declassato
-     * 
-     * @param string $error_line La riga di errore da verificare
-     * @param array $context Contesto di esecuzione (opzionale)
-     * @return array{ignore: bool, downgrade: bool} ignore=true per ignorare completamente, downgrade=true per declassare a warning
-     */
-    private static function should_ignore_error(string $error_line, array $context = []): array
-    {
-        $patterns = self::get_ignorable_error_patterns();
-        
-        foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $error_line)) {
-                // Errori di Action Scheduler per tabelle mancanti vengono IGNORATI completamente
-                if (preg_match('/actionscheduler/i', $error_line)) {
-                    return ['ignore' => true, 'downgrade' => false];
-                }
-                // Altri errori di tabelle opzionali mancanti vengono ignorati
-                if (preg_match('/Table.*doesn\'t exist.*action_scheduler/i', $error_line)) {
-                    return ['ignore' => true, 'downgrade' => false];
-                }
-            }
-        }
-        
-        return ['ignore' => false, 'downgrade' => false];
-    }
-    
-    /**
-     * Estrae il contesto di esecuzione da una riga di log
-     * 
-     * @param string $line Riga di log
-     * @return array{context: string, script: string, details: array} Contesto identificato
-     */
-    private static function extract_execution_context(string $line): array
-    {
-        $context = 'unknown';
-        $script = '';
-        $details = [];
-        
-        // Cerca pattern comuni per identificare il contesto
-        // WP-CLI
-        if (preg_match('/phar:\/\/.*\/wp\/php\/boot-phar\.php/i', $line) || 
-            preg_match('/wp-cli\.php/i', $line) ||
-            preg_match('/WP_CLI/i', $line)) {
-            $context = 'wp_cli';
-            $details['type'] = 'WP-CLI Command';
-        }
-        // AJAX
-        elseif (preg_match('/admin-ajax\.php/i', $line)) {
-            $context = 'ajax';
-            if (preg_match('/admin-ajax\.php[^\s]*\s+(\w+)/', $line, $matches)) {
-                $details['action'] = $matches[1] ?? 'unknown';
-            }
-            $details['type'] = 'AJAX Request';
-        }
-        // WP-CRON
-        elseif (preg_match('/wp-cron\.php/i', $line) || 
-                preg_match('/ActionScheduler/i', $line) ||
-                preg_match('/action_scheduler/i', $line) ||
-                preg_match('/do_action.*wp_scheduled/i', $line)) {
-            $context = 'wp_cron';
-            $details['type'] = 'WP-CRON / Action Scheduler';
-        }
-        // Frontend
-        elseif (preg_match('/index\.php/i', $line) && !preg_match('/wp-admin|wp-includes/i', $line)) {
-            $context = 'frontend';
-            $details['type'] = 'Frontend Request';
-        }
-        // Backend/Admin
-        elseif (preg_match('/wp-admin/i', $line)) {
-            $context = 'backend';
-            $details['type'] = 'Backend/Admin';
-        }
-        // REST API
-        elseif (preg_match('/wp-json/i', $line) || preg_match('/rest_route/i', $line)) {
-            $context = 'rest_api';
-            $details['type'] = 'REST API';
-        }
-        
-        // Estrai script filename se presente
-        if (preg_match('/script_filename\s*=\s*(.+)/i', $line, $matches)) {
-            $script = trim($matches[1]);
-            $details['script'] = basename($script);
-        } elseif (preg_match('/(\/[^\s]+\.php)/', $line, $matches)) {
-            $script = $matches[1];
-            $details['script'] = basename($script);
-        }
-        
-        return [
-            'context' => $context,
-            'script' => $script,
-            'details' => $details,
-        ];
-    }
-    
-    /**
-     * Verifica se un errore dovrebbe essere ignorato in base al contesto di esecuzione
-     * 
-     * @param array $execution_context Contesto di esecuzione
-     * @return bool true se dovrebbe essere ignorato
-     */
-    private static function should_ignore_by_context(array $execution_context): bool
-    {
-        // Ignora errori da WP-CRON/Action Scheduler se configurato
-        // (puoi estendere questa logica per avere più controllo)
-        if ($execution_context['context'] === 'wp_cron') {
-            // Per ora non ignoriamo, ma potresti voler ignorare errori da cron se sono troppo frequenti
-            return false;
-        }
-        
-        return false;
-    }
+    // Metodi rimossi: spostati in classi dedicate
+    // - get_ignorable_error_patterns() -> ErrorFilter::getIgnorablePatterns()
+    // - should_ignore_error() -> ErrorFilter::shouldIgnore()
+    // - extract_execution_context() -> ContextExtractor::extract()
+    // - should_ignore_by_context() -> ErrorFilter::shouldIgnoreByContext()
     /**
      * Percorsi tipici dei file di log su Cloudways
      * 
@@ -315,72 +190,7 @@ class CloudwaysLogParser
         return LogSourceResolver::get_logs_by_type($base, $type, $include_gz);
     }
     
-    /**
-     * Legge la coda (ultime ~K righe) da più file (plain + gz)
-     * 
-     * @param array $files Array di percorsi file (già ordinati per mtime)
-     * @param int $max_lines Numero massimo di righe da restituire
-     * @param callable $accept Callback per filtrare righe (return true per accettare)
-     * @return array Array di righe (ultime N che matchano il filtro)
-     */
-    private static function tail_from_files(array $files, int $max_lines, callable $accept): array
-    {
-        $ring = [];
-        
-        foreach ($files as $file) {
-            // Skip file .gz (non dovrebbero esserci se collect_log_files esclude .gz, ma controllo di sicurezza)
-            if (substr($file, -3) === '.gz') {
-                continue;
-            }
-            
-            try {
-                $fh = @fopen($file, 'rb');
-                
-                if (!$fh) {
-                    continue;
-                }
-                
-                $file_size = @filesize($file);
-                
-                // Per file grandi, leggi solo la coda (ultimi 2MB) - così leggiamo sempre gli errori più recenti
-                // Anche se il file è gigante, leggiamo solo gli ultimi 2MB (dove ci sono gli errori più recenti)
-                if ($file_size && $file_size > 2 * 1024 * 1024) {
-                    @fseek($fh, -min(2 * 1024 * 1024, $file_size), SEEK_END);
-                }
-                
-                while (($line = @fgets($fh)) !== false) {
-                    $line = rtrim($line, "\r\n");
-                    
-                    if ($accept($line)) {
-                        // Non troncare le righe - mantieni intero contenuto (max 5000 caratteri per sicurezza)
-                        $ring[] = mb_strlen($line) > 5000 ? mb_substr($line, 0, 5000) . '... [troncato]' : $line;
-                        
-                        // Mantieni solo le ultime N*12 righe in memoria (per avere abbastanza materiale)
-                        if (count($ring) > $max_lines * 12) {
-                            array_splice($ring, 0, count($ring) - $max_lines * 12);
-                        }
-                    }
-                }
-                
-                @fclose($fh);
-                
-                // Se abbiamo già abbastanza righe, fermati
-                if (count($ring) >= $max_lines) {
-                    break;
-                }
-                
-            } catch (\Throwable $e) {
-                // Silenzioso: continua con il prossimo file
-                if (isset($fh) && $fh) {
-                    @fclose($fh);
-                }
-                continue;
-            }
-        }
-        
-        // Ritorna solo le ultime N righe utili
-        return array_slice($ring, -$max_lines);
-    }
+    // Metodo rimosso: spostato in LogFileReader::tailFromFiles()
     
     /**
      * Analizza un file di log specifico (Apache/PHP/WordPress error log)
@@ -495,7 +305,7 @@ class CloudwaysLogParser
     private static function analyze_apache_errors_extended(string $log_path, int $max_lines = 5000): array
     {
         $issues = [];
-        $lines = self::read_log_tail($log_path, $max_lines);
+        $lines = LogFileReader::readTail($log_path, $max_lines);
         
         if (empty($lines)) {
             return $issues;
@@ -514,7 +324,7 @@ class CloudwaysLogParser
         ];
         
         foreach ($lines as $line) {
-            $timestamp = self::parse_apache_timestamp($line);
+            $timestamp = TimestampParser::parseApache($line);
             if ($timestamp && $timestamp < $cutoff_time) {
                 continue;
             }
@@ -528,7 +338,7 @@ class CloudwaysLogParser
                     $error_counts[$error_key]['count']++;
                     // Raccogli più esempi (fino a 10) per avere varietà
                     if (count($error_counts[$error_key]['examples']) < 10) {
-                        $truncated = self::truncate_line($line, 200);
+                        $truncated = LogUtility::truncateLine($line, 200);
                         // Evita duplicati esatti
                         if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
                             $error_counts[$error_key]['examples'][] = $truncated;
@@ -541,7 +351,7 @@ class CloudwaysLogParser
         foreach ($error_counts as $pattern => $data) {
             if ($data['count'] >= 1) {
                 $clean_pattern = preg_replace('/_\w+$/', '', $pattern);
-                $pattern_name = self::get_pattern_name($clean_pattern);
+                $pattern_name = LogUtility::getPatternName($clean_pattern);
                 
                 $base_severity = $clean_pattern === '/PHP Fatal error/i' || $clean_pattern === '/PHP Parse error/i' ? 'error' : 'warning';
                 
@@ -854,7 +664,7 @@ class CloudwaysLogParser
     private static function analyze_nginx_errors(string $log_path): array
     {
         $issues = [];
-        $lines = self::read_log_tail($log_path, 1000); // Ultime 1000 righe
+        $lines = LogFileReader::readTail($log_path, 1000); // Ultime 1000 righe
         
         if (empty($lines)) {
             return $issues;
@@ -880,7 +690,7 @@ class CloudwaysLogParser
         
         foreach ($lines as $line) {
             // Estrai timestamp (formato: 2025/11/08 04:13:03)
-            $timestamp = self::parse_nginx_timestamp($line);
+            $timestamp = TimestampParser::parseNginx($line);
             if ($timestamp && $timestamp < $cutoff_time) {
                 continue; // Skip errori vecchi
             }
@@ -895,14 +705,14 @@ class CloudwaysLogParser
                     }
                     $error_counts[$error_key]++;
                     if (count($critical_errors[$error_key]) < 3) {
-                        $critical_errors[$error_key][] = self::truncate_line($line, 150);
+                        $critical_errors[$error_key][] = LogUtility::truncateLine($line, 150);
                     }
                 }
             }
             
             // Raccogli altri errori recenti
             if (preg_match('/\[error\]/', $line)) {
-                $recent_errors[] = self::truncate_line($line, 150);
+                $recent_errors[] = LogUtility::truncateLine($line, 150);
                 if (count($recent_errors) > 10) {
                     array_shift($recent_errors);
                 }
@@ -912,7 +722,7 @@ class CloudwaysLogParser
         // Crea issue per errori critici frequenti
         foreach ($error_counts as $pattern => $count) {
             if ($count >= 5) { // Soglia: almeno 5 occorrenze
-                $pattern_name = self::get_pattern_name($pattern);
+                $pattern_name = LogUtility::getPatternName($pattern);
                 $issues[] = [
                     'type' => 'Nginx Error',
                     'severity' => 'error',
@@ -943,7 +753,7 @@ class CloudwaysLogParser
     private static function analyze_nginx_access(string $log_path): array
     {
         $issues = [];
-        $lines = self::read_log_tail($log_path, 5000); // Ultime 5000 righe (più righe perché access log è più verboso)
+        $lines = LogFileReader::readTail($log_path, 5000); // Ultime 5000 righe (più righe perché access log è più verboso)
         
         if (empty($lines)) {
             return $issues;
@@ -959,7 +769,7 @@ class CloudwaysLogParser
                 
                 if ($status >= 500 && $status < 600) {
                     // Estrai timestamp
-                    $timestamp = self::parse_nginx_access_timestamp($line);
+                    $timestamp = TimestampParser::parseNginxAccess($line);
                     if ($timestamp && $timestamp < $cutoff_time) {
                         continue;
                     }
@@ -972,7 +782,7 @@ class CloudwaysLogParser
                     
                     // Raccogli più esempi (fino a 8) per avere varietà
                     if (count($status_5xx[$status_key]['examples']) < 8) {
-                        $truncated = self::truncate_line($line, 150);
+                        $truncated = LogUtility::truncateLine($line, 150);
                         // Evita duplicati esatti
                         if (!in_array($truncated, $status_5xx[$status_key]['examples'])) {
                             $status_5xx[$status_key]['examples'][] = $truncated;
@@ -1022,7 +832,7 @@ class CloudwaysLogParser
         ];
         
         foreach ($lines as $line) {
-            $timestamp = self::parse_apache_timestamp($line);
+            $timestamp = TimestampParser::parseApache($line);
             if ($timestamp && $timestamp < $cutoff_time) {
                 continue;
             }
@@ -1036,7 +846,7 @@ class CloudwaysLogParser
                     $error_counts[$error_key]['count']++;
                     // Raccogli più esempi (fino a 8) per avere varietà
                     if (count($error_counts[$error_key]['examples']) < 8) {
-                        $truncated = self::truncate_line($line, 150);
+                        $truncated = LogUtility::truncateLine($line, 150);
                         // Evita duplicati esatti
                         if (!in_array($truncated, $error_counts[$error_key]['examples'])) {
                             $error_counts[$error_key]['examples'][] = $truncated;
@@ -1050,7 +860,7 @@ class CloudwaysLogParser
             if ($data['count'] >= 3) {
                 // Estrai pattern pulito (rimuovi suffisso contesto)
                 $clean_pattern = preg_replace('/_\w+$/', '', $pattern);
-                $pattern_name = self::get_pattern_name($clean_pattern);
+                $pattern_name = LogUtility::getPatternName($clean_pattern);
                 
                 // Determina severity base
                 $base_severity = $clean_pattern === '/PHP Fatal error/i' || $clean_pattern === '/PHP Parse error/i' ? 'error' : 'warning';
@@ -1105,7 +915,7 @@ class CloudwaysLogParser
     private static function analyze_php_slow(string $log_path): array
     {
         $issues = [];
-        $lines = self::read_log_tail($log_path, 1000); // Leggi più righe per catturare entry complete
+        $lines = LogFileReader::readTail($log_path, 1000); // Leggi più righe per catturare entry complete
         
         if (empty($lines)) {
             return $issues;
@@ -1143,7 +953,7 @@ class CloudwaysLogParser
                 }
                 
                 $timestamp_str = $matches[1];
-                $timestamp = self::parse_php_slow_timestamp($timestamp_str);
+                $timestamp = TimestampParser::parsePhpSlow($timestamp_str);
                 
                 if (!$timestamp || $timestamp < $cutoff_time) {
                     $current_entry = null;
@@ -1261,7 +1071,7 @@ class CloudwaysLogParser
         // Quando cutoff_hours=0, analizza tutto (passa un numero molto alto per leggere tutto)
         // read_log_tail() legge tutto il file quando lines > 10000
         $max_lines = $cutoff_hours == 0 ? 50000 : 5000;
-        $lines = self::read_log_tail($log_path, $max_lines); // Leggi più righe per stack trace completi
+        $lines = LogFileReader::readTail($log_path, $max_lines); // Leggi più righe per stack trace completi
         
         if (empty($lines)) {
             return $issues;
@@ -1284,7 +1094,7 @@ class CloudwaysLogParser
         $i = 0;
         while ($i < count($lines)) {
             $line = $lines[$i];
-            $timestamp = self::parse_apache_timestamp($line);
+            $timestamp = TimestampParser::parseApache($line);
             
             // Salta righe vecchie
             if ($cutoff_time > 0 && $timestamp && $timestamp < $cutoff_time) {
@@ -1293,17 +1103,17 @@ class CloudwaysLogParser
             }
             
             // Estrai contesto di esecuzione
-            $execution_context = self::extract_execution_context($line);
+            $execution_context = ContextExtractor::extract($line);
             
             // Verifica se l'errore dovrebbe essere ignorato
-            $ignore_check = self::should_ignore_error($line, $execution_context);
+            $ignore_check = ErrorFilter::shouldIgnore($line, $execution_context);
             if ($ignore_check['ignore']) {
                 $i++;
                 continue;
             }
             
             // Verifica se ignorare per contesto
-            if (self::should_ignore_by_context($execution_context)) {
+            if (ErrorFilter::shouldIgnoreByContext($execution_context)) {
                 $i++;
                 continue;
             }
@@ -1321,7 +1131,7 @@ class CloudwaysLogParser
             
             if ($matched_pattern) {
                 // Estrai informazioni errore (file, riga, messaggio)
-                $error_info = self::extract_php_error_info($line, $lines, $i);
+                $error_info = ErrorInfoExtractor::extractPhpErrorInfo($line, $lines, $i);
                 
                 // Crea chiave di raggruppamento: tipo + file + riga (se disponibile)
                 $group_key = $error_type;
@@ -1400,7 +1210,7 @@ class CloudwaysLogParser
             $threshold = in_array($data['type'], ['fatal', 'parse', 'error', 'exception']) ? 1 : 3;
             
             if ($data['count'] >= $threshold) {
-                $pattern_name = self::get_pattern_name($data['pattern']);
+                $pattern_name = LogUtility::getPatternName($data['pattern']);
                 
                 // Determina severity
                 $severity = in_array($data['type'], ['fatal', 'parse', 'error', 'exception']) ? 'error' : 'warning';
@@ -1471,84 +1281,7 @@ class CloudwaysLogParser
         return $issues;
     }
     
-    /**
-     * Estrae informazioni dettagliate da un errore PHP (file, riga, messaggio, stack trace)
-     */
-    private static function extract_php_error_info(string $error_line, array $all_lines, int $current_index): array
-    {
-        $info = [
-            'message' => trim($error_line),
-            'file' => null,
-            'line' => null,
-            'stack_trace' => [],
-            'stack_trace_lines' => 0,
-        ];
-        
-        // Estrai file e riga dal messaggio di errore
-        // Pattern: "in /path/to/file.php on line 123"
-        if (preg_match('/in\s+([^\s]+\.php)\s+on\s+line\s+(\d+)/i', $error_line, $matches)) {
-            $info['file'] = $matches[1];
-            $info['line'] = (int)$matches[2];
-        }
-        // Pattern: "/path/to/file.php(123): ..."
-        elseif (preg_match('/([^\s\(]+\.php)\((\d+)\)/', $error_line, $matches)) {
-            $info['file'] = $matches[1];
-            $info['line'] = (int)$matches[2];
-        }
-        
-        // Estrai stack trace dalle righe successive
-        $stack_trace = [];
-        $i = $current_index + 1;
-        $max_stack_lines = 20; // Limita stack trace a 20 righe
-        $stack_depth = 0;
-        
-        while ($i < count($all_lines) && $stack_depth < $max_stack_lines) {
-            $line = $all_lines[$i];
-            
-            // Stack trace tipicamente inizia con "#0" o "Stack trace:" o contiene "called in"
-            if (preg_match('/^(#\d+|Stack trace:)/', $line) || 
-                preg_match('/called in/i', $line) ||
-                preg_match('/\s+in\s+[^\s]+\.php\s+on\s+line\s+\d+/i', $line) ||
-                preg_match('/\[internal function\]:/i', $line)) {
-                
-                $stack_trace[] = trim($line);
-                $stack_depth++;
-                
-                // Estrai file e riga anche dallo stack trace
-                if (preg_match('/([^\s\(]+\.php)\((\d+)\)/', $line, $matches)) {
-                    if (empty($info['file'])) {
-                        $info['file'] = $matches[1];
-                        $info['line'] = (int)$matches[2];
-                    }
-                }
-            } else {
-                // Se la riga non sembra parte dello stack trace, fermati
-                // (ma controlla se è una riga vuota o un nuovo errore)
-                $trimmed = trim($line);
-                if (empty($trimmed)) {
-                    $i++;
-                    continue;
-                }
-                
-                // Se inizia con un nuovo timestamp o pattern di errore, fermati
-                if (self::parse_apache_timestamp($line) || 
-                    preg_match('/^(PHP |WordPress |Uncaught )/i', $line)) {
-                    break;
-                }
-                
-                // Altrimenti potrebbe essere parte del messaggio o stack trace
-                $stack_trace[] = $trimmed;
-                $stack_depth++;
-            }
-            
-            $i++;
-        }
-        
-        $info['stack_trace'] = $stack_trace;
-        $info['stack_trace_lines'] = $stack_depth;
-        
-        return $info;
-    }
+    // Metodo rimosso: spostato in ErrorInfoExtractor::extractPhpErrorInfo()
     
     /**
      * Analizza WordPress cron log
@@ -1556,7 +1289,7 @@ class CloudwaysLogParser
     private static function analyze_wp_cron(string $log_path): array
     {
         $issues = [];
-        $lines = self::read_log_tail($log_path, 500);
+        $lines = LogFileReader::readTail($log_path, 500);
         
         if (empty($lines)) {
             return $issues;
@@ -1568,12 +1301,12 @@ class CloudwaysLogParser
         foreach ($lines as $line) {
             // Cerca errori comuni nei cron
             if (preg_match('/(error|failed|timeout|fatal)/i', $line)) {
-                $timestamp = self::parse_wp_cron_timestamp($line);
+                $timestamp = TimestampParser::parseWpCron($line);
                 if ($timestamp && $timestamp < $cutoff_time) {
                     continue;
                 }
                 
-                $failed_crons[] = self::truncate_line($line, 150);
+                $failed_crons[] = LogUtility::truncateLine($line, 150);
             }
         }
         
@@ -1590,382 +1323,18 @@ class CloudwaysLogParser
         return $issues;
     }
     
-    /**
-     * Legge le ultime N righe di un file di log (efficiente per file grandi)
-     * SICURA: gestisce errori e limita dimensioni per evitare problemi
-     */
-    private static function read_log_tail(string $file_path, int $lines = 100): array
-    {
-        // SICUREZZA: disabilita error reporting durante la lettura
-        $old_error_reporting = error_reporting(0);
-        $old_display_errors = ini_get('display_errors');
-        ini_set('display_errors', '0');
-        
-        try {
-            if (!file_exists($file_path) || !is_readable($file_path)) {
-                return [];
-            }
-            
-            // LIMITE: non leggere file più grandi di 100MB
-            $file_size = @filesize($file_path);
-            if ($file_size === false) {
-                return [];
-            }
-            
-            $max_file_size = 100 * 1024 * 1024; // 100MB
-            if ($file_size > $max_file_size) {
-                // File troppo grande, salta
-                return [];
-            }
-            
-            // Se $lines è 0 o molto grande (>10000), leggi tutto il file (analisi completa)
-            // Altrimenti leggi solo la coda per performance
-            $read_full_file = ($lines <= 0 || $lines > 10000);
-            
-            if ($read_full_file) {
-                // Analisi completa: leggi tutto il file (fino a 100MB)
-                $content = @file_get_contents($file_path);
-                if ($content === false) {
-                    return [];
-                }
-            } else {
-                // Leggi solo la coda (ultimi 5MB per file grandi)
-                $chunk_size = min(5 * 1024 * 1024, $file_size); // Max 5MB per chunk
-                
-                $handle = @fopen($file_path, 'r');
-                if (!$handle) {
-                    return [];
-                }
-                
-                // Vai alla fine del file
-                @fseek($handle, -min($chunk_size, $file_size), SEEK_END);
-                
-                // Leggi l'ultimo chunk
-                $content = @fread($handle, $chunk_size);
-                @fclose($handle);
-                
-                if ($content === false) {
-                    return [];
-                }
-                
-                // Se il file è piccolo, leggi tutto (ma con limite)
-                if ($file_size <= 1024 * 1024) { // Solo se < 1MB
-                    $content = @file_get_contents($file_path);
-                    if ($content === false) {
-                        return [];
-                    }
-                }
-            }
-            
-            $all_lines = explode("\n", $content);
-            $all_lines = array_filter($all_lines, function($line) {
-                return trim($line) !== '';
-            });
-            
-            // Ritorna le ultime N righe
-            // Se $lines è 0 o molto grande, rimuovi il limite (per analisi completa)
-            if ($lines <= 0 || $lines > 10000) {
-                // Analisi completa: ritorna tutte le righe
-                return array_values($all_lines);
-            }
-            
-            // Limita a $lines righe (massimo 10000 per performance)
-            $max_lines = min($lines, 10000);
-            return array_slice($all_lines, -$max_lines);
-            
-        } catch (\Throwable $e) {
-            // Silenzioso: non loggare errori durante la lettura dei log
-            return [];
-        } finally {
-            // Ripristina error reporting
-            error_reporting($old_error_reporting);
-            ini_set('display_errors', $old_display_errors);
-        }
-    }
-    
-    /**
-     * Estrae timestamp da riga log Nginx error
-     */
-    private static function parse_nginx_timestamp(string $line): ?int
-    {
-        // Formato: 2025/11/08 04:13:03
-        if (preg_match('/(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2})/', $line, $matches)) {
-            $date_str = str_replace('/', '-', $matches[1]);
-            $timestamp = strtotime($date_str);
-            return $timestamp ?: null;
-        }
-        return null;
-    }
-    
-    /**
-     * Estrae timestamp da riga log Nginx access
-     */
-    private static function parse_nginx_access_timestamp(string $line): ?int
-    {
-        // Formato access log: [08/Nov/2025:04:13:03 +0000]
-        if (preg_match('/\[(\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2})/', $line, $matches)) {
-            $date_str = str_replace('/', ' ', $matches[1]);
-            $date_str = str_replace(':', ' ', $date_str);
-            $timestamp = strtotime($date_str);
-            return $timestamp ?: null;
-        }
-        return null;
-    }
-    
-    /**
-     * Estrae timestamp da riga log Apache
-     */
-    private static function parse_apache_timestamp(string $line): ?int
-    {
-        // Prova prima formato Apache error log: [Sun Nov 09 12:36:55.838882 2025]
-        $php_timestamp = self::parse_php_error_timestamp($line);
-        if ($php_timestamp !== null) {
-            return $php_timestamp;
-        }
-        
-        // Formato simile a Nginx access
-        return self::parse_nginx_access_timestamp($line);
-    }
-    
-    /**
-     * Estrae timestamp da riga log PHP error (formato Apache error log)
-     * Formato: [Sun Nov 09 12:36:55.838882 2025] [proxy_fcgi:error] ...
-     * 
-     * @param string $line Riga di log
-     * @return int|null Timestamp Unix o null se non trovato
-     */
-    private static function parse_php_error_timestamp(string $line): ?int
-    {
-        // Pattern: [Sun Nov 09 12:36:55.838882 2025]
-        // Esempio: [Sun Nov 09 12:36:55.838882 2025] [proxy_fcgi:error] [pid 1688106:tid 1688194] [client 65.109.35.209:0] AH01071: Got error 'PHP message: ...
-        if (preg_match('/\[(\w{3})\s+(\w{3})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})\.\d+\s+(\d{4})\]/', $line, $matches)) {
-            $day_name = $matches[1];   // Sun
-            $month_name = $matches[2]; // Nov
-            $day = $matches[3];        // 09
-            $hour = $matches[4];       // 12
-            $minute = $matches[5];     // 36
-            $second = $matches[6];     // 55
-            $year = $matches[7];       // 2025
-            
-            // Converti nome mese in numero
-            $months = [
-                'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
-                'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
-                'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12',
-            ];
-            
-            if (!isset($months[$month_name])) {
-                return null;
-            }
-            
-            $month = $months[$month_name];
-            
-            // Crea stringa data nel formato standard
-            $date_str = sprintf('%s-%s-%02d %s:%s:%s', $year, $month, $day, $hour, $minute, $second);
-            
-            // Converte in timestamp Unix (considera timezone server)
-            $timestamp = strtotime($date_str);
-            
-            if ($timestamp === false) {
-                return null;
-            }
-            
-            return $timestamp;
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Estrae timestamp da riga PHP slow log
-     */
-    private static function parse_php_slow_timestamp(string $date_str): ?int
-    {
-        // Formato: 08-Nov-2025 06:50:23
-        // Prova prima il formato standard
-        $timestamp = strtotime($date_str);
-        if ($timestamp !== false) {
-            return $timestamp;
-        }
-        
-        // Prova a convertire il formato mese inglese
-        // 08-Nov-2025 -> 08-11-2025
-        $months = [
-            'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
-            'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
-            'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12',
-        ];
-        
-        foreach ($months as $en => $num) {
-            if (strpos($date_str, $en) !== false) {
-                $date_str_numeric = str_replace($en, $num, $date_str);
-                $timestamp = strtotime($date_str_numeric);
-                if ($timestamp !== false) {
-                    return $timestamp;
-                }
-            }
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Estrae timestamp da riga WordPress cron log
-     */
-    private static function parse_wp_cron_timestamp(string $line): ?int
-    {
-        // Prova vari formati
-        $formats = [
-            'Y-m-d H:i:s',
-            'd/m/Y H:i:s',
-            'Y/m/d H:i:s',
-        ];
-        
-        foreach ($formats as $format) {
-            if (preg_match('/(\d{4}[-\/]\d{2}[-\/]\d{2} \d{2}:\d{2}:\d{2})/', $line, $matches)) {
-                $timestamp = strtotime($matches[1]);
-                if ($timestamp) {
-                    return $timestamp;
-                }
-            }
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Rileva timezone del server
-     * 
-     * @return array{timezone: string, offset: int, formatted: string} Informazioni timezone
-     */
-    private static function get_server_timezone(): array
-    {
-        // Prova a ottenere timezone da PHP
-        $timezone = date_default_timezone_get();
-        
-        // Se non disponibile, prova da WordPress
-        if (function_exists('wp_timezone_string')) {
-            $wp_tz = wp_timezone_string();
-            if (!empty($wp_tz)) {
-                $timezone = $wp_tz;
-            }
-        }
-        
-        // Calcola offset in secondi
-        try {
-            $dt = new \DateTime('now', new \DateTimeZone($timezone));
-            $offset = $dt->getOffset();
-        } catch (\Exception $e) {
-            $offset = 0;
-        }
-        
-        // Formatta offset come +02:00
-        $hours = (int)floor(abs($offset) / 3600);
-        $minutes = (int)((abs($offset) % 3600) / 60);
-        $sign = $offset >= 0 ? '+' : '-';
-        $offset_formatted = sprintf('%s%02d:%02d', $sign, $hours, $minutes);
-        
-        return [
-            'timezone' => $timezone,
-            'offset' => $offset,
-            'formatted' => $offset_formatted,
-        ];
-    }
-    
-    /**
-     * Verifica se i log sono indietro/vecchi e restituisce avviso
-     * 
-     * @param int|null $reference_timestamp Timestamp ultimo errore o ultima modifica file log
-     * @param int $cutoff_timestamp Timestamp di cutoff (ultime X ore)
-     * @return array{is_stale: bool, message: string, last_error_age: int|null} Informazioni su stato log
-     */
-    private static function check_log_timestamp_warning(?int $reference_timestamp, int $cutoff_timestamp): array
-    {
-        $current_time = time();
-        
-        if ($reference_timestamp === null) {
-            return [
-                'is_stale' => false,
-                'message' => 'Nessun timestamp disponibile',
-                'last_error_age' => null,
-            ];
-        }
-        
-        // Calcola età ultimo errore (differenza tra ora e timestamp riferimento)
-        $last_error_age = $current_time - $reference_timestamp;
-        
-        // Se ultimo errore è più vecchio di 1 ora, i log potrebbero essere indietro
-        $one_hour = 3600;
-        $is_stale = $last_error_age > $one_hour;
-        
-        $message = '';
-        if ($is_stale) {
-            $hours_ago = round($last_error_age / 3600, 1);
-            if ($hours_ago < 24) {
-                $message = sprintf('Ultimo errore rilevato ~%.1f ore fa. I log potrebbero essere indietro o non ci sono stati errori recenti.', $hours_ago);
-            } else {
-                $days_ago = round($hours_ago / 24, 1);
-                $message = sprintf('Ultimo errore rilevato ~%.1f giorni fa. I log potrebbero essere vecchi o non ci sono stati errori recenti.', $days_ago);
-            }
-        } else {
-            $minutes_ago = round($last_error_age / 60, 1);
-            if ($minutes_ago > 5) {
-                $message = sprintf('Ultimo errore rilevato ~%.0f minuti fa.', $minutes_ago);
-            } else {
-                $message = sprintf('Ultimo errore rilevato ~%.0f minuti fa (recente).', max(1, $minutes_ago));
-            }
-        }
-        
-        return [
-            'is_stale' => $is_stale,
-            'message' => $message,
-            'last_error_age' => $last_error_age,
-        ];
-    }
-    
-    /**
-     * Tronca una riga a una lunghezza massima
-     */
-    private static function truncate_line(string $line, int $max_length = 1000): string
-    {
-        $line = trim($line);
-        if (strlen($line) <= $max_length) {
-            return $line;
-        }
-        return substr($line, 0, $max_length - 3) . '...';
-    }
-    
-    /**
-     * Ottiene nome leggibile per pattern
-     */
-    private static function get_pattern_name(string $pattern): string
-    {
-        $names = [
-            '/upstream.*closed connection/i' => 'Upstream connection chiusa',
-            '/connect.*failed/i' => 'Connessione fallita',
-            '/timeout/i' => 'Timeout',
-            '/502 Bad Gateway/i' => '502 Bad Gateway',
-            '/503 Service Unavailable/i' => '503 Service Unavailable',
-            '/504 Gateway Timeout/i' => '504 Gateway Timeout',
-            '/500 Internal Server Error/i' => '500 Internal Server Error',
-            '/PHP Fatal error/i' => 'PHP Fatal Error',
-            '/PHP Parse error/i' => 'PHP Parse Error',
-            '/PHP Warning/i' => 'PHP Warning',
-            '/WordPress database error/i' => 'WordPress Database Error',
-            '/Premature end of script headers/i' => 'Premature end of script headers',
-            '/Maximum execution time/i' => 'Maximum execution time exceeded',
-            '/foreach\(\) argument must be of type array\|object/i' => 'Foreach Type Error',
-            '/call_user_func_array\(\)/i' => 'Callback Function Error',
-            '/Uncaught Error/i' => 'Uncaught PHP Error',
-            '/Uncaught Exception/i' => 'Uncaught PHP Exception',
-            '/AH01071/i' => 'Apache Error AH01071',
-        ];
-        
-        // Normalizza pattern per matching (rimuovi flag regex)
-        $normalized = preg_replace('/\/[imsxADSUXu]*$/', '', $pattern);
-        
-        return $names[$pattern] ?? $names[$normalized] ?? $pattern;
-    }
+    // Metodi rimossi: spostati in classi dedicate
+    // - read_log_tail() -> LogFileReader::readTail()
+    // - parse_nginx_timestamp() -> TimestampParser::parseNginx()
+    // - parse_nginx_access_timestamp() -> TimestampParser::parseNginxAccess()
+    // - parse_apache_timestamp() -> TimestampParser::parseApache()
+    // - parse_php_error_timestamp() -> TimestampParser::parsePhpError()
+    // - parse_php_slow_timestamp() -> TimestampParser::parsePhpSlow()
+    // - parse_wp_cron_timestamp() -> TimestampParser::parseWpCron()
+    // - get_server_timezone() -> TimezoneHelper::getServerTimezone()
+    // - check_log_timestamp_warning() -> TimezoneHelper::checkTimestampWarning()
+    // - truncate_line() -> LogUtility::truncateLine()
+    // - get_pattern_name() -> LogUtility::getPatternName()
     
     /**
      * Tail degli ultimi errori grezzi per ogni log
@@ -1979,175 +1348,7 @@ class CloudwaysLogParser
      */
     public static function recent_errors_tail(int $per_file = 30, int $hours = 24): array
     {
-        // NON loggare nulla durante la lettura
-        $old_error_reporting = error_reporting(0);
-        $old_display_errors  = ini_get('display_errors');
-        $old_log_errors      = ini_get('log_errors');
-        ini_set('display_errors', '0');
-        ini_set('log_errors', '0');
-        
-        try {
-            // Usa LogSourceResolver per discovery unificata
-            $base = LogSourceResolver::find_logs_directory();
-            
-            if (empty($base)) {
-                return ['paths' => [], 'tails' => []];
-            }
-            
-            // Per compatibilità, mantieni $paths
-            $paths = ['base' => $base];
-            
-            $tails = [];
-            $cutoff = time() - ($hours * 3600);
-            
-            // Rileva timezone server una sola volta (usato per tutti i log)
-            $server_timezone = self::get_server_timezone();
-            
-            // ACCESS 5xx: unifica nginx, apache e php access log (esclude .gz di default)
-            // USA LogSourceResolver per discovery unificata
-            $accFiles = LogSourceResolver::get_logs_by_types($base, ['nginx_access', 'apache_access', 'php_access'], false);
-            
-            $tails['access_5xx'] = [
-                'file'    => 'nginx/apache/php access (rotati)',
-                'entries' => self::tail_from_files($accFiles, $per_file, function(string $line) use ($cutoff): bool {
-                    // Pattern Cloudways: "GET /index.php" 500 ... (pattern più robusto)
-                    // Supporta sia "/" 500 " che " " 500 "
-                    if (preg_match('/"\s+(\d{3})\s+/', $line, $m) || preg_match('/"\s(\d{3})\s/', $line, $m)) {
-                        $status = (int)$m[1];
-                        if ($status >= 500) {
-                            // Verifica timestamp se presente (nginx/apache access log)
-                            $ts = self::parse_nginx_access_timestamp($line);
-                            if ($ts && $ts < $cutoff) {
-                                return false;
-                            }
-                            return true;
-                        }
-                    }
-                    return false;
-                }),
-            ];
-            
-            // NGINX error (esclude .gz di default)
-            // USA LogSourceResolver per discovery unificata
-            $nginxErrFiles = LogSourceResolver::get_logs_by_type($base, 'nginx_error', false);
-            
-            $tails['nginx_error'] = [
-                'file'    => 'nginx*.error.log*',
-                'entries' => self::tail_from_files($nginxErrFiles, $per_file, function(string $line) use ($cutoff): bool {
-                    // 2025/11/08 04:13:03
-                    $ts = self::parse_nginx_timestamp($line);
-                    if ($ts && $ts < $cutoff) {
-                        return false;
-                    }
-                    return stripos($line, '[error]') !== false || stripos($line, '[crit]') !== false;
-                }),
-            ];
-            
-            // APACHE error (esclude .gz di default)
-            // USA LogSourceResolver per discovery unificata
-            $apacheErrFiles = LogSourceResolver::get_logs_by_type($base, 'apache_error', false);
-            
-            $tails['apache_error'] = [
-                'file'    => 'apache*.error.log*',
-                'entries' => self::tail_from_files($apacheErrFiles, $per_file, function(string $line) use ($cutoff): bool {
-                    $ts = self::parse_apache_timestamp($line);
-                    if ($ts && $ts < $cutoff) {
-                        return false;
-                    }
-                    return stripos($line, '[error]') !== false
-                        || stripos($line, 'PHP Fatal') !== false
-                        || stripos($line, 'Uncaught') !== false;
-                }),
-            ];
-            
-            // PHP error (CORRETTO: usa LogSourceResolver, esclude .gz di default)
-            // FIX: Cerca anche in apache_error/nginx_error (su Cloudways gli errori PHP finiscono lì)
-            $phpErrFiles = LogSourceResolver::get_logs_by_types($base, ['php_error', 'apache_error', 'nginx_error'], false);
-            
-            // Ottieni timestamp ultima modifica file
-            $log_file_mtime = !empty($phpErrFiles) ? @filemtime(reset($phpErrFiles)) : null;
-            
-            // Estrai ultimo timestamp dai log PHP per verificare se sono indietro
-            $last_php_error_timestamp = null;
-            $php_entries = self::tail_from_files($phpErrFiles, $per_file * 2, function(string $line) use (&$last_php_error_timestamp): bool {
-                // Estrai timestamp se presente (prima di filtrare)
-                $ts = self::parse_php_error_timestamp($line);
-                if ($ts === null) {
-                    $ts = self::parse_apache_timestamp($line);
-                }
-                if ($ts === null) {
-                    $ts = self::parse_nginx_timestamp($line);
-                }
-                if ($ts !== null && ($last_php_error_timestamp === null || $ts > $last_php_error_timestamp)) {
-                    $last_php_error_timestamp = $ts;
-                }
-                
-                // Filtra solo errori critici e importanti
-                return (bool) preg_match('/PHP (Fatal|Parse|Warning|Notice|Deprecated)|Uncaught (Exception|Error)/i', $line);
-            });
-            
-            // Limita a per_file righe
-            $php_entries = array_slice($php_entries, 0, $per_file);
-            
-            // Usa timestamp estratto dai log se disponibile, altrimenti filemtime
-            $reference_timestamp = $last_php_error_timestamp ?? $log_file_mtime;
-            
-            $tails['php_error'] = [
-                'file'    => 'php/apache/nginx error.log*',
-                'entries' => $php_entries,
-                'timezone' => $server_timezone,
-                'last_modified' => $log_file_mtime,
-                'last_error_timestamp' => $last_php_error_timestamp,
-                'timestamp_warning' => self::check_log_timestamp_warning($reference_timestamp, $cutoff),
-            ];
-            
-            // PHP slow (esclude .gz di default)
-            // USA LogSourceResolver per discovery unificata
-            $slowFiles = LogSourceResolver::get_logs_by_type($base, 'php_slow', false);
-            
-            $tails['php_slow'] = [
-                'file'    => 'php-app.slow.log*',
-                'entries' => self::tail_from_files($slowFiles, $per_file, function(string $line): bool {
-                    // Mostra tutte le righe non vuote (i blocchi slow hanno righe "script_filename" e stack)
-                    return trim($line) !== '';
-                }),
-            ];
-            
-            // WP cron (esclude .gz di default)
-            // USA LogSourceResolver per discovery unificata
-            $cronFiles = LogSourceResolver::get_logs_by_type($base, 'wp_cron', false);
-            
-            $tails['wp_cron'] = [
-                'file'    => 'wp-cron.log*',
-                'entries' => self::tail_from_files($cronFiles, $per_file, function(string $line): bool {
-                    return stripos($line, 'WordPress database error') !== false
-                        || stripos($line, 'error') !== false
-                        || stripos($line, 'warn') !== false
-                        || stripos($line, 'Executed the cron event') !== false;
-                }),
-            ];
-            
-            // Rimuovo chiavi vuote
-            foreach ($tails as $k => $v) {
-                if (empty($v['entries'])) {
-                    unset($tails[$k]);
-                }
-            }
-            
-            // Aggiungi informazioni timezone e timestamp warning al risultato
-            return [
-                'paths' => $paths, 
-                'tails' => $tails,
-                'timezone' => $server_timezone,
-            ];
-            
-        } catch (\Throwable $e) {
-            return ['paths' => [], 'tails' => []];
-        } finally {
-            error_reporting($old_error_reporting ?? E_ALL);
-            ini_set('display_errors', $old_display_errors ?? '1');
-            ini_set('log_errors', $old_log_errors ?? '1');
-        }
+        return TailReader::recent_errors_tail($per_file, $hours);
     }
     
     /**
