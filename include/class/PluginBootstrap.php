@@ -431,6 +431,11 @@ class PluginBootstrap
     /**
      * Rileva automaticamente il sito corrente e carica il file specifico
      * PROTETTO: gestisce errori senza bloccare WordPress
+     * 
+     * NOTA: I file site_specific possono ora usare il nuovo sistema unificato
+     * di creazione link tramite LinkBuilder (include/class/ListOfPosts/LinkBuilder.php)
+     * e le classi helper in include/class/SiteSpecific/
+     * Vedi docs/REFACTORING_PLAN.md per dettagli
      */
     private static function detectCurrentWebsite(): void
     {

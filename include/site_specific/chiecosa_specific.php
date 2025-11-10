@@ -7,6 +7,9 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
+// Carica funzioni helper per backward compatibility
+require_once __DIR__ . '/helpers.php';
+
 
 add_shortcode('lista_single_temptation_island', 'temptation_island_single_handler');
 add_shortcode('temptation_island_vip_2019', 'temptation_island_vip_2019_handler');
@@ -199,63 +202,9 @@ function tale_e_quale_show_2019_handler($atts, $content = null)
     return $result;
 }
 
-function linkIfNotSelf2($url, $nome)
-{
-    global $current_post;
-    $permalink = get_permalink($current_post->ID);
-
-    if ($permalink != $url) {
-        return "<a href=\"$url\">$nome</a>";
-    } else {
-        return "$nome";
-    }
-}
-
-function linkIfNotSelf($target_url, $nome, $removeIfSelf = true)
-{
-    global $current_post; //il post corrente
-    $current_permalink = get_permalink($current_post->ID);
-    $target_url = ReplaceTargetUrlIfStaging($target_url);
-
-    if ($current_permalink != $target_url) {
-        $target_postid = url_to_postid($target_url);
-
-        if ($target_postid == 0)
-            return "";
-
-        $target_post = get_post($target_postid);
-        if ($target_post->post_status === "publish") {
-            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-            return <<<TAG
-<li>
-<a href="$target_url">			
-<div class="li-img">
-	<img src="$featured_img_url" alt="$nome" />		
-</div>
-<div class="li-text">$nome</div>
-</a></li>\n
-TAG;
-        }
-    } else if (!$removeIfSelf) {
-        $target_postid = url_to_postid($target_url);
-
-        if ($target_postid == 0)
-            return "";
-
-        $target_post = get_post($target_postid);
-        if ($target_post->post_status === "publish") {
-            $featured_img_url = get_the_post_thumbnail_url($target_post->ID, 'thumbnail');
-            return <<<TAG
-<li>
-<div class="li-img">
-	<img src="$featured_img_url" alt="$nome" />		
-</div>
-<div class="li-text">$nome</div>
-</li>\n
-TAG;
-        }
-    }
-}
+// Funzioni linkIfNotSelf e linkIfNotSelf2 sono ora in helpers.php
+// Mantenute qui per backward compatibility se necessario
+// Le funzioni in helpers.php usano il nuovo sistema unificato LinkBuilder
 
 
 //TODO: spostare nella classe base

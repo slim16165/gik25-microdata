@@ -13,7 +13,8 @@
   "autoload": {
     "psr-4": {
       "gik25microdata\\": "include/class/",
-      "gik25microdata\\site_specific\\": "include/site_specific/"
+      "gik25microdata\\site_specific\\": "include/site_specific/",
+      "gik25microdata\\SiteSpecific\\": "include/class/SiteSpecific/"
     }
   },
   "require": {
