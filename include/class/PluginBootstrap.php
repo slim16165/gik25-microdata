@@ -193,6 +193,13 @@ class PluginBootstrap
                 if (class_exists('\gik25microdata\Logs\Viewer\LogViewerAPI')) {
                     \gik25microdata\Logs\Viewer\LogViewerAPI::init();
                 }
+                // Registra API REST per link
+                if (class_exists('\gik25microdata\ListOfPosts\REST\LinkApiController')) {
+                    add_action('rest_api_init', function() {
+                        $controller = new \gik25microdata\ListOfPosts\REST\LinkApiController();
+                        $controller->register_routes();
+                    });
+                }
             }, null, true);
             
             // Inizializzazione condizionale per contesto
@@ -289,6 +296,29 @@ class PluginBootstrap
         SafeExecution::safe_execute(function() {
             if (class_exists('\gik25microdata\Admin\SettingsPage')) {
                 new \gik25microdata\Admin\SettingsPage();
+            }
+        }, null, true);
+        
+        // Dashboard Link (protetto)
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Admin\LinksDashboard')) {
+                \gik25microdata\Admin\LinksDashboard::init();
+            }
+        }, null, true);
+        
+        // Shortcode Builder (protetto)
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Admin\ShortcodeBuilder')) {
+                \gik25microdata\Admin\ShortcodeBuilder::init();
+            }
+        }, null, true);
+        
+        // Registra Widget Link List (protetto)
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Widgets\LinkListWidget')) {
+                add_action('widgets_init', function() {
+                    register_widget('\gik25microdata\Widgets\LinkListWidget');
+                });
             }
         }, null, true);
         
