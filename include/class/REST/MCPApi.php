@@ -962,7 +962,7 @@ class MCPApi
      */
     public static function get_recent_errors(\WP_REST_Request $request): \WP_REST_Response
     {
-        if (!class_exists('\gik25microdata\HealthCheck\CloudwaysLogParser')) {
+        if (!class_exists('\gik25microdata\Logs\Analysis\CloudwaysLogParser')) {
             return new \WP_REST_Response(['error' => 'Log parser not available'], 503);
         }
 
@@ -970,7 +970,7 @@ class MCPApi
         $severity = $request->get_param('severity');
 
         try {
-            $analysis = \gik25microdata\HealthCheck\CloudwaysLogParser::analyze_logs();
+            $analysis = \gik25microdata\Logs\Analysis\CloudwaysLogParser::analyze_logs();
             
             // Filtra errori per severity e tempo
             $cutoff_time = time() - ($hours * 60 * 60);
@@ -1015,7 +1015,7 @@ class MCPApi
      */
     public static function get_critical_errors(\WP_REST_Request $request): \WP_REST_Response
     {
-        if (!class_exists('\gik25microdata\HealthCheck\CloudwaysLogParser')) {
+        if (!class_exists('\gik25microdata\Logs\Analysis\CloudwaysLogParser')) {
             return new \WP_REST_Response(['error' => 'Log parser not available'], 503);
         }
 
@@ -1030,7 +1030,7 @@ class MCPApi
         }
 
         try {
-            $analysis = \gik25microdata\HealthCheck\CloudwaysLogParser::analyze_logs();
+            $analysis = \gik25microdata\Logs\Analysis\CloudwaysLogParser::analyze_logs();
             
             // Filtra solo errori critici PHP
             $critical_errors = [];

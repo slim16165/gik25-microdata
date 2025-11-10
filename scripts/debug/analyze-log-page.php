@@ -47,11 +47,11 @@ $log_file_path = isset($_GET['log_file'])
 $log_file_path = str_replace('\\', '/', $log_file_path);
 
 // Verifica che la classe esista
-if (!class_exists('\gik25microdata\HealthCheck\CloudwaysLogParser')) {
+if (!class_exists('\gik25microdata\Logs\Analysis\CloudwaysLogParser')) {
     wp_die('Errore: CloudwaysLogParser non trovato. Verifica che il plugin sia attivo.');
 }
 
-use gik25microdata\HealthCheck\CloudwaysLogParser;
+use gik25microdata\Logs\Analysis\CloudwaysLogParser;
 
 // Esegui l'analisi
 $result = CloudwaysLogParser::analyze_specific_log_file($log_file_path, 10000);

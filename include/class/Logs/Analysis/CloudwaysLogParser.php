@@ -1,5 +1,7 @@
 <?php
-namespace gik25microdata\HealthCheck;
+namespace gik25microdata\Logs\Analysis;
+
+use gik25microdata\Logs\Resolver\LogSourceResolver;
 
 if (!defined('ABSPATH')) {
     exit;

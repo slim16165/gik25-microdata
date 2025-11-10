@@ -49,9 +49,9 @@ final class Rest
         Trace::init();
 
         $base = null;
-        if (class_exists('gik25microdata\\HealthCheck\\LogSourceResolver')) {
+        if (class_exists('gik25microdata\\Logs\\Resolver\\LogSourceResolver')) {
             try {
-                $base = \gik25microdata\HealthCheck\LogSourceResolver::find_logs_directory() ?: null;
+                $base = \gik25microdata\Logs\Resolver\LogSourceResolver::find_logs_directory() ?: null;
             } catch (\Throwable $e) {
                 $base = null;
             }

@@ -1,7 +1,7 @@
 <?php
-namespace gik25microdata\LogViewer;
+namespace gik25microdata\Logs\Viewer;
 
-use gik25microdata\HealthCheck\CloudwaysLogParser;
+use gik25microdata\Logs\Analysis\CloudwaysLogParser;
 
 if (!defined('ABSPATH')) {
     exit;

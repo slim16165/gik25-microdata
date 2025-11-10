@@ -190,8 +190,8 @@ class PluginBootstrap
 
             // REST API endpoints (devono essere registrati sempre, non solo in admin)
             SafeExecution::safe_execute(function() {
-                if (class_exists('\gik25microdata\LogViewer\LogViewerAPI')) {
-                    \gik25microdata\LogViewer\LogViewerAPI::init();
+                if (class_exists('\gik25microdata\Logs\Viewer\LogViewerAPI')) {
+                    \gik25microdata\Logs\Viewer\LogViewerAPI::init();
                 }
             }, null, true);
             

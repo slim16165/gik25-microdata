@@ -542,8 +542,8 @@ if (defined('WP_CLI') && WP_CLI) {
     \WP_CLI::add_command('gik25:logs', function ($args, $assoc) {
         Trace::init();
         $base = $assoc['base'] ?? null;
-        if (!$base && class_exists('gik25microdata\\HealthCheck\\LogSourceResolver')) {
-            $base = \gik25microdata\HealthCheck\LogSourceResolver::find_logs_directory() ?? null;
+        if (!$base && class_exists('gik25microdata\\Logs\\Resolver\\LogSourceResolver')) {
+            $base = \gik25microdata\Logs\Resolver\LogSourceResolver::find_logs_directory() ?? null;
         }
         $out = Pipeline::run([
             'base'     => $base ?: '/home/1340912.cloudwaysapps.com/gwvyrysadj/logs',

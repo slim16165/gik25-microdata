@@ -1,5 +1,5 @@
 <?php
-namespace gik25microdata\HealthCheck;
+namespace gik25microdata\Logs\Resolver;
 
 if (!defined('ABSPATH')) {
     exit;

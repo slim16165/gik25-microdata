@@ -1,5 +1,5 @@
 <?php
-namespace gik25microdata\LogViewer;
+namespace gik25microdata\Logs\Viewer;
 
 if (!defined('ABSPATH')) {
     exit;

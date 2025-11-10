@@ -15,10 +15,10 @@ if (file_exists(__DIR__ . '/../../../../wp-load.php')) {
 }
 
 // Verifica che la classe esista
-if (!class_exists('\gik25microdata\HealthCheck\CloudwaysLogParser')) {
+if (!class_exists('\gik25microdata\Logs\Analysis\CloudwaysLogParser')) {
     // Prova a caricare il file direttamente
     // scripts/debug/analyze-log.php -> 4 livelli su per arrivare alla root del plugin
-    $parser_file = __DIR__ . '/../../include/class/HealthCheck/CloudwaysLogParser.php';
+    $parser_file = __DIR__ . '/../../include/class/Logs/Analysis/CloudwaysLogParser.php';
     if (file_exists($parser_file)) {
         require_once($parser_file);
     } else {
@@ -26,7 +26,7 @@ if (!class_exists('\gik25microdata\HealthCheck\CloudwaysLogParser')) {
     }
 }
 
-use gik25microdata\HealthCheck\CloudwaysLogParser;
+use gik25microdata\Logs\Analysis\CloudwaysLogParser;
 
 // Percorso del file di log da analizzare
 // Puoi passarlo come argomento da riga di comando o modificarlo qui
