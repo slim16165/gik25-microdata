@@ -5,6 +5,10 @@
 [![static analysis](https://github.com/yiisoft/html/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/html/actions?query=workflow%3A%22static+analysis%22)
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/slim16165/gik25-microdata/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 
+[![CodeScene Average Code Health](https://codescene.io/projects/34014/status-badges/average-code-health)](https://codescene.io/projects/34014)
+[![CodeScene Hotspot Code Health](https://codescene.io/projects/34014/status-badges/hotspot-code-health)](https://codescene.io/projects/34014)
+[![CodeScene System Mastery](https://codescene.io/projects/34014/status-badges/system-mastery)](https://codescene.io/projects/34014)
+
 [![WordPress rating](https://img.shields.io/wordpress/plugin/r/gik25-quotes.svg?maxAge=3600&label=wordpress%20rating)](https://wordpress.org/support/view/plugin-reviews/gik25-quotes)
 [![WordPress](https://img.shields.io/wordpress/plugin/dt/gik25-quotes.svg?maxAge=3600)](https://downloads.wordpress.org/plugin/gik25-quotes.latest-stable.zip)
 [![WordPress](https://img.shields.io/wordpress/v/gik25-quotes.svg?maxAge=3600)](https://wordpress.org/plugins/gik25-quotes/)

@@ -5,6 +5,7 @@ namespace gik25microdata\Logs;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use gik25microdata\Logs\Resolver\LogSourceResolver;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -92,85 +93,8 @@ final class Trace
     }
 }
 
-final class LogSourceResolver
-{
-    /**
-     * Catalogo pattern base, portabile (senza brace glob)
-     * @return array<int,array{pattern:string,type:string}>
-     */
-    public static function catalog(): array
-    {
-        return [
-            ['pattern' => 'apache_wordpress-*.error.log*', 'type' => 'apache_error'],
-            ['pattern' => 'nginx_wordpress-*.error.log*',  'type' => 'nginx_error'],
-            ['pattern' => 'apache_*.error.log*',           'type' => 'apache_error'],
-            ['pattern' => 'nginx_*.error.log*',            'type' => 'nginx_error'],
-            ['pattern' => 'nginx-app.error.log*',          'type' => 'nginx_error'],
-            ['pattern' => 'php-app.error.log*',            'type' => 'php_error'],
-            ['pattern' => 'php*-app.error.log*',           'type' => 'php_error'],
-            ['pattern' => 'php*.error.log*',               'type' => 'php_error'],
-            ['pattern' => 'php*-fpm.error.log*',           'type' => 'php_fpm_error'],
-            ['pattern' => 'php-app.slow.log*',             'type' => 'php_slow'],
-            ['pattern' => 'php*-app.slow.log*',            'type' => 'php_slow'],
-            ['pattern' => 'php-app.access.log*',           'type' => 'php_access'],
-            ['pattern' => 'php*-app.access.log*',          'type' => 'php_access'],
-            ['pattern' => 'apache_wordpress-*.access.log*','type' => 'apache_access'],
-            ['pattern' => 'apache_*.access.log*',          'type' => 'apache_access'],
-            ['pattern' => 'nginx_wordpress-*.access.log*', 'type' => 'nginx_access'],
-            ['pattern' => 'nginx_*.access.log*',           'type' => 'nginx_access'],
-            ['pattern' => 'nginx-app.access.log*',         'type' => 'nginx_access'],
-            ['pattern' => 'wp-cron.log*',                  'type' => 'wp_cron'],
-            ['pattern' => 'nginx-app.status.log*',         'type'=> 'nginx_status'],
-        ];
-    }
-
-    /**
-     * @return array{base:string, candidates:array<string,array<int,string>>, all:array<int,string>}
-     */
-    public static function discover(string $baseDir): array
-    {
-        $base = rtrim((string) (realpath($baseDir) ?: $baseDir), '/') . '/';
-        $candidates = [
-            'apache_error' => [],
-            'nginx_error'  => [],
-            'php_error'    => [],
-            'php_fpm_error'=> [],
-        ];
-        $all = [];
-        foreach (self::catalog() as $entry) {
-            $matches = glob($base . $entry['pattern'], GLOB_NOSORT) ?: [];
-            foreach ($matches as $f) {
-                $all[] = $f;
-                if (isset($candidates[$entry['type']])) {
-                    $candidates[$entry['type']][] = $f;
-                }
-            }
-        }
-        Trace::log('resolver', [
-            'base' => $base,
-            'counts' => array_map('count', $candidates),
-            'total_all' => count($all),
-        ]);
-        return ['base' => $base, 'candidates' => $candidates, 'all' => $all];
-    }
-
-    public static function selectErrorFile(array $candidates): ?string
-    {
-        foreach (['apache_error','nginx_error','php_error','php_fpm_error'] as $k) {
-            if (!empty($candidates[$k])) {
-                usort($candidates[$k], function ($a, $b) {
-                    $ma = @filemtime($a) ?: 0;
-                    $mb = @filemtime($b) ?: 0;
-                    return $mb <=> $ma;
-                });
-                Trace::log('resolver.select', ['type' => $k, 'selected' => $candidates[$k][0]]);
-                return $candidates[$k][0];
-            }
-        }
-        Trace::log('resolver.select', ['type' => 'none', 'selected' => null]);
-        return null;
-    }
-}
+// Classe LogSourceResolver rimossa: duplicato di Logs/Resolver/LogSourceResolver.php
+// Usa gik25microdata\Logs\Resolver\LogSourceResolver invece
 
 final class LogReader
 {
@@ -259,16 +183,35 @@ final class Pipeline
         $trace = ['steps' => [], 'annotations' => []];
 
         $base = $opts['base'] ?? '/home/1340912.cloudwaysapps.com/gwvyrysadj/logs';
-        $disc = LogSourceResolver::discover($base);
+        $disc_raw = LogSourceResolver::discover($base);
         $overrideInput = isset($opts['file']) ? trim((string) $opts['file']) : '';
+        
+        // Converti formato discover() in formato candidates per compatibilità
+        $candidates = [];
+        $all_files = [];
+        foreach ($disc_raw as $entry) {
+            $type = $entry['type'] ?? 'unknown';
+            if (!isset($candidates[$type])) {
+                $candidates[$type] = [];
+            }
+            $candidates[$type][] = $entry['path'];
+            $all_files[] = $entry['path'];
+        }
+        
+        $disc = [
+            'base' => $base,
+            'candidates' => $candidates,
+            'all' => $all_files,
+        ];
+        
         $sel = $overrideInput !== '' ? self::resolveFileOverride($overrideInput, $disc) : null;
         if (!$sel) {
-            $sel = LogSourceResolver::selectErrorFile($disc['candidates']);
+            $sel = LogSourceResolver::selectErrorFile($candidates);
         }
 
         $trace['discovery'] = [
-            'base'                 => $disc['base'],
-            'candidates'           => $disc['candidates'],
+            'base'                 => $base,
+            'candidates'           => $candidates,
             'selected_error_file'  => $sel,
             'override_request'     => $overrideInput ?: null,
             'override_matched'     => $overrideInput !== '' ? $sel : null,
@@ -543,7 +486,7 @@ if (defined('WP_CLI') && WP_CLI) {
         Trace::init();
         $base = $assoc['base'] ?? null;
         if (!$base && class_exists('gik25microdata\\Logs\\Resolver\\LogSourceResolver')) {
-            $base = \gik25microdata\Logs\Resolver\LogSourceResolver::find_logs_directory() ?? null;
+            $base = LogSourceResolver::find_logs_directory() ?? null;
         }
         $out = Pipeline::run([
             'base'     => $base ?: '/home/1340912.cloudwaysapps.com/gwvyrysadj/logs',

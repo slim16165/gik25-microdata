@@ -3,6 +3,8 @@ namespace gik25microdata\Logs\Analysis;
 
 use gik25microdata\Logs\Resolver\LogSourceResolver;
 use gik25microdata\Logs\Viewer\LogFormatter;
+use gik25microdata\Logs\Support\TimestampParser;
+use gik25microdata\Logs\Support\TimezoneHelper;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -48,7 +50,7 @@ final class TailReader
             $cutoff = time() - ($hours * 3600);
             
             // Rileva timezone server una sola volta (usato per tutti i log)
-            $server_timezone = self::get_server_timezone();
+            $server_timezone = TimezoneHelper::getServerTimezone();
             
             // ACCESS 5xx: unifica nginx, apache e php access log (esclude .gz di default)
             // USA LogSourceResolver per discovery unificata
@@ -63,7 +65,7 @@ final class TailReader
                         $status = (int)$m[1];
                         if ($status >= 500) {
                             // Verifica timestamp se presente (nginx/apache access log)
-                            $ts = self::parse_nginx_access_timestamp($line);
+                            $ts = TimestampParser::parseNginxAccess($line);
                             if ($ts && $ts < $cutoff) {
                                 return false;
                             }
@@ -82,7 +84,7 @@ final class TailReader
                 'file'    => 'nginx*.error.log*',
                 'entries' => self::tail_from_files($nginxErrFiles, $per_file, function(string $line) use ($cutoff): bool {
                     // 2025/11/08 04:13:03
-                    $ts = self::parse_nginx_timestamp($line);
+                    $ts = TimestampParser::parseNginx($line);
                     if ($ts && $ts < $cutoff) {
                         return false;
                     }
@@ -97,7 +99,7 @@ final class TailReader
             $tails['apache_error'] = [
                 'file'    => 'apache*.error.log*',
                 'entries' => self::tail_from_files($apacheErrFiles, $per_file, function(string $line) use ($cutoff): bool {
-                    $ts = self::parse_apache_timestamp($line);
+                    $ts = TimestampParser::parseApache($line);
                     if ($ts && $ts < $cutoff) {
                         return false;
                     }
@@ -118,12 +120,12 @@ final class TailReader
             $last_php_error_timestamp = null;
             $php_entries = self::tail_from_files($phpErrFiles, $per_file * 2, function(string $line) use (&$last_php_error_timestamp): bool {
                 // Estrai timestamp se presente (prima di filtrare)
-                $ts = self::parse_php_error_timestamp($line);
+                $ts = TimestampParser::parsePhpError($line);
                 if ($ts === null) {
-                    $ts = self::parse_apache_timestamp($line);
+                    $ts = TimestampParser::parseApache($line);
                 }
                 if ($ts === null) {
-                    $ts = self::parse_nginx_timestamp($line);
+                    $ts = TimestampParser::parseNginx($line);
                 }
                 if ($ts !== null && ($last_php_error_timestamp === null || $ts > $last_php_error_timestamp)) {
                     $last_php_error_timestamp = $ts;
@@ -145,7 +147,7 @@ final class TailReader
                 'timezone' => $server_timezone,
                 'last_modified' => $log_file_mtime,
                 'last_error_timestamp' => $last_php_error_timestamp,
-                'timestamp_warning' => self::check_log_timestamp_warning($reference_timestamp, $cutoff),
+                'timestamp_warning' => TimezoneHelper::checkTimestampWarning($reference_timestamp, $cutoff),
             ];
             
             // PHP slow (esclude .gz di default)
@@ -264,179 +266,11 @@ final class TailReader
         return array_slice($ring, -$max_lines);
     }
 
-    /**
-     * Estrae timestamp da riga log Nginx error
-     */
-    private static function parse_nginx_timestamp(string $line): ?int
-    {
-        // Formato: 2025/11/08 04:13:03
-        if (preg_match('/(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2})/', $line, $matches)) {
-            $date_str = str_replace('/', '-', $matches[1]);
-            $timestamp = strtotime($date_str);
-            return $timestamp ?: null;
-        }
-        return null;
-    }
-
-    /**
-     * Estrae timestamp da riga log Nginx access
-     */
-    private static function parse_nginx_access_timestamp(string $line): ?int
-    {
-        // Formato access log: [08/Nov/2025:04:13:03 +0000]
-        if (preg_match('/\[(\d{2}\/\w{3}\/\d{4}:\d{2}:\d{2}:\d{2})/', $line, $matches)) {
-            $date_str = str_replace('/', ' ', $matches[1]);
-            $date_str = str_replace(':', ' ', $date_str);
-            $timestamp = strtotime($date_str);
-            return $timestamp ?: null;
-        }
-        return null;
-    }
-
-    /**
-     * Estrae timestamp da riga log Apache
-     */
-    private static function parse_apache_timestamp(string $line): ?int
-    {
-        // Prova prima formato Apache error log: [Sun Nov 09 12:36:55.838882 2025]
-        $php_timestamp = self::parse_php_error_timestamp($line);
-        if ($php_timestamp !== null) {
-            return $php_timestamp;
-        }
-        
-        // Formato simile a Nginx access
-        return self::parse_nginx_access_timestamp($line);
-    }
-
-    /**
-     * Estrae timestamp da riga log PHP error (formato Apache error log)
-     * Formato: [Sun Nov 09 12:36:55.838882 2025] [proxy_fcgi:error] ...
-     * 
-     * @param string $line Riga di log
-     * @return int|null Timestamp Unix o null se non trovato
-     */
-    private static function parse_php_error_timestamp(string $line): ?int
-    {
-        // Pattern: [Sun Nov 09 12:36:55.838882 2025]
-        // Esempio: [Sun Nov 09 12:36:55.838882 2025] [proxy_fcgi:error] [pid 1688106:tid 1688194] [client 65.109.35.209:0] AH01071: Got error 'PHP message: ...
-        if (preg_match('/\[(\w{3})\s+(\w{3})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})\.\d+\s+(\d{4})\]/', $line, $matches)) {
-            $day_name = $matches[1];   // Sun
-            $month_name = $matches[2]; // Nov
-            $day = $matches[3];        // 09
-            $hour = $matches[4];       // 12
-            $minute = $matches[5];     // 36
-            $second = $matches[6];     // 55
-            $year = $matches[7];       // 2025
-            
-            // Converti nome mese in numero
-            $months = [
-                'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
-                'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
-                'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12',
-            ];
-            
-            if (!isset($months[$month_name])) {
-                return null;
-            }
-            
-            $month = $months[$month_name];
-            
-            // Crea stringa data nel formato standard
-            $date_str = sprintf('%s-%s-%02d %s:%s:%s', $year, $month, $day, $hour, $minute, $second);
-            
-            $timestamp = strtotime($date_str);
-            return $timestamp ?: null;
-        }
-        return null;
-    }
-
-    /**
-     * Rileva timezone del server
-     * 
-     * @return array{timezone: string, offset: int, formatted: string} Informazioni timezone
-     */
-    private static function get_server_timezone(): array
-    {
-        // Prova a ottenere timezone da PHP
-        $timezone = date_default_timezone_get();
-        
-        // Se non disponibile, prova da WordPress
-        if (function_exists('wp_timezone_string')) {
-            $wp_tz = wp_timezone_string();
-            if (!empty($wp_tz)) {
-                $timezone = $wp_tz;
-            }
-        }
-        
-        // Calcola offset in secondi
-        try {
-            $dt = new \DateTime('now', new \DateTimeZone($timezone));
-            $offset = $dt->getOffset();
-        } catch (\Exception $e) {
-            $offset = 0;
-        }
-        
-        // Formatta offset come +02:00
-        $hours = (int)floor(abs($offset) / 3600);
-        $minutes = (int)((abs($offset) % 3600) / 60);
-        $sign = $offset >= 0 ? '+' : '-';
-        $offset_formatted = sprintf('%s%02d:%02d', $sign, $hours, $minutes);
-        
-        return [
-            'timezone' => $timezone,
-            'offset' => $offset,
-            'formatted' => $offset_formatted,
-        ];
-    }
-
-    /**
-     * Verifica se i log sono indietro/vecchi e restituisce avviso
-     * 
-     * @param int|null $reference_timestamp Timestamp ultimo errore o ultima modifica file log
-     * @param int $cutoff_timestamp Timestamp di cutoff (ultime X ore)
-     * @return array{is_stale: bool, message: string, last_error_age: int|null} Informazioni su stato log
-     */
-    private static function check_log_timestamp_warning(?int $reference_timestamp, int $cutoff_timestamp): array
-    {
-        $current_time = time();
-        
-        if ($reference_timestamp === null) {
-            return [
-                'is_stale' => false,
-                'message' => 'Nessun timestamp disponibile',
-                'last_error_age' => null,
-            ];
-        }
-        
-        // Calcola età ultimo errore (differenza tra ora e timestamp riferimento)
-        $last_error_age = $current_time - $reference_timestamp;
-        
-        // Se ultimo errore è più vecchio di 1 ora, i log potrebbero essere indietro
-        $one_hour = 3600;
-        $is_stale = $last_error_age > $one_hour;
-        
-        $message = '';
-        if ($is_stale) {
-            $hours_ago = round($last_error_age / 3600, 1);
-            if ($hours_ago < 24) {
-                $message = sprintf('Ultimo errore rilevato ~%.1f ore fa. I log potrebbero essere indietro o non ci sono stati errori recenti.', $hours_ago);
-            } else {
-                $days_ago = round($hours_ago / 24, 1);
-                $message = sprintf('Ultimo errore rilevato ~%.1f giorni fa. I log potrebbero essere vecchi o non ci sono stati errori recenti.', $days_ago);
-            }
-        } else {
-            $minutes_ago = round($last_error_age / 60, 1);
-            if ($minutes_ago > 5) {
-                $message = sprintf('Ultimo errore rilevato ~%.0f minuti fa.', $minutes_ago);
-            } else {
-                $message = sprintf('Ultimo errore rilevato ~%.0f minuti fa (recente).', max(1, $minutes_ago));
-            }
-        }
-        
-        return [
-            'is_stale' => $is_stale,
-            'message' => $message,
-            'last_error_age' => $last_error_age,
-        ];
-    }
+    // Metodi rimossi: spostati in classi dedicate
+    // - parse_nginx_timestamp() -> TimestampParser::parseNginx()
+    // - parse_nginx_access_timestamp() -> TimestampParser::parseNginxAccess()
+    // - parse_apache_timestamp() -> TimestampParser::parseApache()
+    // - parse_php_error_timestamp() -> TimestampParser::parsePhpError()
+    // - get_server_timezone() -> TimezoneHelper::getServerTimezone()
+    // - check_log_timestamp_warning() -> TimezoneHelper::checkTimestampWarning()
 }

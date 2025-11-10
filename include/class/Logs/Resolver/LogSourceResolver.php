@@ -213,5 +213,26 @@ final class LogSourceResolver
         
         return null;
     }
+    
+    /**
+     * Seleziona il file di errore più recente dai candidati
+     * 
+     * @param array<string,array<int,string>> $candidates Array di candidati per tipo
+     * @return string|null Percorso al file selezionato o null
+     */
+    public static function selectErrorFile(array $candidates): ?string
+    {
+        foreach (['apache_error','nginx_error','php_error','php_fpm_error'] as $k) {
+            if (!empty($candidates[$k])) {
+                usort($candidates[$k], function ($a, $b) {
+                    $ma = @filemtime($a) ?: 0;
+                    $mb = @filemtime($b) ?: 0;
+                    return $mb <=> $ma;
+                });
+                return $candidates[$k][0];
+            }
+        }
+        return null;
+    }
 }
 
