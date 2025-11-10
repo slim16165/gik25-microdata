@@ -6,6 +6,7 @@ use gik25microdata\Logs\Analysis\Parser\MultiLineParserInterface;
 use gik25microdata\Logs\Domain\LogRecord;
 use gik25microdata\Logs\Support\TimestampParser;
 use gik25microdata\Logs\Support\ContextExtractor;
+use gik25microdata\Logs\Support\PhpErrorPatterns;
 use gik25microdata\Logs\Filter\ErrorFilter;
 use gik25microdata\Logs\Analysis\ErrorInfoExtractor;
 
@@ -18,17 +19,6 @@ if (!defined('ABSPATH')) {
  */
 final class PhpErrorMultiLineParser implements MultiLineParserInterface
 {
-    private const CRITICAL_PATTERNS = [
-        '/PHP Fatal error/i' => 'fatal',
-        '/PHP Parse error/i' => 'parse',
-        '/Uncaught Error/i' => 'error',
-        '/Uncaught Exception/i' => 'exception',
-        '/PHP Warning/i' => 'warning',
-        '/WordPress database error/i' => 'database',
-        '/Premature end of script headers/i' => 'headers',
-        '/Maximum execution time/i' => 'timeout',
-    ];
-    
     public function supports(string $type): bool
     {
         return $type === 'php_error' || $type === 'php_fpm_error';
@@ -60,7 +50,7 @@ final class PhpErrorMultiLineParser implements MultiLineParserInterface
         // Cerca pattern di errore
         $matched_pattern = null;
         $error_type = null;
-        foreach (self::CRITICAL_PATTERNS as $pattern => $type) {
+        foreach (PhpErrorPatterns::getCriticalPatterns() as $pattern => $type) {
             if (preg_match($pattern, $line)) {
                 $matched_pattern = $pattern;
                 $error_type = $type;
@@ -76,11 +66,7 @@ final class PhpErrorMultiLineParser implements MultiLineParserInterface
         $error_info = ErrorInfoExtractor::extractPhpErrorInfo($line, $lines, $startIndex);
         
         // Determina severity
-        $severity = match($error_type) {
-            'fatal', 'parse', 'error', 'exception', 'database', 'headers' => 'error',
-            'warning', 'timeout' => 'warning',
-            default => 'info'
-        };
+        $severity = PhpErrorPatterns::getSeverity($error_type);
         
         $record = new LogRecord(
             timestamp: $timestamp,

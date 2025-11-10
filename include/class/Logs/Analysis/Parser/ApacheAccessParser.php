@@ -1,53 +1,23 @@
 <?php
 namespace gik25microdata\Logs\Analysis\Parser;
 
-use gik25microdata\Logs\Analysis\Contract\LogParserInterface;
-use gik25microdata\Logs\Domain\LogRecord;
-use gik25microdata\Logs\Support\TimestampParser;
-use gik25microdata\Logs\Support\LogUtility;
-
 if (!defined('ABSPATH')) {
     exit;
 }
 
 /**
- * Parser per log access Apache (stesso formato di Nginx access)
+ * Parser per log access Apache
  */
-final class ApacheAccessParser implements LogParserInterface
+final class ApacheAccessParser extends AccessLogParserBase
 {
-    public function supports(string $type): bool
+    protected function getLogType(): string
     {
-        return $type === 'apache_access';
+        return 'apache_access';
     }
     
-    public function tryParse(string $line): ?LogRecord
+    protected function getContext(): string
     {
-        // Pattern tipico access log: IP - - [timestamp] "method path protocol" status size
-        if (!preg_match('/" (\d{3}) /', $line, $matches)) {
-            return null;
-        }
-        
-        $status = (int)$matches[1];
-        
-        // Interessa solo status 5xx
-        if ($status < 500 || $status >= 600) {
-            return null;
-        }
-        
-        $timestamp = TimestampParser::parseNginxAccess($line); // Stesso formato timestamp
-        
-        return new LogRecord(
-            timestamp: $timestamp,
-            severity: 'error',
-            context: 'apache',
-            source: 'apache_access',
-            message: sprintf('HTTP %d: %s', $status, LogUtility::truncateLine($line, 200)),
-            type: 'apache_access',
-            details: [
-                'status' => $status,
-                'raw_line' => $line
-            ]
-        );
+        return 'apache';
     }
 }
 

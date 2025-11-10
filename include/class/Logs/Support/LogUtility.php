@@ -11,6 +11,16 @@ if (!defined('ABSPATH')) {
 class LogUtility
 {
     /**
+     * Pattern regex per identificare errori PHP critici (cerca in qualsiasi punto della riga)
+     */
+    public const PHP_ERROR_PATTERN = '/PHP (Fatal|Parse|Warning|Notice|Deprecated)|Uncaught (Exception|Error)/i';
+    
+    /**
+     * Pattern regex per identificare errori PHP con formato esteso (inizio riga)
+     */
+    public const PHP_ERROR_PATTERN_START = '~^(PHP (?:Fatal error|Parse error|Warning|Notice|Deprecated))~';
+    
+    /**
      * Tronca una riga a una lunghezza massima
      * 
      * @param string $line Riga da troncare

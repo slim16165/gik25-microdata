@@ -5,6 +5,7 @@ use gik25microdata\Logs\Resolver\LogSourceResolver;
 use gik25microdata\Logs\Viewer\LogFormatter;
 use gik25microdata\Logs\Support\TimestampParser;
 use gik25microdata\Logs\Support\TimezoneHelper;
+use gik25microdata\Logs\Support\LogUtility;
 use gik25microdata\Logs\Reader\LogFileReader;
 
 if (!defined('ABSPATH')) {
@@ -133,7 +134,7 @@ final class TailReader
                 }
                 
                 // Filtra solo errori critici e importanti
-                return (bool) preg_match('/PHP (Fatal|Parse|Warning|Notice|Deprecated)|Uncaught (Exception|Error)/i', $line);
+                return (bool) preg_match(LogUtility::PHP_ERROR_PATTERN, $line);
             });
             
             // Limita a per_file righe

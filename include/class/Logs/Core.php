@@ -6,6 +6,7 @@ namespace gik25microdata\Logs;
 use DateTimeImmutable;
 use DateTimeZone;
 use gik25microdata\Logs\Resolver\LogSourceResolver;
+use gik25microdata\Logs\Support\LogUtility;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -153,7 +154,7 @@ final class LogParser
             $ts  = $m[1] ?? null;
             $sev = strtolower($m[2] ?? '');
             $sev = self::SEV_MAP[$sev] ?? $sev;
-        } elseif (preg_match('~^(PHP (?:Fatal error|Parse error|Warning|Notice|Deprecated))~', $line, $m)) {
+        } elseif (preg_match(LogUtility::PHP_ERROR_PATTERN_START, $line, $m)) {
             $sev = self::SEV_MAP[$m[1]] ?? 'info';
         }
 

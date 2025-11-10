@@ -11,6 +11,15 @@ if (!defined('ABSPATH')) {
 class TimestampParser
 {
     /**
+     * Mappa nomi mesi inglesi in numeri
+     */
+    private const MONTH_NAMES = [
+        'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
+        'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
+        'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12',
+    ];
+    
+    /**
      * Estrae timestamp da riga log Nginx error
      * Formato: 2025/11/08 04:13:03
      * 
@@ -83,18 +92,11 @@ class TimestampParser
             $second = $matches[6];     // 55
             $year = $matches[7];       // 2025
             
-            // Converti nome mese in numero
-            $months = [
-                'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
-                'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
-                'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12',
-            ];
-            
-            if (!isset($months[$month_name])) {
+            if (!isset(self::MONTH_NAMES[$month_name])) {
                 return null;
             }
             
-            $month = $months[$month_name];
+            $month = self::MONTH_NAMES[$month_name];
             
             // Crea stringa data nel formato standard
             $date_str = sprintf('%s-%s-%02d %s:%s:%s', $year, $month, $day, $hour, $minute, $second);
@@ -129,13 +131,7 @@ class TimestampParser
         
         // Prova a convertire il formato mese inglese
         // 08-Nov-2025 -> 08-11-2025
-        $months = [
-            'Jan' => '01', 'Feb' => '02', 'Mar' => '03', 'Apr' => '04',
-            'May' => '05', 'Jun' => '06', 'Jul' => '07', 'Aug' => '08',
-            'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12',
-        ];
-        
-        foreach ($months as $en => $num) {
+        foreach (self::MONTH_NAMES as $en => $num) {
             if (strpos($date_str, $en) !== false) {
                 $date_str_numeric = str_replace($en, $num, $date_str);
                 $timestamp = strtotime($date_str_numeric);

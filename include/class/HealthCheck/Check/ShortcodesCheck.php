@@ -22,29 +22,6 @@ class ShortcodesCheck
         // Debug: verifica quanti shortcode sono registrati in totale
         $total_registered = is_array($shortcode_tags) ? count($shortcode_tags) : 0;
         
-        // Lista di tutti gli shortcode del plugin (sia richiesti che opzionali)
-        // Questi sono gli shortcode che DOVREBBERO essere registrati se i file sono stati caricati
-        $all_plugin_shortcodes = [
-            // Base - da classi ShortcodeBase
-            'md_boxinfo', 'boxinfo', 'boxinformativo',
-            'md_quote', 'quote', 
-            'youtube', 
-            'telefono',
-            'md_progressbar', 'progressbar', 
-            'slidingbox',
-            'flipbox', 'md_flipbox', 
-            'blinkingbutton', 'md_blinkingbutton',
-            'perfectpullquote', 
-            'prezzo', 
-            'flexlist',
-            // Opzionali - da file site_specific o condizioni
-            'kitchen_finder', // KitchenFinder
-            'app_nav', // AppNav
-            'carousel', 'list', 'grid', // GenericCarousel
-            // Da totaldesign_specific.php (hardcoded)
-            'link_colori', 'grafica3d', 'archistar',
-        ];
-        
         // Shortcode base MINIMI che devono sempre esistere
         // Questi sono quelli che vengono istanziati direttamente nei file
         $required_shortcodes = [

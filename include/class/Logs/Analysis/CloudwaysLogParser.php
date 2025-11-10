@@ -312,11 +312,6 @@ class CloudwaysLogParser
             }
             $debug_info['hours'] = $hours;
             
-            // Determina tipo di file per usare il metodo di analisi corretto
-            $filename = basename($selected_error_file);
-            $is_apache = stripos($filename, 'apache') !== false;
-            $is_nginx = stripos($filename, 'nginx') !== false;
-            
             // Usa LogAnalyzer per analizzare errori PHP
             $analyzer = new LogAnalyzer();
             $max_lines = $hours === 0 ? 50000 : 5000; // Se hours=0, analizza tutto (molte righe)
