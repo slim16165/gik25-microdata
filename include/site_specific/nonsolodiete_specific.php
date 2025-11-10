@@ -3,6 +3,7 @@ namespace gik25microdata\site_specific;
 
 use gik25microdata\ListOfPosts\ListOfPostsHelper;
 use gik25microdata\ListOfPosts\Types\LinkBase;
+use gik25microdata\site_specific\NonsoloDieti\NonsoloDietiHandler;
 use Illuminate\Support\Collection;
 use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Ul;
@@ -10,6 +11,11 @@ use Yiisoft\Html\Tag\Ul;
 if (!defined('ABSPATH'))
 {
     exit; // Exit if accessed directly.
+}
+
+// Inizializza handler moderno (opzionale - mantiene retrocompatibilità)
+if (class_exists('\\gik25microdata\\site_specific\\NonsoloDieti\\NonsoloDietiHandler')) {
+    NonsoloDietiHandler::registerShortcodes();
 }
 
 //add_action('wp_head', 'add_HeaderScript');
@@ -28,6 +34,7 @@ TAG;
 
 }
 
+// Mantiene shortcode legacy per retrocompatibilità
 add_shortcode('link_analisi_sangue', __NAMESPACE__ . '\\link_analisi_sangue_handler');
 add_shortcode('link_vitamine', __NAMESPACE__ . '\\link_vitamine_handler');
 add_shortcode('link_diete', __NAMESPACE__ . '\\link_diete_handler');

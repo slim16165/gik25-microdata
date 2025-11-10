@@ -125,9 +125,42 @@ class ListOfPostsHelper
         /** @var LinkBase $item */
         foreach ($links_col_x as $item)
         {
-            $currentColumn .= self::GetLinkWithImage($item->Title, $item->Url);
+            $currentColumn .= $this->GetLinkWithImage($item->Url, $item->Title, $item->Comment);
         }
         return $currentColumn;
+    }
+
+    /**
+     * Crea lista di link da tag WordPress
+     * 
+     * @param string $tag Nome del tag
+     * @return string HTML della lista
+     */
+    public function GetLinksWithImagesByTag(string $tag): string
+    {
+        $debugMsg = "";
+        $target_posts = WPPostsHelper::GetPostsDataByTag($debugMsg, $tag);
+        
+        if (empty($target_posts)) {
+            return $debugMsg;
+        }
+        
+        $collection = new Collection();
+        
+        foreach ($target_posts as $post) {
+            $url = get_permalink($post->ID);
+            $title = $post->post_title;
+            
+            if ($url && $title) {
+                $collection->add(new LinkBase($title, $url, ''));
+            }
+        }
+        
+        if ($this->linkConfig->nColumns > 1) {
+            return $this->GetLinksWithImagesMulticolumn($collection);
+        }
+        
+        return $this->getLinksWithImagesCurrentColumn($collection);
     }
 
 

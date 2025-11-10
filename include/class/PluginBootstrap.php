@@ -431,6 +431,8 @@ class PluginBootstrap
     /**
      * Rileva automaticamente il sito corrente e carica il file specifico
      * PROTETTO: gestisce errori senza bloccare WordPress
+     * 
+     * Supporta sia file legacy (*_specific.php) che handler moderni (SiteSpecific/*Handler.php)
      */
     private static function detectCurrentWebsite(): void
     {
@@ -439,24 +441,56 @@ class PluginBootstrap
                 return; // Non possiamo determinare il dominio
             }
             
-            $domain_specific_files = [
-                'www.nonsolodiete.it' => 'nonsolodiete_specific.php',
-                'www.superinformati.com' => 'superinformati_specific.php',
-                'www.totaldesign.it' => 'totaldesign_specific.php',
-                // Aggiungi altre corrispondenze qui
+            $domain_mapping = [
+                'www.nonsolodiete.it' => [
+                    'legacy' => 'nonsolodiete_specific.php',
+                    'handler' => 'NonsoloDieti\\NonsoloDietiHandler',
+                ],
+                'www.superinformati.com' => [
+                    'legacy' => 'superinformati_specific.php',
+                    'handler' => null, // TODO: creare SuperInformatiHandler
+                ],
+                'www.totaldesign.it' => [
+                    'legacy' => 'totaldesign_specific.php',
+                    'handler' => null, // TODO: creare TotalDesignHandler
+                ],
+                'www.chiecosa.it' => [
+                    'legacy' => 'chiecosa_specific.php',
+                    'handler' => null, // TODO: creare ChieCosaHandler
+                ],
+                'www.prestitiinforma.it' => [
+                    'legacy' => 'prestitinforma_specific.php',
+                    'handler' => null, // TODO: creare PrestinformaHandler
+                ],
             ];
 
             $current_domain = $_SERVER['HTTP_HOST'];
 
-            if (array_key_exists($current_domain, $domain_specific_files)) {
-                $specific_file = $domain_specific_files[$current_domain];
-                $file_path = self::$plugin_dir . '/include/site_specific/' . $specific_file;
+            if (array_key_exists($current_domain, $domain_mapping)) {
+                $config = $domain_mapping[$current_domain];
                 
-                // Verifica che il file esista prima di richiederlo
-                if (file_exists($file_path)) {
-                    require_once($file_path);
-                } else {
-                    self::logError("File specifico per dominio non trovato: {$specific_file}");
+                // Prova a caricare handler moderno se disponibile
+                if (!empty($config['handler'])) {
+                    $handler_class = '\\gik25microdata\\site_specific\\' . $config['handler'];
+                    if (class_exists($handler_class)) {
+                        SafeExecution::safe_execute(function() use ($handler_class) {
+                            if (method_exists($handler_class, 'registerShortcodes')) {
+                                $handler_class::registerShortcodes();
+                            }
+                        }, null, true);
+                        // Handler moderno caricato, ma carica anche legacy per retrocompatibilità
+                    }
+                }
+                
+                // Carica file legacy per retrocompatibilità
+                if (!empty($config['legacy'])) {
+                    $file_path = self::$plugin_dir . '/include/site_specific/' . $config['legacy'];
+                    
+                    if (file_exists($file_path)) {
+                        require_once($file_path);
+                    } else {
+                        self::logError("File specifico per dominio non trovato: {$config['legacy']}");
+                    }
                 }
             }
         }, null, true);
