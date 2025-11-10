@@ -3,7 +3,7 @@
  * Plugin Name: Revious Microdata
  * Plugin URI:  https://github.com/slim16165/gik25-microdata
  * Description: Plugin WordPress multipiattaforma per gestione shortcode, microdata, ottimizzazioni SEO e widget interattivi. Include sistema caroselli configurabili, widget cucine, navigazione app-like, MCP server per AI, health check e molto altro.
- * Version:     2.3.1
+ * Version:     2.3.2
  * Author:      Gianluigi Salvi
  * Author URI:  https://github.com/slim16165
  * License:     GPL-2.0+
@@ -18,7 +18,7 @@
  * 
  * @package ReviousMicrodata
  * @author  Gianluigi Salvi
- * @version 2.3.1
+ * @version 2.3.2
  */
 
 if (!defined('ABSPATH')) {
@@ -31,6 +31,12 @@ require_once __DIR__ . '/include/class/Utility/SafeExecution.php';
 
 // Carica la classe Bootstrap
 require_once __DIR__ . '/include/class/PluginBootstrap.php';
+
+// Carica e inizializza endpoint logs avanzato (resolver/reader/parser/pipeline + tracing)
+// Caricamento diretto per garantire la registrazione route anche se l'autoloader non è pronto
+require_once __DIR__ . '/include/class/Logs/Core.php';
+require_once __DIR__ . '/include/class/Logs/Rest.php';
+\gik25microdata\Logs\Rest::init();
 
 // Inizializza il plugin
 \gik25microdata\PluginBootstrap::init(__FILE__);

@@ -164,6 +164,17 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 
 # Changelog
 
+## 2.3.2 (2025-01-XX) - Fix Filtri Log Viewer
+
+### 🐛 Bug Fixes
+- ✅ **Fix Errore Sintassi**: Corretto errore di parsing nella funzione `filterTime` (parametri mancanti nella firma funzione)
+- ✅ **Filtri Log Più Permissivi**: I filtri severity e time ora includono righe senza severità/timestamp riconosciuti invece di scartarle
+  - Righe senza severità riconosciuta dal parser vengono ora mostrate (prima venivano filtrate)
+  - Righe senza timestamp vengono incluse quando non ci sono filtri temporali attivi
+- ✅ **Miglioramento Visualizzazione Errori**: Tutti gli errori del log vengono ora mostrati anche se il parser non riconosce formato/timestamp
+
+---
+
 ## 2.3.1 (2025-11-09) - LogRocket Configurabile e Log Viewer Avanzato
 
 ### 🔧 LogRocket Configurabile
@@ -175,6 +186,7 @@ Il widget caricherà automaticamente CSS e JS solo sulla pagina che contiene lo 
 ### 📊 Log Viewer Avanzato
 - ✅ **UI Reattiva**: Aggiornamento automatico quando si modificano i filtri (debounce 500ms)
 - ✅ **Filtri in Tempo Reale**: Modifiche ai filtri (severity, file, contesto) aggiornano immediatamente la tabella
+- ✅ **Finestra Temporale Configurabile**: Endpoint REST accetta il parametro `hours` (0 = tutto il log) per scegliere quante ore analizzare
 - ✅ **REST API Endpoint**: Endpoint `/wp-json/gik25/v1/logs/errors` per recupero errori PHP con filtri
 - ✅ **Export CSV/JSON**: Esportazione errori filtrati in formato CSV o JSON
 - ✅ **Grid.js Integration**: Tabella avanzata con ordinamento, ricerca, paginazione
