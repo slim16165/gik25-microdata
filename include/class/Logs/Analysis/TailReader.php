@@ -5,6 +5,7 @@ use gik25microdata\Logs\Resolver\LogSourceResolver;
 use gik25microdata\Logs\Viewer\LogFormatter;
 use gik25microdata\Logs\Support\TimestampParser;
 use gik25microdata\Logs\Support\TimezoneHelper;
+use gik25microdata\Logs\Reader\LogFileReader;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -58,7 +59,7 @@ final class TailReader
             
             $tails['access_5xx'] = [
                 'file'    => 'nginx/apache/php access (rotati)',
-                'entries' => self::tail_from_files($accFiles, $per_file, function(string $line) use ($cutoff): bool {
+                'entries' => LogFileReader::tailFromFiles($accFiles, $per_file, function(string $line) use ($cutoff): bool {
                     // Pattern Cloudways: "GET /index.php" 500 ... (pattern più robusto)
                     // Supporta sia "/" 500 " che " " 500 "
                     if (preg_match('/"\s+(\d{3})\s+/', $line, $m) || preg_match('/"\s(\d{3})\s/', $line, $m)) {
@@ -82,7 +83,7 @@ final class TailReader
             
             $tails['nginx_error'] = [
                 'file'    => 'nginx*.error.log*',
-                'entries' => self::tail_from_files($nginxErrFiles, $per_file, function(string $line) use ($cutoff): bool {
+                'entries' => LogFileReader::tailFromFiles($nginxErrFiles, $per_file, function(string $line) use ($cutoff): bool {
                     // 2025/11/08 04:13:03
                     $ts = TimestampParser::parseNginx($line);
                     if ($ts && $ts < $cutoff) {
@@ -98,7 +99,7 @@ final class TailReader
             
             $tails['apache_error'] = [
                 'file'    => 'apache*.error.log*',
-                'entries' => self::tail_from_files($apacheErrFiles, $per_file, function(string $line) use ($cutoff): bool {
+                'entries' => LogFileReader::tailFromFiles($apacheErrFiles, $per_file, function(string $line) use ($cutoff): bool {
                     $ts = TimestampParser::parseApache($line);
                     if ($ts && $ts < $cutoff) {
                         return false;
@@ -118,7 +119,7 @@ final class TailReader
             
             // Estrai ultimo timestamp dai log PHP per verificare se sono indietro
             $last_php_error_timestamp = null;
-            $php_entries = self::tail_from_files($phpErrFiles, $per_file * 2, function(string $line) use (&$last_php_error_timestamp): bool {
+            $php_entries = LogFileReader::tailFromFiles($phpErrFiles, $per_file * 2, function(string $line) use (&$last_php_error_timestamp): bool {
                 // Estrai timestamp se presente (prima di filtrare)
                 $ts = TimestampParser::parsePhpError($line);
                 if ($ts === null) {
@@ -156,7 +157,7 @@ final class TailReader
             
             $tails['php_slow'] = [
                 'file'    => 'php-app.slow.log*',
-                'entries' => self::tail_from_files($slowFiles, $per_file, function(string $line): bool {
+                'entries' => LogFileReader::tailFromFiles($slowFiles, $per_file, function(string $line): bool {
                     // Mostra tutte le righe non vuote (i blocchi slow hanno righe "script_filename" e stack)
                     return trim($line) !== '';
                 }),
@@ -168,7 +169,7 @@ final class TailReader
             
             $tails['wp_cron'] = [
                 'file'    => 'wp-cron.log*',
-                'entries' => self::tail_from_files($cronFiles, $per_file, function(string $line): bool {
+                'entries' => LogFileReader::tailFromFiles($cronFiles, $per_file, function(string $line): bool {
                     return stripos($line, 'WordPress database error') !== false
                         || stripos($line, 'error') !== false
                         || stripos($line, 'warn') !== false
@@ -199,72 +200,7 @@ final class TailReader
         }
     }
 
-    /**
-     * Legge la coda (ultime ~K righe) da più file (plain + gz)
-     * 
-     * @param array $files Array di percorsi file (già ordinati per mtime)
-     * @param int $max_lines Numero massimo di righe da restituire
-     * @param callable $accept Callback per filtrare righe (return true per accettare)
-     * @return array Array di righe (ultime N che matchano il filtro)
-     */
-    private static function tail_from_files(array $files, int $max_lines, callable $accept): array
-    {
-        $ring = [];
-        
-        foreach ($files as $file) {
-            // Skip file .gz (non dovrebbero esserci se collect_log_files esclude .gz, ma controllo di sicurezza)
-            if (substr($file, -3) === '.gz') {
-                continue;
-            }
-            
-            try {
-                $fh = @fopen($file, 'rb');
-                
-                if (!$fh) {
-                    continue;
-                }
-                
-                $file_size = @filesize($file);
-                
-                // Per file grandi, leggi solo la coda (ultimi 2MB) - così leggiamo sempre gli errori più recenti
-                // Anche se il file è gigante, leggiamo solo gli ultimi 2MB (dove ci sono gli errori più recenti)
-                if ($file_size && $file_size > 2 * 1024 * 1024) {
-                    @fseek($fh, -min(2 * 1024 * 1024, $file_size), SEEK_END);
-                }
-                
-                while (($line = @fgets($fh)) !== false) {
-                    $line = rtrim($line, "\r\n");
-                    
-                    if ($accept($line)) {
-                        // Non troncare le righe - mantieni intero contenuto (max 5000 caratteri per sicurezza)
-                        $ring[] = mb_strlen($line) > 5000 ? mb_substr($line, 0, 5000) . '... [troncato]' : $line;
-                        
-                        // Mantieni solo le ultime N*12 righe in memoria (per avere abbastanza materiale)
-                        if (count($ring) > $max_lines * 12) {
-                            array_splice($ring, 0, count($ring) - $max_lines * 12);
-                        }
-                    }
-                }
-                
-                @fclose($fh);
-                
-                // Se abbiamo già abbastanza righe, fermati
-                if (count($ring) >= $max_lines) {
-                    break;
-                }
-                
-            } catch (\Throwable $e) {
-                // Silenzioso: continua con il prossimo file
-                if (isset($fh) && $fh) {
-                    @fclose($fh);
-                }
-                continue;
-            }
-        }
-        
-        // Ritorna solo le ultime N righe utili
-        return array_slice($ring, -$max_lines);
-    }
+    // Metodo rimosso: spostato in LogFileReader::tailFromFiles()
 
     // Metodi rimossi: spostati in classi dedicate
     // - parse_nginx_timestamp() -> TimestampParser::parseNginx()

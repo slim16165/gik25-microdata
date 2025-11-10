@@ -287,27 +287,56 @@ final class Pipeline
         ];
     }
 
-    private static function filterSeverity(array $rows, string $list): array
+    /**
+     * Filtro generico per lista di valori
+     * 
+     * @param array $rows Righe da filtrare
+     * @param string $list Lista valori separati da virgola
+     * @param callable $extractor Callback che estrae il valore da confrontare: fn($row) => string|null
+     * @param string $name Nome del filtro per il report
+     * @param bool $includeEmpty Se true, include righe senza valore (default: false)
+     * @return array{0: array, 1: array} [righe filtrate, info filtro]
+     */
+    private static function filterByList(array $rows, string $list, callable $extractor, string $name, bool $includeEmpty = false): array
     {
         $allowed = array_filter(array_map('trim', explode(',', strtolower($list))));
         $before = count($rows);
         if (!$allowed) {
-            return [$rows, ['name' => 'severity', 'before' => $before, 'after' => $before, 'allowed' => '<none>', 'note' => 'no severity filter']];
+            return [$rows, ['name' => $name, 'before' => $before, 'after' => $before, 'allowed' => '<none>', 'note' => "no {$name} filter"]];
         }
-        // Passa tutte le righe: se non hanno severità riconosciuta, le includiamo comunque
-        $rows = array_values(array_filter($rows, fn($r) => empty($r['severity']) || in_array((string) $r['severity'], $allowed, true)));
-        return [$rows, ['name' => 'severity', 'before' => $before, 'after' => count($rows), 'allowed' => implode(',', $allowed), 'note' => 'righe senza severità incluse']];
+        
+        $filtered = array_values(array_filter($rows, function($r) use ($extractor, $allowed, $includeEmpty) {
+            $value = $extractor($r);
+            if ($includeEmpty && empty($value)) {
+                return true; // Includi righe senza valore
+            }
+            return !empty($value) && in_array(strtolower((string) $value), $allowed, true);
+        }));
+        
+        $note = $includeEmpty ? "righe senza {$name} incluse" : null;
+        return [$filtered, ['name' => $name, 'before' => $before, 'after' => count($filtered), 'allowed' => implode(',', $allowed), 'note' => $note]];
+    }
+
+    private static function filterSeverity(array $rows, string $list): array
+    {
+        return self::filterByList(
+            $rows,
+            $list,
+            fn($r) => $r['severity'] ?? null,
+            'severity',
+            true // Include righe senza severità
+        );
     }
 
     private static function filterContext(array $rows, string $list): array
     {
-        $allowed = array_filter(array_map('trim', explode(',', strtolower($list))));
-        $before = count($rows);
-        if (!$allowed) {
-            return [$rows, ['name' => 'context', 'before' => $before, 'after' => $before, 'allowed' => '<none>', 'note' => 'no context filter']];
-        }
-        $rows = array_values(array_filter($rows, fn($r) => !empty($r['context']) && in_array((string) $r['context'], $allowed, true)));
-        return [$rows, ['name' => 'context', 'before' => $before, 'after' => count($rows), 'allowed' => implode(',', $allowed)]];
+        return self::filterByList(
+            $rows,
+            $list,
+            fn($r) => $r['context'] ?? null,
+            'context',
+            false // Escludi righe senza contesto
+        );
     }
 
     private static function filterTime(array $rows, ?string $since, ?string $until, int $hours, DateTimeZone $tz): array
