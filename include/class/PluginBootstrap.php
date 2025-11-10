@@ -195,6 +195,9 @@ class PluginBootstrap
                 }
             }, null, true);
             
+            // Inizializza nuove feature (Step 1-20)
+            self::initializeNewFeatures();
+            
             // Inizializzazione condizionale per contesto
             if (defined('DOING_AJAX') && DOING_AJAX) {
                 // Assicurati che gli shortcode vengano caricati anche in contesto AJAX
@@ -225,6 +228,80 @@ class PluginBootstrap
         }
     }
 
+    /**
+     * Inizializza nuove feature
+     */
+    private static function initializeNewFeatures(): void
+    {
+        // Step 1: Cache System
+        // CacheManager si auto-inizializza con hook
+        
+        // Step 2: Analytics
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Analytics\AnalyticsTracker')) {
+                \gik25microdata\Analytics\AnalyticsTracker::init();
+            }
+        }, null, true);
+        
+        // Step 3: Performance Monitoring
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Performance\PerformanceMonitor')) {
+                \gik25microdata\Performance\PerformanceMonitor::init();
+            }
+        }, null, true);
+        
+        // Step 4: SEO Enhancements
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\SEO\SEOEnhancer')) {
+                \gik25microdata\SEO\SEOEnhancer::init();
+            }
+        }, null, true);
+        
+        // Step 5: Image Optimization
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Image\ImageOptimizer')) {
+                \gik25microdata\Image\ImageOptimizer::init();
+            }
+        }, null, true);
+        
+        // Step 7: Social Sharing
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Social\SocialSharing')) {
+                \gik25microdata\Social\SocialSharing::init();
+            }
+        }, null, true);
+        
+        // Step 8: Advanced Search
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Search\AdvancedSearch')) {
+                \gik25microdata\Search\AdvancedSearch::init();
+            }
+        }, null, true);
+        
+        // Step 10: Security
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Security\SecurityManager')) {
+                \gik25microdata\Security\SecurityManager::init();
+            }
+        }, null, true);
+        
+        // Step 12: Webhooks
+        SafeExecution::safe_execute(function() {
+            if (class_exists('\gik25microdata\Webhooks\WebhookManager')) {
+                \gik25microdata\Webhooks\WebhookManager::init();
+            }
+        }, null, true);
+        
+        // Step 16: Enhanced Dashboard (solo admin)
+        if (is_admin()) {
+            SafeExecution::safe_execute(function() {
+                if (class_exists('\gik25microdata\Admin\EnhancedDashboard')) {
+                    \gik25microdata\Admin\EnhancedDashboard::init();
+                }
+            }, null, true);
+        }
+    }
+    
     /**
      * Inizializza il contesto Admin
      */
