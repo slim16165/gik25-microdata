@@ -435,28 +435,31 @@ class PluginBootstrap
     private static function detectCurrentWebsite(): void
     {
         SafeExecution::safe_execute(function() {
-            if (!isset($_SERVER['HTTP_HOST'])) {
-                return; // Non possiamo determinare il dominio
-            }
-            
-            $domain_specific_files = [
-                'www.nonsolodiete.it' => 'nonsolodiete_specific.php',
-                'www.superinformati.com' => 'superinformati_specific.php',
-                'www.totaldesign.it' => 'totaldesign_specific.php',
-                // Aggiungi altre corrispondenze qui
-            ];
-
-            $current_domain = $_SERVER['HTTP_HOST'];
-
-            if (array_key_exists($current_domain, $domain_specific_files)) {
-                $specific_file = $domain_specific_files[$current_domain];
-                $file_path = self::$plugin_dir . '/include/site_specific/' . $specific_file;
+            if (class_exists('\gik25microdata\SiteSpecific\SiteSpecificRegistry')) {
+                \gik25microdata\SiteSpecific\SiteSpecificRegistry::loadSiteSpecificFile(self::$plugin_dir);
+            } else {
+                // Fallback al metodo precedente se la classe non esiste
+                if (!isset($_SERVER['HTTP_HOST'])) {
+                    return;
+                }
                 
-                // Verifica che il file esista prima di richiederlo
-                if (file_exists($file_path)) {
-                    require_once($file_path);
-                } else {
-                    self::logError("File specifico per dominio non trovato: {$specific_file}");
+                $domain_specific_files = [
+                    'www.nonsolodiete.it' => 'nonsolodiete_specific.php',
+                    'www.superinformati.com' => 'superinformati_specific.php',
+                    'www.totaldesign.it' => 'totaldesign_specific.php',
+                ];
+
+                $current_domain = $_SERVER['HTTP_HOST'];
+
+                if (array_key_exists($current_domain, $domain_specific_files)) {
+                    $specific_file = $domain_specific_files[$current_domain];
+                    $file_path = self::$plugin_dir . '/include/site_specific/' . $specific_file;
+                    
+                    if (file_exists($file_path)) {
+                        require_once($file_path);
+                    } else {
+                        self::logError("File specifico per dominio non trovato: {$specific_file}");
+                    }
                 }
             }
         }, null, true);
