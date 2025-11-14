@@ -75,25 +75,29 @@ Le seguenti branch **cursor/** contengono lavoro già mergiato tramite PR #15 (`
 
 ---
 
-## 🎯 Azioni Immediate
+## ✅ Azioni Completate
 
-### 1. Push Commit Locale
+### 1. ✅ Branch Cursor Cancellate (Già Mergiate)
+- ✅ `cursor/refactor-and-generalize-wordpress-plugin-28b3` - **CANCELLATA**
+- ✅ `cursor/refactor-and-generalize-wordpress-plugin-47c9` - **CANCELLATA**
+- ✅ `cursor/refactor-and-generalize-wordpress-plugin-967b` - **CANCELLATA**
+- ✅ `cursor/refactor-and-generalize-wordpress-plugin-ae75` - **CANCELLATA**
+
+### 2. ✅ Branch Dependabot Cancellate (Obsolete)
+- ✅ `dependabot/github_actions/actions/checkout-5` - **CANCELLATA**
+- ✅ `dependabot/github_actions/dorny/paths-filter-3` - **CANCELLATA**
+
+### 3. ✅ Branch Feature/Sperimentali Cancellate
+- ✅ `PHP7` - **CANCELLATA**
+- ✅ `PHP8` - **CANCELLATA**
+- ✅ `minimal-php7` - **CANCELLATA**
+- ✅ `to_typescript` - **CANCELLATA**
+- ✅ `renovate/configure` - **CANCELLATA**
+
+### 4. ⏳ Push Commit Locale (Da Fare)
 ```bash
 git push origin master
 ```
-
-### 2. Cancellare Branch Cursor (Già Mergiate)
-```bash
-git push origin --delete cursor/refactor-and-generalize-wordpress-plugin-28b3
-git push origin --delete cursor/refactor-and-generalize-wordpress-plugin-47c9
-git push origin --delete cursor/refactor-and-generalize-wordpress-plugin-967b
-git push origin --delete cursor/refactor-and-generalize-wordpress-plugin-ae75
-```
-
-### 3. Merge PR Dependabot
-- Merge via GitHub UI o CLI:
-  - `dependabot/github_actions/actions/checkout-5`
-  - `dependabot/github_actions/dorny/paths-filter-3`
 
 ---
 
