@@ -1,0 +1,299 @@
+/**
+ * Mobile App Shell - Styles
+ * App JS avanzatissima tipo mobile
+ */
+
+.mobile-app-shell {
+    position: relative;
+    width: 100%;
+    max-width: 428px;
+    height: 100vh;
+    max-height: 926px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+}
+
+.app-menu-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.app-menu-btn span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.app-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.app-search-btn {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.app-search-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.app-nav {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 2rem 1rem;
+}
+
+.app-nav.open {
+    left: 0;
+}
+
+.nav-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-icon {
+    font-size: 1.5rem;
+}
+
+.nav-label {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.app-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+.app-page {
+    display: none;
+    padding: 1rem;
+    min-height: 100%;
+}
+
+.app-page.active {
+    display: block;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.page-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.8rem;
+}
+
+.page-header p {
+    margin: 0;
+    opacity: 0.8;
+}
+
+.widget-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.widget-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem;
+    min-height: 200px;
+}
+
+.app-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(20px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-overlay.search-open {
+    display: flex;
+}
+
+.search-container {
+    width: 90%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-result {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-result:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.app-notification {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 15px;
+    color: #333;
+    font-weight: 500;
+    z-index: 3000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.app-notification.success {
+    background: rgba(76, 175, 80, 0.95);
+    color: white;
+}
+
+.app-notification.warning {
+    background: rgba(255, 152, 0, 0.95);
+    color: white;
+}
+
+/* Theme variants */
+.mobile-app-shell.theme-light {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.mobile-app-shell.theme-light .app-header {
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+}
+
+.mobile-app-shell.theme-light .app-title {
+    color: #333;
+}
+
+/* Responsive */
+@media (max-width: 428px) {
+    .mobile-app-shell {
+        max-width: 100%;
+        border-radius: 0;
+        height: 100vh;
+    }
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+

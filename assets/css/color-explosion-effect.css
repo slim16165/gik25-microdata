@@ -1,0 +1,58 @@
+/**
+ * Color Explosion Effect - Styles
+ */
+
+.color-explosion {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    text-align: center;
+}
+
+.explosion-canvas {
+    width: 100%;
+    height: 400px;
+    display: block;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    margin-bottom: 1.5rem;
+}
+
+.explosion-trigger {
+    padding: 1rem 2rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.explosion-trigger:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.explosion-trigger:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .color-explosion {
+        padding: 1rem;
+    }
+    
+    .explosion-canvas {
+        height: 300px;
+    }
+}
+

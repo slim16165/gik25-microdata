@@ -7,6 +7,32 @@ use gik25microdata\site_specific\Totaldesign\ProgrammaticHub;
 use gik25microdata\Widgets\ContextualWidgets;
 use gik25microdata\REST\MCPApi;
 use gik25microdata\ListOfPosts\LinkBuilder;
+use gik25microdata\Hubs\DynamicColorHub;
+use gik25microdata\Hubs\DynamicArchitectsHub;
+use gik25microdata\Hubs\Dynamic3DGraphicsHub;
+use gik25microdata\Hubs\AdvancedCrossLinker;
+use gik25microdata\Widgets\ColorHarmonyVisualizer;
+use gik25microdata\Widgets\PaletteGeneratorParticles;
+use gik25microdata\Widgets\ProductComparisonCinematic;
+use gik25microdata\Widgets\RoomSimulatorIsometric;
+use gik25microdata\Widgets\IKEAHackExplorer3D;
+use gik25microdata\Widgets\LightingSimulator;
+use gik25microdata\Widgets\ColorPicker3D;
+use gik25microdata\Widgets\ArchitecturalVisualization3D;
+use gik25microdata\Widgets\FluidColorMixer;
+use gik25microdata\Widgets\InteractiveDesignGame;
+use gik25microdata\Widgets\ColorRoomRecommender;
+use gik25microdata\Widgets\PantoneHubDynamic;
+use gik25microdata\Widgets\IsometricIKEAConfigurator;
+use gik25microdata\Widgets\ColorExplosionEffect;
+use gik25microdata\Widgets\AdvancedColorPicker;
+use gik25microdata\Widgets\WidgetRegistry;
+use gik25microdata\Widgets\WidgetPerformanceMonitor;
+use gik25microdata\Widgets\MobileAppShell;
+use gik25microdata\Widgets\Psycho\MoodColorTracker;
+use gik25microdata\Widgets\Psycho\ColorTherapyVisualizer;
+use gik25microdata\Widgets\Psycho\PersonalityColorTest;
+use gik25microdata\Widgets\Psycho\StressReliefColors;
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
@@ -35,6 +61,85 @@ function _conditionalLoadJsCss_Colori()
 
 ConditionalLoadJsCss_Colori();
 ProgrammaticHub::init();
+
+// Inizializza Hub Dinamici (nuove integrazioni strategiche)
+if (class_exists('\\gik25microdata\\Hubs\\DynamicColorHub')) {
+    DynamicColorHub::init();
+}
+if (class_exists('\\gik25microdata\\Hubs\\DynamicArchitectsHub')) {
+    DynamicArchitectsHub::init();
+}
+if (class_exists('\\gik25microdata\\Hubs\\Dynamic3DGraphicsHub')) {
+    Dynamic3DGraphicsHub::init();
+}
+if (class_exists('\\gik25microdata\\Hubs\\AdvancedCrossLinker')) {
+    AdvancedCrossLinker::init();
+}
+
+// Inizializza Widget Avanzatissimi Livello Videogame
+if (class_exists('\\gik25microdata\\Widgets\\ColorHarmonyVisualizer')) {
+    ColorHarmonyVisualizer::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\PaletteGeneratorParticles')) {
+    PaletteGeneratorParticles::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\ProductComparisonCinematic')) {
+    ProductComparisonCinematic::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\RoomSimulatorIsometric')) {
+    RoomSimulatorIsometric::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\IKEAHackExplorer3D')) {
+    IKEAHackExplorer3D::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\LightingSimulator')) {
+    LightingSimulator::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\ColorPicker3D')) {
+    ColorPicker3D::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\ArchitecturalVisualization3D')) {
+    ArchitecturalVisualization3D::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\FluidColorMixer')) {
+    FluidColorMixer::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\InteractiveDesignGame')) {
+    InteractiveDesignGame::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\ColorRoomRecommender')) {
+    ColorRoomRecommender::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\PantoneHubDynamic')) {
+    PantoneHubDynamic::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\IsometricIKEAConfigurator')) {
+    IsometricIKEAConfigurator::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\ColorExplosionEffect')) {
+    ColorExplosionEffect::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\AdvancedColorPicker')) {
+    AdvancedColorPicker::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\WidgetPerformanceMonitor')) {
+    WidgetPerformanceMonitor::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\MobileAppShell')) {
+    MobileAppShell::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\Psycho\\MoodColorTracker')) {
+    MoodColorTracker::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\Psycho\\ColorTherapyVisualizer')) {
+    ColorTherapyVisualizer::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\Psycho\\PersonalityColorTest')) {
+    PersonalityColorTest::init();
+}
+if (class_exists('\\gik25microdata\\Widgets\\Psycho\\StressReliefColors')) {
+    StressReliefColors::init();
+}
 
 // REST API per MCP Server
 // L'autoloader Composer dovrebbe caricare la classe automaticamente

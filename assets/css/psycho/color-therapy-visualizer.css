@@ -1,0 +1,80 @@
+/**
+ * Color Therapy Visualizer - Styles
+ */
+
+.color-therapy-visualizer {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.therapy-container {
+    width: 100%;
+    height: 500px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+    margin-bottom: 1.5rem;
+}
+
+.therapy-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.therapy-btn {
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.therapy-btn:hover,
+.therapy-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.therapy-info {
+    text-align: center;
+    color: white;
+}
+
+.therapy-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+}
+
+.therapy-info p {
+    margin: 0;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .color-therapy-visualizer {
+        padding: 1rem;
+    }
+    
+    .therapy-container {
+        height: 300px;
+    }
+    
+    .therapy-controls {
+        grid-template-columns: 1fr;
+    }
+}
+

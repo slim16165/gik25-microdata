@@ -1,0 +1,302 @@
+/**
+ * Color Harmony Visualizer Styles
+ * Advanced CSS with animations and effects
+ */
+
+.color-harmony-visualizer {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.color-harmony-visualizer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.harmony-container {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.harmony-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+}
+
+.harmony-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.harmony-info {
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.harmony-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.harmony-subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.harmony-controls {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.harmony-type-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.harmony-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.harmony-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.harmony-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.harmony-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.harmony-btn:active {
+    transform: translateY(0);
+}
+
+.harmony-btn.active {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.harmony-icon {
+    font-size: 1.2rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.harmony-label {
+    position: relative;
+    z-index: 1;
+}
+
+.harmony-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.harmony-action-btn {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.harmony-action-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.harmony-action-btn:active {
+    transform: translateY(0);
+}
+
+.harmony-palette-display {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.palette-color {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.palette-color:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    z-index: 5;
+}
+
+.palette-color::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    pointer-events: none;
+}
+
+.color-hex,
+.color-hsl {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+.color-hsl {
+    bottom: 0.1rem;
+    font-size: 0.65rem;
+    opacity: 0.8;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .harmony-btn,
+    .harmony-action-btn,
+    .palette-color {
+        transition: none;
+    }
+    
+    .harmony-btn::before {
+        transition: none;
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .color-harmony-visualizer {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+    
+    .harmony-container {
+        height: 400px;
+    }
+    
+    .harmony-type-selector {
+        gap: 0.5rem;
+    }
+    
+    .harmony-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .harmony-label {
+        display: none;
+    }
+    
+    .harmony-palette-display {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.75rem;
+    }
+}
+
+/* Accessibility */
+.harmony-btn:focus,
+.harmony-action-btn:focus {
+    outline: 3px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .color-harmony-visualizer {
+        background: white;
+        box-shadow: none;
+    }
+    
+    .harmony-controls {
+        display: none;
+    }
+}
+

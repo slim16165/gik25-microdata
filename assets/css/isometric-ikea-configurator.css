@@ -1,0 +1,128 @@
+/**
+ * Isometric IKEA Configurator - Styles
+ */
+
+.ikea-configurator {
+    position: relative;
+    width: 100%;
+    max-width: 1600px;
+    margin: 2rem auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+}
+
+.configurator-container {
+    width: 100%;
+    height: 600px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.configurator-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    color: white;
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.panel-section {
+    margin-bottom: 2rem;
+}
+
+.panel-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.line-selector {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.line-selector:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.color-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+
+.color-option {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    border-color: white;
+}
+
+.color-option.selected {
+    border-color: white;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.accessories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.accessory-item {
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.accessory-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+@media (max-width: 1024px) {
+    .ikea-configurator {
+        grid-template-columns: 1fr;
+    }
+    
+    .configurator-panel {
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .ikea-configurator {
+        padding: 1rem;
+    }
+    
+    .configurator-container {
+        height: 400px;
+    }
+}
+

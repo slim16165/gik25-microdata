@@ -20,3 +20,10 @@ coverage/
 coverage.xml
 junit.xml
 
+# Chat recovery exports
+scripts/chat-recovery/*.json
+scripts/chat-recovery/*.md
+scripts/chat-recovery/chat_export*.json
+scripts/chat-recovery/*_chats.json
+scripts/chat-recovery/*_chats.md
+
