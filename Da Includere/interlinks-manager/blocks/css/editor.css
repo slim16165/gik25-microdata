@@ -1,0 +1,136 @@
+/* General ---------------------------------------------------------------------------------------------------------- */
+.daext-display-none {
+    display: none;
+}
+
+/* Interlinks Suggestions Meta Box ---------------------------------------------------------------------------------- */
+#daim-interlinks-suggestions-list{
+    display: none;
+    margin: 16px 0 0 0;
+}
+
+#daim-interlinks-suggestions-list > p{
+    font-size: 13px;
+    line-height: 1.4em;
+}
+
+#daim-interlinks-suggestions-hidden-input{
+    line-height: 0px !important;
+    outline: none !important;
+    border: none !important;
+    position: absolute !important;
+    z-index: -1 !important;
+    box-shadow: none !important;
+}
+
+#daim-interlinks-suggestions-hidden-input:focus{
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.daim-interlinks-suggestions-item{
+    display: flex;
+    padding: 10px 0;
+    border-top: 1px solid #e0e0e0;
+    justify-content: space-between;
+}
+
+.daim-interlinks-suggestions-item:last-of-type{
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 10px;
+}
+
+.daim-suggestion-link{
+    text-decoration: none;
+}
+
+.daim-suggestion-link span:first-of-type{
+    text-decoration: underline;
+}
+
+.daim-suggestion-link span:last-of-type{
+    text-decoration: none;
+}
+
+.daim-interlinks-suggestions-container-left{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.daim-interlinks-suggestions-link{
+    font-size: 13px;
+    line-height: 18px;
+    padding-bottom: 8px;
+    display: block;
+}
+
+.daim-interlinks-suggestions-post-type{
+    font-size: 11px;
+    padding: 3px 8px;
+    background: #e0e0e0;
+    display: block;
+    width: fit-content;
+    color: #1e1e1e;
+}
+
+.daim-interlinks-suggestions-copy-button{
+    width: 28px;
+    height: 28px;
+    border-radius: 2px;
+    border: 1px solid #949494;
+    cursor: pointer;
+    margin-left: 8px;
+    box-sizing: content-box;
+}
+
+.daim-interlinks-suggestions-copy-button > svg{
+    margin: 2px;
+}
+
+.daim-interlinks-suggestions-copy-button:hover > svg path{
+    fill: #007cba;
+}
+
+#daim-meta-suggestions .form-table{
+    margin-top: 0;
+}
+
+#daim-meta-suggestions .form-table td{
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+/* Interlinks Optimization Meta Box */
+
+#daim-meta-optimization .inside{
+    margin: 0;
+    padding-bottom: 16px;
+}
+
+#daim-meta-optimization .form-table{
+    margin-top: 0;
+    padding-top: 16px;
+}
+
+#daim-meta-optimization td{
+    padding-bottom: 0;
+    padding-top: 16px;
+}
+
+#daim-meta-optimization p{
+    font-size: 13px;
+    line-height: 1.4em;
+    margin-top: 0;
+}
+
+#daim-meta-optimization p:not(:last-of-type){
+    margin-bottom: 16px;
+}
+
+/* Interlinks Options block */
+.daim-interlinks-options-custom-margin {
+    margin-bottom: 16px !important;
+}
+/* Interlinks Options block - end */

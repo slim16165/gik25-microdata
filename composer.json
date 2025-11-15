@@ -13,14 +13,17 @@
   "autoload": {
     "psr-4": {
       "gik25microdata\\": "include/class/",
-      "gik25microdata\\site_specific\\": "include/site_specific/"
+      "gik25microdata\\site_specific\\": "include/site_specific/",
+      "gik25microdata\\InternalLinks\\": "include/class/InternalLinks/"
     }
   },
   "require": {
     "athari/yalinqo": "^2.0",
     "yiisoft/html": "^3.0",
     "illuminate/collections": "^10.0",
-    "monolog/monolog": "^3.0"
+    "monolog/monolog": "^3.0",
+    "phpoffice/phpspreadsheet": "^2.0",
+    "wamania/php-stemmer": "^1.0"
   },
   "config": {
     "allow-plugins": {

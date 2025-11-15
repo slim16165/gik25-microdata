@@ -587,6 +587,336 @@ Collection: wordpress_content
 
 ---
 
+## 7. Scenario B: Architettura con Fallback
+
+### 7.1 Principio di Indipendenza
+
+**Obiettivo**: WordPress funziona completamente indipendentemente da C#, ma migliora quando C# è disponibile.
+
+**Architettura Fallback**:
+```
+WordPress Plugin
+├── Modalità Operativa: 'auto' | 'csharp' | 'external_api'
+├── Fallback Chain per Embedding:
+│   ├── 1. Try C# via MCP (se disponibile e modalità 'auto'/'csharp')
+│   ├── 2. Catch → Try External API (OpenAI/HuggingFace)
+│   └── 3. Catch → Use Cached/Default Embedding
+├── Ricerca Semantica:
+│   └── Query Qdrant direttamente (sempre disponibile se embedding esistono)
+└── Wikidata:
+    ├── 1. Try C# SPARQL (se disponibile)
+    ├── 2. Catch → Direct Wikidata API
+    └── 3. Catch → Use Cache
+```
+
+### 7.2 Pattern Fallback Dettagliati
+
+#### 7.2.1 Embedding Generation
+
+**Pattern PHP con Fallback**:
+```php
+class EmbeddingManager {
+    private $generation_mode = 'auto'; // 'csharp', 'external_api', 'auto'
+    private $mcp_client;
+    private $external_api_client;
+    
+    public function generateEmbedding($post_id) {
+        $content = $this->getPostContent($post_id);
+        
+        // Step 1: Try C# via MCP (se disponibile)
+        if ($this->generation_mode === 'csharp' || $this->generation_mode === 'auto') {
+            try {
+                $embedding = $this->generateViaMCP($post_id, $content);
+                if ($embedding && $this->validateEmbedding($embedding)) {
+                    $this->logSuccess('embedding', 'mcp', $post_id);
+                    return $embedding;
+                }
+            } catch (MCPException $e) {
+                $this->logFallback('embedding', 'mcp', $e->getMessage());
+                // Continua al fallback
+            } catch (Exception $e) {
+                $this->logError('embedding', 'mcp', $e->getMessage());
+            }
+        }
+        
+        // Step 2: Fallback External API
+        if ($this->generation_mode === 'external_api' || $this->generation_mode === 'auto') {
+            try {
+                $embedding = $this->generateViaExternalAPI($content);
+                if ($embedding && $this->validateEmbedding($embedding)) {
+                    $this->logSuccess('embedding', 'external_api', $post_id);
+                    return $embedding;
+                }
+            } catch (Exception $e) {
+                $this->logError('embedding', 'external_api', $e->getMessage());
+            }
+        }
+        
+        // Step 3: Use Cached/Default
+        $cached = $this->getCachedEmbedding($post_id);
+        if ($cached) {
+            $this->logSuccess('embedding', 'cached', $post_id);
+            return $cached;
+        }
+        
+        // Last resort: return null (sistema continuerà senza embedding)
+        $this->logWarning('embedding', 'no_fallback', $post_id);
+        return null;
+    }
+}
+```
+
+**Configurazione**:
+```php
+// wp-config.php o settings plugin
+define('EMBEDDING_MODE', 'auto'); // 'csharp', 'external_api', 'auto'
+define('MCP_ENABLED', true);
+define('MCP_ENDPOINT', 'http://localhost:3000'); // o URL remoto
+define('MCP_API_KEY', 'your-api-key-here');
+define('MCP_TIMEOUT', 30); // secondi
+define('MCP_FALLBACK_TO_API', true);
+
+// External API fallback
+define('EMBEDDING_API_PROVIDER', 'openai'); // 'openai', 'huggingface', 'cohere'
+define('EMBEDDING_API_KEY', 'your-api-key');
+define('EMBEDDING_MODEL', 'text-embedding-ada-002'); // per OpenAI
+```
+
+#### 7.2.2 Ricerca Semantica
+
+**Pattern**: Ricerca semantica funziona sempre se embedding esistono nel database vettoriale, indipendentemente da C#.
+
+```php
+class VectorDBClient {
+    public function semanticSearch($query, $limit = 10) {
+        // 1. Genera embedding query (con fallback)
+        $query_embedding = $this->embeddingManager->generateEmbeddingForText($query);
+        if (!$query_embedding) {
+            // Fallback a ricerca keyword-based
+            return $this->keywordSearch($query, $limit);
+        }
+        
+        // 2. Query Qdrant direttamente (sempre disponibile)
+        return $this->qdrantClient->search($query_embedding, $limit);
+    }
+}
+```
+
+#### 7.2.3 Wikidata Integration
+
+**Pattern con Fallback**:
+```php
+class WikidataEnricher {
+    public function enrichContent($post_id, $entity_id) {
+        // Step 1: Try C# SPARQL (se disponibile)
+        if ($this->mcpEnabled && $this->mcpClient->isAvailable()) {
+            try {
+                $result = $this->mcpClient->callTool('wikidata_enrich', [
+                    'post_id' => $post_id,
+                    'entity_id' => $entity_id
+                ]);
+                if ($result) {
+                    return $result;
+                }
+            } catch (Exception $e) {
+                $this->logFallback('wikidata', 'mcp', $e->getMessage());
+            }
+        }
+        
+        // Step 2: Direct Wikidata API
+        try {
+            $entity = $this->wikidataAPI->getEntity($entity_id);
+            return $this->processEntity($entity);
+        } catch (Exception $e) {
+            $this->logError('wikidata', 'api', $e->getMessage());
+        }
+        
+        // Step 3: Use Cache
+        return $this->getCachedEntity($entity_id);
+    }
+}
+```
+
+### 7.3 Gestione Errori e Resilienza
+
+#### 7.3.1 Retry Logic
+
+```php
+class MCPClient {
+    private $maxRetries = 3;
+    private $retryDelay = 1000; // millisecondi
+    
+    public function callToolWithRetry($tool, $args, $retries = null) {
+        $retries = $retries ?? $this->maxRetries;
+        
+        for ($attempt = 1; $attempt <= $retries; $attempt++) {
+            try {
+                return $this->callTool($tool, $args);
+            } catch (TimeoutException $e) {
+                if ($attempt < $retries) {
+                    usleep($this->retryDelay * $attempt); // Exponential backoff
+                    continue;
+                }
+                throw $e;
+            } catch (Exception $e) {
+                // Non retry per errori non-transient
+                throw $e;
+            }
+        }
+    }
+}
+```
+
+#### 7.3.2 Circuit Breaker
+
+```php
+class CircuitBreaker {
+    private $failureThreshold = 5;
+    private $timeout = 60; // secondi
+    private $failures = 0;
+    private $lastFailureTime = null;
+    private $state = 'closed'; // 'closed', 'open', 'half-open'
+    
+    public function call($callback) {
+        if ($this->state === 'open') {
+            if (time() - $this->lastFailureTime > $this->timeout) {
+                $this->state = 'half-open';
+            } else {
+                throw new CircuitBreakerOpenException();
+            }
+        }
+        
+        try {
+            $result = $callback();
+            $this->onSuccess();
+            return $result;
+        } catch (Exception $e) {
+            $this->onFailure();
+            throw $e;
+        }
+    }
+    
+    private function onSuccess() {
+        $this->failures = 0;
+        $this->state = 'closed';
+    }
+    
+    private function onFailure() {
+        $this->failures++;
+        $this->lastFailureTime = time();
+        if ($this->failures >= $this->failureThreshold) {
+            $this->state = 'open';
+        }
+    }
+}
+```
+
+#### 7.3.3 Health Check
+
+```php
+class HealthChecker {
+    public function checkMCPAvailability() {
+        try {
+            $response = $this->mcpClient->callTool('health_check', []);
+            return [
+                'available' => true,
+                'response_time' => $response['response_time'],
+                'version' => $response['version'] ?? null
+            ];
+        } catch (Exception $e) {
+            return [
+                'available' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+    
+    public function checkVectorDB() {
+        try {
+            $this->vectorDB->ping();
+            return ['available' => true];
+        } catch (Exception $e) {
+            return ['available' => false, 'error' => $e->getMessage()];
+        }
+    }
+}
+```
+
+### 7.4 Configurazione Modalità Operative
+
+**Modalità 'auto'** (Raccomandata):
+- Prova prima C# via MCP
+- Se fallisce, usa External API
+- Se fallisce, usa cache/default
+- Trasparente per l'utente finale
+
+**Modalità 'csharp'**:
+- Solo C# via MCP
+- Nessun fallback (utile per testing)
+- Fallisce se C# non disponibile
+
+**Modalità 'external_api'**:
+- Solo External API
+- Nessun C# (utile se C# non disponibile)
+- Costi API esterni
+
+**Configurazione Dinamica**:
+```php
+// Admin UI per cambiare modalità
+add_action('admin_init', function() {
+    if (isset($_POST['embedding_mode'])) {
+        update_option('embedding_mode', sanitize_text_field($_POST['embedding_mode']));
+    }
+});
+
+// Lettura configurazione
+$mode = get_option('embedding_mode', 'auto');
+define('EMBEDDING_MODE', $mode);
+```
+
+### 7.5 Diagramma Flusso Fallback
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ WordPress: Richiesta Embedding per Post                     │
+└─────────────────────────────────────────────────────────────┘
+                        ↓
+        ┌───────────────┴───────────────┐
+        │  Modalità: 'auto'/'csharp'?   │
+        └───────────────┬───────────────┘
+                        ↓ Sì
+        ┌───────────────────────────────┐
+        │ Try: C# via MCP               │
+        │ - Timeout: 30s                │
+        │ - Retry: 3 tentativi          │
+        └───────────────┬───────────────┘
+                        ↓
+        ┌───────────────┴───────────────┐
+        │ Success?                       │
+        └───────────────┬───────────────┘
+        ↓ Sì            ↓ No
+   [Return Embedding]   │
+                        ↓
+        ┌───────────────────────────────┐
+        │ Fallback: External API        │
+        │ (OpenAI/HuggingFace)          │
+        └───────────────┬───────────────┘
+                        ↓
+        ┌───────────────┴───────────────┐
+        │ Success?                       │
+        └───────────────┬───────────────┘
+        ↓ Sì            ↓ No
+   [Return Embedding]   │
+                        ↓
+        ┌───────────────────────────────┐
+        │ Fallback: Cached/Default      │
+        └───────────────┬───────────────┘
+                        ↓
+                [Return or Null]
+```
+
+---
+
 ## 7. Piano di Implementazione
 
 ### Fase 1: Fondamenta (Settimane 1-4)

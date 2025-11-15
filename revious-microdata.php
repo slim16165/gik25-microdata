@@ -40,3 +40,22 @@ require_once __DIR__ . '/include/class/Logs/Rest.php';
 
 // Inizializza il plugin
 \gik25microdata\PluginBootstrap::init(__FILE__);
+
+// Register activation/deactivation hooks for Internal Links
+register_activation_hook(__FILE__, function() {
+    if (class_exists('\gik25microdata\InternalLinks\Core\Activator')) {
+        \gik25microdata\InternalLinks\Core\Activator::activate();
+    }
+});
+
+register_deactivation_hook(__FILE__, function() {
+    if (class_exists('\gik25microdata\InternalLinks\Core\Activator')) {
+        \gik25microdata\InternalLinks\Core\Activator::deactivate();
+    }
+});
+
+register_uninstall_hook(__FILE__, function() {
+    if (class_exists('\gik25microdata\InternalLinks\Core\Activator')) {
+        \gik25microdata\InternalLinks\Core\Activator::uninstall();
+    }
+});

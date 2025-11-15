@@ -59,6 +59,14 @@ Indice completo della documentazione del plugin gik25-microdata.
 - **[CAROUSEL_GENERALIZATION_PLAN.md](./CAROUSEL_GENERALIZATION_PLAN.md)** - Piano generalizzazione carousel
 - **[GENERIC_CAROUSEL.md](./GENERIC_CAROUSEL.md)** - Carousel generico
 
+### Fusione Plugin Link Interni
+- **[ANALISI_FUSIONE_PLUGIN_LINK.md](./ANALISI_FUSIONE_PLUGIN_LINK.md)** - Analisi dettagliata Interlinks Manager + Link Whisper Premium
+- **[PROGETTAZIONE_ARCHITETTURA_LINK_UNIFICATI.md](./PROGETTAZIONE_ARCHITETTURA_LINK_UNIFICATI.md)** - Progettazione architettura unificata
+- **[RIEPILOGO_FUSIONE_PLUGIN.md](./RIEPILOGO_FUSIONE_PLUGIN.md)** - Riepilogo lavoro e roadmap
+- **[INTERNAL_LINKS_IMPLEMENTATION_STATUS.md](./INTERNAL_LINKS_IMPLEMENTATION_STATUS.md)** - Status implementazione sistema link interni
+- **[INTERNAL_LINKS_QUICK_START.md](./INTERNAL_LINKS_QUICK_START.md)** - Quick start guide per sistema link interni
+- **[INTERNAL_LINKS_IMPLEMENTATION_COMPLETE.md](./INTERNAL_LINKS_IMPLEMENTATION_COMPLETE.md)** - Riepilogo completo implementazione
+
 ---
 
 ## 📝 Note Storiche (Archivio)

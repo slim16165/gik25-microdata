@@ -194,6 +194,14 @@ class PluginBootstrap
                     \gik25microdata\Logs\Viewer\LogViewerAPI::init();
                 }
             }, null, true);
+
+            // Initialize Internal Links Manager
+            SafeExecution::safe_execute(function() {
+                if (class_exists('\gik25microdata\InternalLinks\Core\InternalLinksManager')) {
+                    $manager = \gik25microdata\InternalLinks\Core\InternalLinksManager::getInstance();
+                    $manager->init();
+                }
+            }, null, true);
             
             // Inizializzazione condizionale per contesto
             if (defined('DOING_AJAX') && DOING_AJAX) {

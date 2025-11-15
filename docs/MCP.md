@@ -95,6 +95,24 @@ Aggiungi in `cline_mcp_settings.json`:
 - `get_tags` - Lista tag (con ricerca)
 - `get_post_tags` - Tag di un post
 
+**Embedding e Ricerca Semantica (NUOVO):**
+- `generate_embedding` - Genera embedding per un post
+- `batch_generate_embeddings` - Genera embedding per più post
+- `semantic_search` - Ricerca semantica contenuti
+- `find_similar_content` - Trova contenuti simili a un post
+
+**Analisi Avanzata (NUOVO):**
+- `analyze_content_quality` - Analizza qualità contenuto con NLP
+- `analyze_seo` - Analizza SEO di un post
+
+**Wikidata (NUOVO):**
+- `wikidata_enrich` - Arricchisce contenuto con dati Wikidata
+- `wikidata_search` - Cerca entità Wikidata
+- `wikidata_query` - Esegue query SPARQL su Wikidata
+
+**Health Check:**
+- `health_check` - Verifica disponibilità server MCP
+
 ## Autenticazione
 
 Per modificare articoli, configura un'Application Password WordPress:
@@ -133,8 +151,86 @@ curl "https://www.totaldesign.it/wp-json/wp-mcp/v1/posts/recent?limit=5"
 - La cache è di 1 ora
 - Svuota cache WordPress se necessario
 
+## Pattern Fallback
+
+### Architettura con Fallback
+
+Il sistema WordPress funziona **indipendentemente** da C#, ma migliora quando C# è disponibile. Vedi `ARCHITETTURA_SISTEMA_IBRIDO.md` sezione 7 per dettagli completi.
+
+### Esempio: Generazione Embedding con Fallback
+
+**Pattern PHP**:
+```php
+// 1. Try C# via MCP (se disponibile)
+try {
+    $embedding = $mcpClient->callTool('generate_embedding', [
+        'post_id' => 123,
+        'content' => $content
+    ]);
+} catch (MCPException $e) {
+    // 2. Fallback: External API (OpenAI/HuggingFace)
+    $embedding = $externalAPI->generateEmbedding($content);
+} catch (Exception $e) {
+    // 3. Fallback: Cached/Default
+    $embedding = getCachedEmbedding(123);
+}
+```
+
+**Configurazione Modalità**:
+- `auto`: Prova C# → Fallback External API → Fallback Cache
+- `csharp`: Solo C# (nessun fallback)
+- `external_api`: Solo External API (nessun C#)
+
+### Esempio: Ricerca Semantica
+
+La ricerca semantica funziona **sempre** se embedding esistono nel database vettoriale, indipendentemente da C#:
+
+```php
+// Query Qdrant direttamente (sempre disponibile)
+$results = $vectorDB->semanticSearch($query, $limit);
+```
+
+### Esempio: Wikidata con Fallback
+
+```php
+// 1. Try C# SPARQL (se disponibile)
+try {
+    $result = $mcpClient->callTool('wikidata_enrich', [
+        'post_id' => 123,
+        'entity_id' => 'Q12345'
+    ]);
+} catch (Exception $e) {
+    // 2. Fallback: Direct Wikidata API
+    $result = $wikidataAPI->getEntity('Q12345');
+} catch (Exception $e) {
+    // 3. Fallback: Cache
+    $result = getCachedEntity('Q12345');
+}
+```
+
+### Nuovi Endpoint REST API
+
+**Embedding:**
+- `POST /wp-json/wp-mcp/v1/embedding/generate` - Genera embedding
+- `POST /wp-json/wp-mcp/v1/embedding/search` - Ricerca semantica
+- `GET /wp-json/wp-mcp/v1/semantic/similar?post_id=123` - Contenuti simili
+
+**Wikidata:**
+- `POST /wp-json/wp-mcp/v1/wikidata/enrich` - Arricchisci contenuto
+- `POST /wp-json/wp-mcp/v1/wikidata/search` - Cerca entità
+- `POST /wp-json/wp-mcp/v1/wikidata/query` - Query SPARQL
+
+**Analisi:**
+- `POST /wp-json/wp-mcp/v1/analyze/quality` - Analizza qualità
+- `POST /wp-json/wp-mcp/v1/analyze/seo` - Analizza SEO
+
+Vedi `docs/INTERFACCE_MCP.md` per specifiche tecniche complete di tutti i tool.
+
 ## Riferimenti
 
 - Implementazione REST API: `include/class/REST/MCPApi.php`
 - Server Node.js: `mcp-server/server.js`
 - Configurazione: `mcp-server/README.md`
+- **Interfacce MCP Complete**: `docs/INTERFACCE_MCP.md`
+- **Guida Sviluppatore C#**: `docs/GUIDA_SVILUPPATORE_CSHARP.md`
+- **Architettura Sistema**: `ARCHITETTURA_SISTEMA_IBRIDO.md`
