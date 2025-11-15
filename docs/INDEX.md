@@ -66,6 +66,8 @@ Indice completo della documentazione del plugin gik25-microdata.
 - **[INTERNAL_LINKS_IMPLEMENTATION_STATUS.md](./INTERNAL_LINKS_IMPLEMENTATION_STATUS.md)** - Status implementazione sistema link interni
 - **[INTERNAL_LINKS_QUICK_START.md](./INTERNAL_LINKS_QUICK_START.md)** - Quick start guide per sistema link interni
 - **[INTERNAL_LINKS_IMPLEMENTATION_COMPLETE.md](./INTERNAL_LINKS_IMPLEMENTATION_COMPLETE.md)** - Riepilogo completo implementazione
+- **[PORTING_PHP_TO_DOTNET.md](./PORTING_PHP_TO_DOTNET.md)** - Studio porting PHP a .NET
+- **[COMPLETAMENTO_SISTEMA_INTERNAL_LINKS.md](./COMPLETAMENTO_SISTEMA_INTERNAL_LINKS.md)** - Riepilogo finale completamento sistema
 
 ---
 
