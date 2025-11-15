@@ -106,7 +106,7 @@ class Linked_Data_Autocomplete_Service implements Autocomplete_Service {
 	}
 
 	private function do_query( $query, $scope = 'cloud', $exclude = '' ) {
-		// MODIFIED: Use Wikidata Search API instead of WordLift API
+		// MODIFIED: Use Wikidata Search API with caching and advanced search
 		if ( 'local' === $scope ) {
 			// For local scope, return empty (local entities are handled by Local_Autocomplete_Service)
 			return array();
@@ -115,14 +115,22 @@ class Linked_Data_Autocomplete_Service implements Autocomplete_Service {
 		$configuration_service = Wordlift_Configuration_Service::get_instance();
 		$language = $configuration_service->get_language_code();
 
-		// Use Wikidata Search API
+		require_once __DIR__ . '/../../includes/class-wordlift-wikidata-cache.php';
+
+		// Check cache first
+		$cached_results = Wordlift_Wikidata_Cache::get_search( $query, $language );
+		if ( $cached_results !== false && is_array( $cached_results ) ) {
+			return $cached_results;
+		}
+
+		// Use Wikidata Search API with fuzzy matching
 		$wikidata_url = add_query_arg(
 			array(
 				'action'   => 'wbsearchentities',
 				'search'   => $query,
 				'language' => $language,
 				'format'   => 'json',
-				'limit'    => 10,
+				'limit'    => 15, // Get more results for better filtering
 			),
 			'https://www.wikidata.org/w/api.php'
 		);
@@ -148,9 +156,28 @@ class Linked_Data_Autocomplete_Service implements Autocomplete_Service {
 			return array();
 		}
 
-		// Convert Wikidata format to WordLift format
-		$results = array();
-		foreach ( $body['search'] as $item ) {
+		// Filter and rank results using fuzzy matching
+		$filtered_results = $this->filter_and_rank_results( $query, $body['search'], $exclude );
+
+		// Cache the results
+		Wordlift_Wikidata_Cache::set_search( $query, $language, $filtered_results );
+
+		return $filtered_results;
+	}
+
+	/**
+	 * Filter and rank search results using fuzzy matching.
+	 *
+	 * @param string $query Original search query.
+	 * @param array  $results Raw search results.
+	 * @param string $exclude Excluded URIs.
+	 * @return array Filtered and ranked results.
+	 */
+	private function filter_and_rank_results( $query, $results, $exclude ) {
+		$ranked_results = array();
+		$query_lower = strtolower( $query );
+
+		foreach ( $results as $item ) {
 			$entity_id = 'https://www.wikidata.org/wiki/' . $item['id'];
 			
 			// Skip excluded URIs
@@ -161,36 +188,88 @@ class Linked_Data_Autocomplete_Service implements Autocomplete_Service {
 				}
 			}
 
+			$label = isset( $item['label'] ) ? $item['label'] : '';
+			$label_lower = strtolower( $label );
+
+			// Calculate relevance score
+			$score = 0;
+			
+			// Exact match gets highest score
+			if ( $label_lower === $query_lower ) {
+				$score = 100;
+			} elseif ( strpos( $label_lower, $query_lower ) !== false ) {
+				// Contains query gets high score
+				$score = 80;
+			} else {
+				// Fuzzy match score
+				$similarity = $this->calculate_similarity( $query_lower, $label_lower );
+				$score = $similarity * 60;
+			}
+
+			// Boost score if has description
+			if ( ! empty( $item['description'] ) ) {
+				$score += 5;
+			}
+
 			// Build labels array (label + aliases)
-			$labels = array( $item['label'] );
+			$labels = array( $label );
 			if ( isset( $item['aliases'] ) && is_array( $item['aliases'] ) ) {
 				$labels = array_merge( $labels, $item['aliases'] );
 			}
 
 			$result = array(
 				'id'           => $entity_id,
-				'label'        => array( $item['label'] ),
+				'label'        => array( $label ),
 				'labels'       => $labels,
 				'descriptions' => isset( $item['description'] ) && ! empty( $item['description'] ) ? array( $item['description'] ) : array(),
 				'scope'        => 'cloud',
-				'sameAss'      => array(), // Wikidata doesn't provide sameAs in search results
+				'sameAss'      => array(),
 				'types'        => isset( $item['concepturi'] ) ? array( $item['concepturi'] ) : array( 'http://schema.org/Thing' ),
 				'urls'         => array(),
 				'images'       => array(),
+				'_score'       => $score, // Internal score for sorting
 			);
 
-			// Add displayTypes if available (Wikidata entity type)
+			// Add displayTypes if available
 			if ( isset( $item['match'] ) && isset( $item['match']['type'] ) ) {
 				$result['displayTypes'] = array( $item['match']['type'] );
 			} else {
-				// Default to Thing if no type specified
 				$result['displayTypes'] = array( 'Thing' );
 			}
 
-			$results[] = $result;
+			$ranked_results[] = $result;
 		}
 
-		return $results;
+		// Sort by score (descending)
+		usort( $ranked_results, function( $a, $b ) {
+			return ( $b['_score'] ?? 0 ) - ( $a['_score'] ?? 0 );
+		} );
+
+		// Remove score from final results and limit to top 10
+		$final_results = array();
+		foreach ( array_slice( $ranked_results, 0, 10 ) as $result ) {
+			unset( $result['_score'] );
+			$final_results[] = $result;
+		}
+
+		return $final_results;
+	}
+
+	/**
+	 * Calculate similarity between two strings.
+	 *
+	 * @param string $str1 First string.
+	 * @param string $str2 Second string.
+	 * @return float Similarity score (0-1).
+	 */
+	private function calculate_similarity( $str1, $str2 ) {
+		$max_len = max( strlen( $str1 ), strlen( $str2 ) );
+		if ( $max_len === 0 ) {
+			return 1.0;
+		}
+
+		$distance = levenshtein( $str1, $str2 );
+		return 1 - ( $distance / $max_len );
 	}
 
 	/**

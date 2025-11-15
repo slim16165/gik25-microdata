@@ -88,65 +88,36 @@ class Super_Resolution_Controller {
 		// Get the path to the image file on the local disk
 		$image_path = get_attached_file( $attachment_id );
 
-		// Read the contents of the **local** image file into a string
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$image_data = file_get_contents( $image_path );
-
-		if ( ! $image_data ) {
-			// If image data is false, return a 404 response
+		if ( ! $image_path || ! file_exists( $image_path ) ) {
 			return new WP_Error( '404', 'Image not found.', array( 'status' => 404 ) );
 		}
 
-			$boundary = '__X_SUPER_RESOLUTION__';
-			$body     = "--$boundary\r\n";
-			$body    .= "content-disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n";
-			$body    .= "content-type: image/jpeg\r\n\r\n";
-			$body    .= $image_data . "\r\n";
-			$body    .= "--$boundary\r\n";
+		// MODIFIED: Use local upscaling instead of WordLift cloud service
+		require_once __DIR__ . '/../../../includes/class-wordlift-local-image-upscaler.php';
+		
+		// Get scale factor from query parameter (default 2x)
+		$scale_factor = isset( $_GET['scale'] ) ? intval( $_GET['scale'] ) : 2;
+		$scale_factor = max( 1, min( 4, $scale_factor ) ); // Limit between 1x and 4x
 
-			$endpoint = 'https://super-resolution.wordlift.io/upscales';
-			// Create a new HTTP POST request
-			$request = wp_remote_post(
-				$endpoint,
-				array(
-					// Set the content type header to multipart/form-data
-					'headers' => array(
-						'Accept'       => 'image/jpeg',
-						'Content-Type' => "multipart/form-data; boundary=$boundary",
-					),
-					// Set the request body to the image file
-					'body'    => $body,
-					// Set the timeout to 30 seconds
-					'timeout' => 100,
-				)
-			);
+		$upscaled_data = Wordlift_Local_Image_Upscaler::upscale_image( $image_path, $scale_factor );
 
-		if ( is_wp_error( $request ) ) {
-			// If the request resulted in an error, return it
-			return $request;
+		if ( is_wp_error( $upscaled_data ) ) {
+			return $upscaled_data;
 		}
 
-		if ( wp_remote_retrieve_response_code( $request ) !== 200 ) {
-			// If the response code is not 200 OK, return an error
-			return new WP_Error(
-				'api_error',
-				wp_remote_retrieve_response_message( $request ),
-				array(
-					'status' => wp_remote_retrieve_response_code( $request ),
-				)
-			);
+		// Get MIME type from original image
+		$mime_type = get_post_mime_type( $attachment_id );
+		if ( ! $mime_type ) {
+			$image_info = getimagesize( $image_path );
+			$mime_type = $image_info ? $image_info['mime'] : 'image/jpeg';
 		}
-
-		// Get the response body, which contains the binary data of the upscaled image
-		$response_body = wp_remote_retrieve_body( $request );
 
 		// Set the content type header to the appropriate image MIME type
-		header( 'Content-Type: image/jpeg' );
+		header( 'Content-Type: ' . $mime_type );
 
 		// Sending the image binary data.
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		exit( $response_body );
-
+		exit( $upscaled_data );
 	}
 
 	/**

@@ -80,7 +80,7 @@ class Local_Analysis_Service extends Singleton implements Analysis_Service {
 	}
 
 	/**
-	 * Extract entities using local methods (Wikidata search, pattern matching).
+	 * Extract entities using local methods (Wikidata search, DBpedia, pattern matching).
 	 *
 	 * @param string $text Text to analyze.
 	 * @param string $language Language code.
@@ -92,12 +92,44 @@ class Local_Analysis_Service extends Singleton implements Analysis_Service {
 		// Extract potential entity names (capitalized words, proper nouns)
 		$potential_entities = $this->extract_potential_entities( $text );
 
+		require_once __DIR__ . '/../../includes/class-wordlift-wikidata-cache.php';
+		require_once __DIR__ . '/../../includes/class-wordlift-dbpedia-service.php';
+
 		foreach ( $potential_entities as $entity_name ) {
-			// Try to find entity in Wikidata
-			$wikidata_entity = $this->search_wikidata( $entity_name, $language );
+			// Check cache first
+			$cached_search = Wordlift_Wikidata_Cache::get_search( $entity_name, $language );
+			
+			if ( $cached_search !== false ) {
+				$wikidata_entity = $cached_search;
+			} else {
+				// Try to find entity in Wikidata
+				$wikidata_entity = $this->search_wikidata( $entity_name, $language );
+				
+				// If not found in Wikidata, try DBpedia
+				if ( ! $wikidata_entity ) {
+					$dbpedia_results = Wordlift_DBpedia_Service::search( $entity_name, $language, 1 );
+					if ( ! empty( $dbpedia_results ) ) {
+						$dbpedia_entity = $dbpedia_results[0];
+						$wikidata_entity = array(
+							'id' => 'dbpedia-' . md5( $dbpedia_entity['id'] ),
+							'label' => $dbpedia_entity['label'],
+							'description' => $dbpedia_entity['description'],
+							'types' => array(),
+							'source' => 'dbpedia',
+						);
+					}
+				}
+				
+				// Cache the result
+				if ( $wikidata_entity ) {
+					Wordlift_Wikidata_Cache::set_search( $entity_name, $language, $wikidata_entity );
+				}
+			}
 			
 			if ( $wikidata_entity ) {
-				$entity_id = 'https://www.wikidata.org/entity/' . $wikidata_entity['id'];
+				$entity_id = isset( $wikidata_entity['source'] ) && $wikidata_entity['source'] === 'dbpedia' 
+					? $wikidata_entity['id']
+					: 'https://www.wikidata.org/entity/' . $wikidata_entity['id'];
 				
 				$entities[ $entity_id ] = array(
 					'id' => $entity_id,
@@ -106,10 +138,10 @@ class Local_Analysis_Service extends Singleton implements Analysis_Service {
 					'mainType' => $this->determine_entity_type( $wikidata_entity ),
 					'types' => isset( $wikidata_entity['types'] ) ? $wikidata_entity['types'] : array(),
 					'sameAs' => array( $entity_id ),
-					'confidence' => 0.7, // Default confidence for local analysis
+					'confidence' => 0.8, // Increased confidence with DBpedia support
 				);
 			} else {
-				// Create local entity if not found in Wikidata
+				// Create local entity if not found in external sources
 				$local_id = 'local-entity-' . md5( strtolower( $entity_name ) );
 				$entities[ $local_id ] = array(
 					'id' => $local_id,
@@ -152,21 +184,28 @@ class Local_Analysis_Service extends Singleton implements Analysis_Service {
 	}
 
 	/**
-	 * Search Wikidata for an entity.
+	 * Search Wikidata for an entity with fuzzy matching and advanced filtering.
 	 *
 	 * @param string $search_term Term to search.
 	 * @param string $language Language code.
 	 * @return array|false Entity data or false if not found.
 	 */
 	private function search_wikidata( $search_term, $language = 'en' ) {
-		// Use Wikidata Search API
+		// Check cache first
+		require_once __DIR__ . '/../../includes/class-wordlift-wikidata-cache.php';
+		$cached = Wordlift_Wikidata_Cache::get_search( $search_term, $language );
+		if ( $cached !== false ) {
+			return $cached;
+		}
+
+		// Use Wikidata Search API with fuzzy matching
 		$search_url = add_query_arg(
 			array(
 				'action' => 'wbsearchentities',
 				'search' => $search_term,
 				'language' => $language,
 				'format' => 'json',
-				'limit' => 1,
+				'limit' => 5, // Get more results for better matching
 			),
 			'https://www.wikidata.org/w/api.php'
 		);
@@ -180,17 +219,81 @@ class Local_Analysis_Service extends Singleton implements Analysis_Service {
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 
-		if ( ! empty( $data['search'] ) && ! empty( $data['search'][0] ) ) {
-			$result = $data['search'][0];
-			return array(
-				'id' => $result['id'],
-				'label' => isset( $result['label'] ) ? $result['label'] : $search_term,
-				'description' => isset( $result['description'] ) ? $result['description'] : '',
-				'types' => isset( $result['types'] ) ? $result['types'] : array(),
-			);
+		if ( ! empty( $data['search'] ) ) {
+			// Find best match using fuzzy matching
+			$best_match = $this->find_best_match( $search_term, $data['search'] );
+			
+			if ( $best_match ) {
+				$result = array(
+					'id' => $best_match['id'],
+					'label' => isset( $best_match['label'] ) ? $best_match['label'] : $search_term,
+					'description' => isset( $best_match['description'] ) ? $best_match['description'] : '',
+					'types' => isset( $best_match['types'] ) ? $best_match['types'] : array(),
+				);
+				
+				// Cache the result
+				Wordlift_Wikidata_Cache::set_search( $search_term, $language, $result );
+				
+				return $result;
+			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Find best match using fuzzy string matching.
+	 *
+	 * @param string $search_term Search term.
+	 * @param array  $results Search results.
+	 * @return array|false Best match or false.
+	 */
+	private function find_best_match( $search_term, $results ) {
+		$best_score = 0;
+		$best_match = false;
+		$search_lower = strtolower( $search_term );
+
+		foreach ( $results as $result ) {
+			$label = isset( $result['label'] ) ? strtolower( $result['label'] ) : '';
+			
+			// Exact match gets highest score
+			if ( $label === $search_lower ) {
+				return $result;
+			}
+			
+			// Calculate similarity score
+			$score = $this->calculate_similarity( $search_lower, $label );
+			
+			// Boost score if search term is contained in label
+			if ( strpos( $label, $search_lower ) !== false ) {
+				$score += 0.3;
+			}
+			
+			if ( $score > $best_score ) {
+				$best_score = $score;
+				$best_match = $result;
+			}
+		}
+
+		// Only return if similarity is above threshold
+		return $best_score > 0.5 ? $best_match : ( ! empty( $results ) ? $results[0] : false );
+	}
+
+	/**
+	 * Calculate similarity between two strings (simple Levenshtein-based).
+	 *
+	 * @param string $str1 First string.
+	 * @param string $str2 Second string.
+	 * @return float Similarity score (0-1).
+	 */
+	private function calculate_similarity( $str1, $str2 ) {
+		$max_len = max( strlen( $str1 ), strlen( $str2 ) );
+		if ( $max_len === 0 ) {
+			return 1.0;
+		}
+
+		$distance = levenshtein( $str1, $str2 );
+		return 1 - ( $distance / $max_len );
 	}
 
 	/**

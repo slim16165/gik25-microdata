@@ -141,18 +141,51 @@ class Post_Excerpt_Rest_Controller {
 	}
 
 	/**
-	 * Generate excerpt locally using simple text extraction algorithm.
+	 * Generate excerpt locally using TextRank algorithm for better quality.
 	 *
 	 * @param string $text Full text content.
 	 * @return string Generated excerpt.
 	 */
 	private static function generate_local_excerpt( $text ) {
-		// Configuration
-		$ratio = 0.0005; // Ratio of excerpt to full text
+		require_once __DIR__ . '/../../includes/class-wordlift-textrank-summarizer.php';
+
+		// Use TextRank for better summarization
+		$excerpt = Wordlift_TextRank_Summarizer::summarize( $text, 3 );
+
+		// Fallback to simple extraction if TextRank fails
+		if ( empty( $excerpt ) || strlen( $excerpt ) < 60 ) {
+			$excerpt = self::generate_simple_excerpt( $text );
+		}
+
+		// Ensure minimum and maximum length
 		$min_length = 60;
 		$max_length = 500;
 
-		// Clean text
+		if ( strlen( $excerpt ) < $min_length ) {
+			// Add more content if too short
+			$sentences = preg_split( '/(?<=[.!?])\s+/', wp_strip_all_tags( $text ), -1, PREG_SPLIT_NO_EMPTY );
+			$excerpt = implode( ' ', array_slice( $sentences, 0, 3 ) );
+		}
+
+		if ( strlen( $excerpt ) > $max_length ) {
+			$excerpt = substr( $excerpt, 0, $max_length );
+			$excerpt = substr( $excerpt, 0, strrpos( $excerpt, ' ' ) ) . '...';
+		}
+
+		return trim( $excerpt );
+	}
+
+	/**
+	 * Generate simple excerpt as fallback.
+	 *
+	 * @param string $text Full text content.
+	 * @return string Generated excerpt.
+	 */
+	private static function generate_simple_excerpt( $text ) {
+		$ratio = 0.0005;
+		$min_length = 60;
+		$max_length = 500;
+
 		$text = wp_strip_all_tags( $text );
 		$text = preg_replace( '/\s+/', ' ', $text );
 		$text = trim( $text );
@@ -160,7 +193,6 @@ class Post_Excerpt_Rest_Controller {
 		$text_length = strlen( $text );
 		$target_length = max( $min_length, min( $max_length, (int) ( $text_length * $ratio ) ) );
 
-		// Simple algorithm: take first sentences until we reach target length
 		$sentences = preg_split( '/(?<=[.!?])\s+/', $text, -1, PREG_SPLIT_NO_EMPTY );
 		
 		$excerpt = '';
@@ -168,23 +200,10 @@ class Post_Excerpt_Rest_Controller {
 			if ( strlen( $excerpt ) + strlen( $sentence ) > $target_length && strlen( $excerpt ) >= $min_length ) {
 				break;
 			}
-			$excerpt .= $sentence . ' ';
+			$excerpt .= ( $excerpt ? ' ' : '' ) . $sentence;
 		}
 
-		$excerpt = trim( $excerpt );
-
-		// If excerpt is too short, take first part of text
-		if ( strlen( $excerpt ) < $min_length ) {
-			$excerpt = mb_substr( $text, 0, $target_length );
-			// Try to end at word boundary
-			$last_space = mb_strrpos( $excerpt, ' ' );
-			if ( $last_space !== false && $last_space > $min_length ) {
-				$excerpt = mb_substr( $excerpt, 0, $last_space );
-			}
-			$excerpt .= '...';
-		}
-
-		return $excerpt;
+		return $excerpt ?: substr( $text, 0, $target_length );
 	}
 
 	/**
