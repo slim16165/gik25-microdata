@@ -37,7 +37,7 @@ jobs:
           push-to-registry: false
 
       - name: Upload attestation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: slsa-attestation
           path: slsa-attestation.json
