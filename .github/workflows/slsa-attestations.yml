@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Generate attestation
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v3
         with:
           subject-name: "ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}"
           subject-digest: "sha256:${{ github.sha }}"
