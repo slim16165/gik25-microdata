@@ -39,7 +39,8 @@ class DatabaseSchema
 
         // Table: autolinks
         $sql_autolinks = "CREATE TABLE {$wpdb->prefix}gik25_il_autolinks (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (id),
             name VARCHAR(255) NOT NULL,
             keyword VARCHAR(255) NOT NULL,
             url VARCHAR(2083) NOT NULL,
@@ -75,7 +76,8 @@ class DatabaseSchema
 
         // Table: links
         $sql_links = "CREATE TABLE {$wpdb->prefix}gik25_il_links (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (id),
             source_post_id BIGINT NOT NULL,
             target_post_id BIGINT NOT NULL,
             target_url VARCHAR(2083) NOT NULL,
@@ -109,7 +111,8 @@ class DatabaseSchema
 
         // Table: suggestions
         $sql_suggestions = "CREATE TABLE {$wpdb->prefix}gik25_il_suggestions (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (id),
             post_id BIGINT NOT NULL,
             suggested_post_id BIGINT NOT NULL,
             phrase TEXT NOT NULL,
@@ -134,7 +137,8 @@ class DatabaseSchema
 
         // Table: clicks
         $sql_clicks = "CREATE TABLE {$wpdb->prefix}gik25_il_clicks (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (id),
             link_id BIGINT NOT NULL,
             post_id BIGINT NOT NULL,
             ip_address VARCHAR(45),
@@ -151,7 +155,8 @@ class DatabaseSchema
 
         // Table: http_status
         $sql_http_status = "CREATE TABLE {$wpdb->prefix}gik25_il_http_status (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (id),
             url VARCHAR(2083) NOT NULL,
             post_id BIGINT,
             http_status INT,
@@ -170,7 +175,8 @@ class DatabaseSchema
 
         // Table: juice
         $sql_juice = "CREATE TABLE {$wpdb->prefix}gik25_il_juice (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (id),
             post_id BIGINT NOT NULL,
             url VARCHAR(2083) NOT NULL,
             seo_power INT DEFAULT 100,
@@ -188,7 +194,8 @@ class DatabaseSchema
 
         // Table: categories
         $sql_categories = "CREATE TABLE {$wpdb->prefix}gik25_il_categories (
-            category_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            category_id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (category_id),
             name VARCHAR(255) NOT NULL,
             description TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -197,7 +204,8 @@ class DatabaseSchema
 
         // Table: term_groups
         $sql_term_groups = "CREATE TABLE {$wpdb->prefix}gik25_il_term_groups (
-            term_group_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            term_group_id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (term_group_id),
             name VARCHAR(100) NOT NULL,
             filters TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -206,7 +214,8 @@ class DatabaseSchema
 
         // Table: archive
         $sql_archive = "CREATE TABLE {$wpdb->prefix}gik25_il_archive (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id BIGINT AUTO_INCREMENT,
+            PRIMARY KEY (id),
             post_id BIGINT NOT NULL,
             post_title TEXT,
             post_permalink TEXT,

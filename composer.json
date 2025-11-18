@@ -15,7 +15,10 @@
       "gik25microdata\\": "include/class/",
       "gik25microdata\\site_specific\\": "include/site_specific/",
       "gik25microdata\\InternalLinks\\": "include/class/InternalLinks/"
-    }
+    },
+    "classmap": [
+      "include/class/Logs/Core.php"
+    ]
   },
   "require": {
     "athari/yalinqo": "^2.0",
@@ -38,7 +41,7 @@
     "szepeviktor/phpstan-wordpress": "dev-master",
     "vimeo/psalm": "^5.0",
     "phpunit/phpunit": "^10.0",
-    "yoast/phpunit-polyfills": "^1.0",
+    "yoast/phpunit-polyfills": "^2.0",
     "rector/rector": "^0.19",
     "friendsofphp/php-cs-fixer": "^3.0"
   },

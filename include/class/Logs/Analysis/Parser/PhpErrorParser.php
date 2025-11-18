@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 /**
  * Parser per log errori PHP
  */
-final class PhpErrorParser implements LogParserInterface
+class PhpErrorParser implements LogParserInterface
 {
     public function supports(string $type): bool
     {

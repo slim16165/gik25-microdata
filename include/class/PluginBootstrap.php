@@ -29,6 +29,30 @@ class PluginBootstrap
      */
     public static function init(string $plugin_file): void
     {
+        // Verifica se siamo durante l'attivazione del plugin
+        // Durante l'attivazione, WordPress include il file per verificare errori fatali
+        // ma non dovremmo eseguire l'inizializzazione completa
+        $is_activation = false;
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+        foreach ($backtrace as $frame) {
+            if (isset($frame['function']) && $frame['function'] === 'register_activation_hook') {
+                $is_activation = true;
+                break;
+            }
+            if (isset($frame['file']) && strpos($frame['file'], 'plugin.php') !== false && 
+                isset($frame['function']) && in_array($frame['function'], ['activate_plugin', 'plugin_sandbox_scrape'])) {
+                $is_activation = true;
+                break;
+            }
+        }
+        
+        // Durante l'attivazione, esegui solo l'inizializzazione minima necessaria
+        if ($is_activation) {
+            self::$plugin_dir = dirname($plugin_file);
+            self::$plugin_file = $plugin_file;
+            return; // Non eseguire l'inizializzazione completa durante l'attivazione
+        }
+        
         // Esegui inizializzazione in modo sicuro
         SafeExecution::safe_execute(function() use ($plugin_file) {
             self::$plugin_dir = dirname($plugin_file);
@@ -49,11 +73,24 @@ class PluginBootstrap
             }
             
             // Carica autoloader (protetto)
+            // Verifica che composer sia stato eseguito (controlla autoload_real.php)
             $autoload_path = self::$plugin_dir . '/vendor/autoload.php';
-            if (file_exists($autoload_path)) {
+            $autoload_real_path = self::$plugin_dir . '/vendor/composer/autoload_real.php';
+            if (file_exists($autoload_path) && file_exists($autoload_real_path)) {
                 SafeExecution::safe_execute(function() use ($autoload_path) {
                     require_once $autoload_path;
                 }, null, true);
+            } else {
+                // Composer non è stato eseguito - mostra avviso ma non blocca il plugin
+                if (current_user_can('manage_options')) {
+                    add_action('admin_notices', function() {
+                        echo '<div class="notice notice-warning is-dismissible">';
+                        echo '<p><strong>Revious Microdata:</strong> ';
+                        echo 'Le dipendenze Composer non sono state installate. ';
+                        echo 'Esegui <code>composer install --no-dev</code> nella directory del plugin per abilitare tutte le funzionalità.';
+                        echo '</p></div>';
+                    });
+                }
             }
             
             // Inizializza tabelle database (protetto)
@@ -95,8 +132,10 @@ class PluginBootstrap
     private static function checkComposerDependencies(): bool
     {
         $autoload_path = self::$plugin_dir . '/vendor/autoload.php';
+        $autoload_real_path = self::$plugin_dir . '/vendor/composer/autoload_real.php';
         
-        if (file_exists($autoload_path)) {
+        // Verifica che entrambi i file esistano (composer install è stato eseguito)
+        if (file_exists($autoload_path) && file_exists($autoload_real_path)) {
             return true;
         }
 
@@ -192,6 +231,13 @@ class PluginBootstrap
             SafeExecution::safe_execute(function() {
                 if (class_exists('\gik25microdata\Logs\Viewer\LogViewerAPI')) {
                     \gik25microdata\Logs\Viewer\LogViewerAPI::init();
+                }
+            }, null, true);
+            
+            // MCP REST API endpoints (devono essere registrati sempre)
+            SafeExecution::safe_execute(function() {
+                if (class_exists('\gik25microdata\REST\MCPApi')) {
+                    \gik25microdata\REST\MCPApi::init();
                 }
             }, null, true);
 
@@ -562,8 +608,23 @@ class PluginBootstrap
             return self::getLogLocation();
         }, ['path' => '', 'url' => '', 'exists' => false], true);
 
-        // Mostra notifica admin solo in backend e non durante AJAX (protetto)
-        if (is_admin() && !defined('DOING_AJAX')) {
+        // Mostra notifica admin solo in backend e non durante AJAX o attivazione (protetto)
+        // Verifica se siamo durante l'attivazione del plugin
+        $is_activation = false;
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);
+        foreach ($backtrace as $frame) {
+            if (isset($frame['function']) && $frame['function'] === 'register_activation_hook') {
+                $is_activation = true;
+                break;
+            }
+            if (isset($frame['file']) && strpos($frame['file'], 'plugin.php') !== false && 
+                isset($frame['function']) && in_array($frame['function'], ['activate_plugin', 'plugin_sandbox_scrape'])) {
+                $is_activation = true;
+                break;
+            }
+        }
+        
+        if (is_admin() && !defined('DOING_AJAX') && !$is_activation) {
             SafeExecution::safe_add_action('admin_notices', function() use ($message, $exception, $log_location) {
                 echo '<div class="notice notice-error is-dismissible">';
                 echo '<p><strong>Revious Microdata:</strong> ' . esc_html($message) . '</p>';
@@ -809,6 +870,24 @@ class PluginBootstrap
      */
     private static function registerErrorHandlers(): void
     {
+        // Non registrare error handler durante l'attivazione del plugin
+        // per evitare output inaspettato
+        if (defined('WP_UNINSTALL_PLUGIN') || (defined('WP_CLI') && WP_CLI)) {
+            return;
+        }
+        
+        // Verifica se siamo durante l'attivazione (controlla se register_activation_hook è in esecuzione)
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+        foreach ($backtrace as $frame) {
+            if (isset($frame['function']) && $frame['function'] === 'register_activation_hook') {
+                return; // Non registrare durante l'attivazione
+            }
+            if (isset($frame['file']) && strpos($frame['file'], 'plugin.php') !== false && 
+                isset($frame['function']) && in_array($frame['function'], ['activate_plugin', 'plugin_sandbox_scrape'])) {
+                return; // Non registrare durante l'attivazione
+            }
+        }
+        
         /**
          * Error handler per catturare errori non fatali del plugin
          */
